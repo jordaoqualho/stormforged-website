@@ -43,6 +43,7 @@ export default function DailyBattleLog() {
           totalWins: 0,
           totalLosses: 0,
           totalDraws: 0,
+          totalPoints: 0,
           playerCount: 0,
           winRate: 0,
         });
@@ -75,10 +76,10 @@ export default function DailyBattleLog() {
             {day.totalAttacks > 0 ? (
               <div className="space-y-2">
                 <div className="flex flex-col items-center space-y-1">
-                  <div className="text-xs font-bold text-gray-300">Strikes</div>
+                  <div className="text-xs font-bold text-gray-300">Points</div>
                   <div className="flex items-center space-x-1">
-                    <span className="text-sm">⚔️</span>
-                    <span className="text-lg font-pixel text-gold">{day.totalAttacks}</span>
+                    <span className="text-sm">⭐</span>
+                    <span className="text-lg font-pixel text-gold">{day.totalPoints || 0}</span>
                   </div>
                 </div>
 
