@@ -12,20 +12,18 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
   const [loadingText, setLoadingText] = useState("Initializing Stormforged...");
   const [isCompleting, setIsCompleting] = useState(false);
 
-  const loadingSteps = [
-    { text: "Initializing Stormforged...", duration: 1000 },
-    { text: "Loading battle data...", duration: 800 },
-    { text: "Preparing command center...", duration: 700 },
-    { text: "Activating guild systems...", duration: 600 },
-    { text: "Synchronizing warriors...", duration: 500 },
-    { text: "Ready for battle!", duration: 400 },
-  ];
-
   useEffect(() => {
+    const loadingSteps = [
+      { text: "Initializing Stormforged...", duration: 1000 },
+      { text: "Loading battle data...", duration: 800 },
+      { text: "Preparing command center...", duration: 700 },
+      { text: "Activating guild systems...", duration: 600 },
+      { text: "Synchronizing warriors...", duration: 500 },
+      { text: "Ready for battle!", duration: 400 },
+    ];
+
     let currentStep = 0;
-    let progressInterval: NodeJS.Timeout;
     let stepTimeout: NodeJS.Timeout;
-    let minDurationTimeout: NodeJS.Timeout;
     let isCompleted = false;
 
     const completeLoading = () => {
@@ -33,9 +31,6 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
         isCompleted = true;
         setIsCompleting(true);
         setLoadingText("Welcome to Stormforged!");
-        clearInterval(progressInterval);
-        clearTimeout(stepTimeout);
-        clearTimeout(minDurationTimeout);
         setTimeout(() => {
           onComplete();
         }, 1200);
@@ -62,11 +57,11 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
     };
 
     // Start the loading process
-    progressInterval = setInterval(updateProgress, 60); // Balanced timing
+    const progressInterval = setInterval(updateProgress, 60);
     stepTimeout = setTimeout(nextStep, 200);
 
     // Set minimum duration timer as primary completion trigger
-    minDurationTimeout = setTimeout(() => {
+    const minDurationTimeout = setTimeout(() => {
       if (!isCompleted) {
         completeLoading();
       }

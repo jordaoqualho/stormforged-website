@@ -17,7 +17,7 @@ import NotificationSystem, { useNotifications } from "@/components/NotificationS
 import SoundToggle from "@/components/SoundToggle";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export default function Home() {
   const { loadData, isLoading } = useGuildWarStore();
@@ -47,10 +47,7 @@ export default function Home() {
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
-      // Reduced delay since InitialLoadingScreen handles the timing
-      setTimeout(() => {
-        setIsInitialLoading(false);
-      }, 200);
+      // Remove the timeout - let InitialLoadingScreen handle its own timing
     };
 
     initializeApp();
@@ -58,7 +55,7 @@ export default function Home() {
 
   // Show initial loading screen
   if (isInitialLoading) {
-    return <InitialLoadingScreen onComplete={() => setIsInitialLoading(false)} minDuration={4500} />;
+    return <InitialLoadingScreen onComplete={useCallback(() => setIsInitialLoading(false), [])} minDuration={4500} />;
   }
 
   // Show data loading screen
