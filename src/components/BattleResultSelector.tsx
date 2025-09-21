@@ -77,7 +77,7 @@ export default function BattleResultSelector({
       {/* Battle Icons Grid */}
       <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-pixel text-gold text-lg">⚔️ Battle Results (5 Attacks)</h3>
+          <h3 className="font-pixel text-gold text-lg">⚔️ Battle Results</h3>
           <button
             type="button"
             onClick={resetAll}
@@ -89,7 +89,7 @@ export default function BattleResultSelector({
         </div>
 
         {/* Icon Grid */}
-        <div className="grid grid-cols-5 gap-3 mb-4">
+        <div className="grid grid-cols-5 gap-2 mb-4">
           {results.map((result, index) => (
             <button
               key={index}
@@ -120,7 +120,7 @@ export default function BattleResultSelector({
         </div>
 
         {/* Legend */}
-        <div className="flex justify-center space-x-6 text-sm font-pixel-operator">
+        <div className="flex justify-center space-x-6 text-sm font-pixel-operator mt-2">
           <div className="flex items-center space-x-2">
             <span className="text-success">⚔️</span>
             <span className="text-text-secondary">Victory (5 pts)</span>
@@ -163,14 +163,6 @@ export default function BattleResultSelector({
               {stats.victories * 5 + stats.draws * 3 + stats.losses * 2}
             </div>
             <div className="text-xs text-text-muted font-pixel-operator">Points</div>
-          </div>
-        </div>
-
-        {/* Point Breakdown */}
-        <div className="mt-3 text-center">
-          <div className="text-xs font-pixel-operator text-text-muted">
-            ({stats.victories}×5) + ({stats.draws}×3) + ({stats.losses}×2) ={" "}
-            {stats.victories * 5 + stats.draws * 3 + stats.losses * 2} points
           </div>
         </div>
       </div>
