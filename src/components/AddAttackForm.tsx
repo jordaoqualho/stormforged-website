@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDate } from "@/lib/calculations";
-import { calculatePoints } from "@/lib/points";
+import { calculatePoints, getPointBreakdown } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -29,6 +29,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const draws = battleResults.filter((r) => r === "draw").length;
   const losses = battleResults.filter((r) => r === "loss").length;
   const points = calculatePoints(wins, losses, draws);
+  const pointBreakdown = getPointBreakdown(wins, losses, draws);
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
   const { playClick, playSword, playSuccess, playError } = useRPGSounds();
@@ -90,7 +91,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           <h2 className="text-2xl font-pixel text-gold text-glow">Battle Log Entry</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
-        
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Player Name Input */}
@@ -115,13 +115,10 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           </div>
 
           {/* Battle Results Selector */}
-          <BattleResultSelector
-            onResultsChange={setBattleResults}
-            initialResults={battleResults}
-          />
+          <BattleResultSelector onResultsChange={setBattleResults} initialResults={battleResults} />
 
           {/* Battle Summary */}
-          {battleResults.some(r => r !== "victory") && (
+          {battleResults.some((r) => r !== "victory") && (
             <div className="panel-rpg">
               <h3 className="font-pixel text-sm text-gold mb-3">📊 Battle Summary</h3>
               <div className="grid grid-cols-4 gap-3 text-center">
