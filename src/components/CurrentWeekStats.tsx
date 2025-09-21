@@ -1,13 +1,20 @@
 "use client";
 
-import { getWeekNumberForDate, getWeekRange } from "@/lib/calculations";
+import { getWeekNumberForDate, getWeekRange, getCurrentWeekNumber } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import RPGWeekSelector from "./RPGWeekSelector";
 
 export default function CurrentWeekStats() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
+
+  // Calculate current week number
+  useEffect(() => {
+    const weekNumber = getCurrentWeekNumber();
+    setCurrentWeekNumber(weekNumber);
+  }, []);
 
   // Calculate available weeks from attack data (war weeks start on Friday)
   const availableWeeks = useMemo(() => {
@@ -111,7 +118,7 @@ export default function CurrentWeekStats() {
             <div>
               <h2 className="text-xl sm:text-2xl font-pixel text-gold text-glow">Command Center</h2>
               <div className="text-xs sm:text-sm text-text-muted font-pixel-operator">
-                {selectedWeek ? `Week ${selectedWeek}` : "Current Week"} • {formatDate(displayData.weekStart)} -{" "}
+                {selectedWeek ? `Week ${selectedWeek}` : currentWeekNumber ? `Week ${currentWeekNumber}` : "Current Week"} • {formatDate(displayData.weekStart)} -{" "}
                 {formatDate(displayData.weekEnd)}
               </div>
             </div>
@@ -126,9 +133,6 @@ export default function CurrentWeekStats() {
               getWeekRange={getWeekRange}
               className="w-full sm:min-w-64"
             />
-            <div className="text-xs sm:text-sm text-text-muted font-pixel-operator text-center sm:text-left">
-              {selectedWeek ? `Week ${selectedWeek}` : "Current Week"}
-            </div>
           </div>
         </div>
 
