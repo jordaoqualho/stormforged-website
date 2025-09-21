@@ -2,6 +2,7 @@
 
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useState } from "react";
+import RPGConfirmModal from "./RPGConfirmModal";
 
 interface DataManagementProps {
   onSuccess?: (message: string) => void;
@@ -13,6 +14,10 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   const [importData, setImportData] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [showImportSection, setShowImportSection] = useState(false);
+  
+  // Confirmation modal states
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const { exportData, importData: importDataAction, clearAllData, isSaving } = useGuildWarStore();
 
@@ -45,10 +50,10 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       return;
     }
 
-    if (!confirm("This will replace all current battle records. Are you sure you want to continue?")) {
-      return;
-    }
+    setShowImportConfirm(true);
+  };
 
+  const confirmImport = async () => {
     setIsImporting(true);
     try {
       await importDataAction(importData);
@@ -64,10 +69,10 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   };
 
   const handleClearData = async () => {
-    if (!confirm("This will permanently delete all battle records. Are you sure you want to continue?")) {
-      return;
-    }
+    setShowClearConfirm(true);
+  };
 
+  const confirmClearData = async () => {
     try {
       await clearAllData();
       onSuccess?.("All battle records have been cleared. The slate is clean! 🗑️");
@@ -235,6 +240,32 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
           </div>
         </div>
       </div>
+
+      {/* Import Confirmation Modal */}
+      <RPGConfirmModal
+        isOpen={showImportConfirm}
+        onClose={() => setShowImportConfirm(false)}
+        onConfirm={confirmImport}
+        title="Import Battle Records"
+        message="This will replace all current battle records with the imported data. Are you sure you want to continue?"
+        confirmText="Import Records"
+        cancelText="Cancel"
+        type="warning"
+        icon="🏰"
+      />
+
+      {/* Clear Data Confirmation Modal */}
+      <RPGConfirmModal
+        isOpen={showClearConfirm}
+        onClose={() => setShowClearConfirm(false)}
+        onConfirm={confirmClearData}
+        title="Clear All Records"
+        message="This will permanently delete all battle records from Stormforged's archives. This action cannot be undone and will erase all history!"
+        confirmText="Clear All"
+        cancelText="Cancel"
+        type="danger"
+        icon="💀"
+      />
     </div>
   );
 }
