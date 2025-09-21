@@ -18,6 +18,14 @@ export default function Home() {
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
+  // Calculate current week number of the year
+  const getCurrentWeekNumber = () => {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const daysSinceStart = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.ceil((daysSinceStart + startOfYear.getDay() + 1) / 7);
+  };
+
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -66,7 +74,19 @@ export default function Home() {
                   })}
                 </div>
                 <div className="text-xs text-text-muted font-pixel-operator">
-                  Battle Day #{Math.ceil((Date.now() - new Date("2024-01-01").getTime()) / (1000 * 60 * 60 * 24))}
+                  {getCurrentWeekNumber() === 1
+                    ? "First Week of Battle"
+                    : getCurrentWeekNumber() <= 4
+                    ? `Week ${getCurrentWeekNumber()} Campaign`
+                    : getCurrentWeekNumber() <= 12
+                    ? `Week ${getCurrentWeekNumber()} Siege`
+                    : getCurrentWeekNumber() <= 26
+                    ? `Week ${getCurrentWeekNumber()} War`
+                    : getCurrentWeekNumber() <= 39
+                    ? `Week ${getCurrentWeekNumber()} Crusade`
+                    : getCurrentWeekNumber() <= 52
+                    ? `Week ${getCurrentWeekNumber()} Legend`
+                    : `Week ${getCurrentWeekNumber()} Epic`}
                 </div>
               </div>
               <div className="flex items-center space-x-3">
