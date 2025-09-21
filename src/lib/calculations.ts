@@ -11,17 +11,20 @@ export function formatDate(date: Date): string {
 export function getWeekStart(date: string): string {
   const d = new Date(date);
   const day = d.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
-  
+
   // Calculate days to subtract to get to the most recent Friday
   let daysToSubtract;
-  if (day === 5) { // Friday
+  if (day === 5) {
+    // Friday
     daysToSubtract = 0; // Already Friday
-  } else if (day === 6) { // Saturday
+  } else if (day === 6) {
+    // Saturday
     daysToSubtract = 1; // Go back 1 day to Friday
-  } else { // Sunday (0) through Thursday (4)
+  } else {
+    // Sunday (0) through Thursday (4)
     daysToSubtract = day + 2; // Go back to previous Friday
   }
-  
+
   const weekStart = new Date(d);
   weekStart.setDate(d.getDate() - daysToSubtract);
   return formatDate(weekStart);

@@ -15,19 +15,19 @@ export default function DailyBattleLog() {
 
   // Reorder days to start from Friday (war week starts on Friday)
   const reorderDaysForWarWeek = (dailyStats: any[], weekStart: string) => {
-    const dayOrder = ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+    const dayOrder = ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"];
     const orderedDays = [];
-    
+
     // Create a map for quick lookup
     const dayMap = new Map();
-    dailyStats.forEach(day => {
+    dailyStats.forEach((day) => {
       const dayName = new Date(day.date).toLocaleDateString("en-US", { weekday: "short" });
       dayMap.set(dayName, day);
     });
-    
+
     // Calculate the actual week start date
     const weekStartDate = new Date(weekStart);
-    
+
     // Add days in war week order (Friday to Thursday)
     dayOrder.forEach((dayName, index) => {
       if (dayMap.has(dayName)) {
@@ -36,9 +36,9 @@ export default function DailyBattleLog() {
         // Create empty day entry for missing days using the correct week boundaries
         const emptyDate = new Date(weekStartDate);
         emptyDate.setDate(weekStartDate.getDate() + index);
-        
+
         orderedDays.push({
-          date: emptyDate.toISOString().split('T')[0],
+          date: emptyDate.toISOString().split("T")[0],
           totalAttacks: 0,
           totalWins: 0,
           totalLosses: 0,
@@ -48,7 +48,7 @@ export default function DailyBattleLog() {
         });
       }
     });
-    
+
     return orderedDays;
   };
 

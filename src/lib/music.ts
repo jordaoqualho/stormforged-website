@@ -43,36 +43,74 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
   },
 ];
 
-// Initialize Howler.js tracks
-const tracks: Record<string, Howl> = {
-  tavern_ambience: new Howl({
-    src: ["/music/tavern-ambience.mp3"],
-    loop: true,
-    volume: 0.3,
-    onload: () => console.log("Tavern ambience loaded"),
-    onloaderror: (id: number, error: unknown) => console.error("Tavern ambience load error:", error),
-  }),
-  battle_theme: new Howl({
-    src: ["/music/battle-theme.mp3"],
-    loop: true,
-    volume: 0.4,
-    onload: () => console.log("Battle theme loaded"),
-    onloaderror: (id: number, error: unknown) => console.error("Battle theme load error:", error),
-  }),
-  victory_fanfare: new Howl({
-    src: ["/music/victory-fanfare.mp3"],
-    loop: false,
-    volume: 0.5,
-    onload: () => console.log("Victory fanfare loaded"),
-    onloaderror: (id: number, error: unknown) => console.error("Victory fanfare load error:", error),
-  }),
-  peaceful_village: new Howl({
-    src: ["/music/peaceful-village.mp3"],
-    loop: true,
-    volume: 0.2,
-    onload: () => console.log("Peaceful village loaded"),
-    onloaderror: (id: number, error: unknown) => console.error("Peaceful village load error:", error),
-  }),
+// Initialize Howler.js tracks with better error handling
+let tracks: Record<string, Howl> = {};
+
+// Initialize tracks only when needed and in browser environment
+const initializeTracks = () => {
+  if (typeof window === "undefined" || Object.keys(tracks).length > 0) {
+    return tracks;
+  }
+
+  // Check if audio is supported
+  if (typeof window !== "undefined" && !window.AudioContext && !(window as any).webkitAudioContext) {
+    console.warn("Audio not supported in this environment");
+    return {};
+  }
+
+  // Check if Howler is available
+  if (typeof Howl === "undefined") {
+    console.warn("Howler.js not available");
+    return {};
+  }
+
+  try {
+    tracks = {
+      tavern_ambience: new Howl({
+        src: ["/music/tavern-ambience.mp3"],
+        loop: true,
+        volume: 0.3,
+        onload: () => console.log("Tavern ambience loaded"),
+        onloaderror: (id: number, error: unknown) => {
+          console.warn("Tavern ambience load error:", error);
+          // Don't throw error, just log warning
+        },
+      }),
+      battle_theme: new Howl({
+        src: ["/music/battle-theme.mp3"],
+        loop: true,
+        volume: 0.4,
+        onload: () => console.log("Battle theme loaded"),
+        onloaderror: (id: number, error: unknown) => {
+          console.warn("Battle theme load error:", error);
+        },
+      }),
+      victory_fanfare: new Howl({
+        src: ["/music/victory-fanfare.mp3"],
+        loop: false,
+        volume: 0.5,
+        onload: () => console.log("Victory fanfare loaded"),
+        onloaderror: (id: number, error: unknown) => {
+          console.warn("Victory fanfare load error:", error);
+        },
+      }),
+      peaceful_village: new Howl({
+        src: ["/music/peaceful-village.mp3"],
+        loop: true,
+        volume: 0.2,
+        onload: () => console.log("Peaceful village loaded"),
+        onloaderror: (id: number, error: unknown) => {
+          console.warn("Peaceful village load error:", error);
+        },
+      }),
+    };
+  } catch (error) {
+    console.warn("Failed to initialize audio tracks:", error);
+    // Return empty tracks object if initialization fails
+    tracks = {};
+  }
+
+  return tracks;
 };
 
 export function useRPGBackgroundMusic() {
@@ -99,9 +137,10 @@ export function useRPGBackgroundMusic() {
   });
   const currentTrackRef = useRef<Howl | null>(null);
 
-  // Initialize volume for all tracks
+  // Initialize tracks and volume
   useEffect(() => {
-    Object.values(tracks).forEach((track) => {
+    const initializedTracks = initializeTracks();
+    Object.values(initializedTracks).forEach((track) => {
       track.volume(volume);
     });
   }, [volume]);
@@ -127,9 +166,10 @@ export function useRPGBackgroundMusic() {
     // Stop current track
     stopMusic();
 
-    const track = tracks[trackId];
+    const initializedTracks = initializeTracks();
+    const track = initializedTracks[trackId];
     if (!track) {
-      console.error(`Track not found: ${trackId}`);
+      console.warn(`Track not found: ${trackId}`);
       return;
     }
 
@@ -139,7 +179,7 @@ export function useRPGBackgroundMusic() {
       setIsPlaying(true);
       console.log(`Playing track: ${trackId}`);
     } catch (error) {
-      console.error(`Error playing track ${trackId}:`, error);
+      console.warn(`Error playing track ${trackId}:`, error);
     }
   };
 
@@ -168,7 +208,8 @@ export function useRPGBackgroundMusic() {
     }
 
     // Update volume for all tracks
-    Object.values(tracks).forEach((track) => {
+    const initializedTracks = initializeTracks();
+    Object.values(initializedTracks).forEach((track) => {
       track.volume(newVolume);
     });
   };
@@ -187,15 +228,20 @@ export function useRPGBackgroundMusic() {
   // Play victory fanfare for achievements
   const playVictoryFanfare = () => {
     if (isEnabled) {
-      const victoryTrack = tracks.victory_fanfare;
+      const initializedTracks = initializeTracks();
+      const victoryTrack = initializedTracks.victory_fanfare;
       if (victoryTrack) {
-        victoryTrack.play();
+        try {
+          victoryTrack.play();
 
-        // Return to previous track after fanfare (if it was playing)
-        if (isPlaying && currentTrack !== "victory_fanfare") {
-          victoryTrack.once("end", () => {
-            playTrack(currentTrack);
-          });
+          // Return to previous track after fanfare (if it was playing)
+          if (isPlaying && currentTrack !== "victory_fanfare") {
+            victoryTrack.once("end", () => {
+              playTrack(currentTrack);
+            });
+          }
+        } catch (error) {
+          console.warn("Error playing victory fanfare:", error);
         }
       }
     }
