@@ -180,10 +180,10 @@ This project is licensed under the MIT License.
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## ⚔️ About Heroes of Horizon
+## ⚔️ About Idle of Horizons
 
-This tracker is designed for the mobile strategy game "Heroes of Horizon" where guilds compete in weekly wars. Each member can perform up to 5 attacks per day, and tracking this data helps optimize guild performance and strategy.
+This tracker is designed for the mobile strategy game "Idle of Horizons" where guilds compete in weekly wars. Each member can perform up to 5 attacks per day, and tracking this data helps optimize guild performance and strategy.
 
 ---
 
-**Built with ❤️ for the Heroes of Horizon community**
+**Built with ❤️ for the Idle of Horizons community**

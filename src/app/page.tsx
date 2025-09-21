@@ -207,7 +207,7 @@ export default function Home() {
           <div className="mt-8 pt-6 border-t border-mystic-blue">
             <div className="text-center">
               <p className="text-xs text-text-muted font-pixel-operator">
-                Built with ⚔️ for the Heroes of Horizon community • Powered by Next.js &amp; TailwindCSS
+                Built with ⚔️ for the Idle of Horizons community • Powered by Next.js &amp; TailwindCSS
               </p>
             </div>
           </div>
