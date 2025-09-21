@@ -5,17 +5,24 @@ import { useRPGSounds } from "@/lib/sounds";
 import { useEffect, useState } from "react";
 
 export default function SoundToggle() {
-  const { isEnabled, toggleSound } = useRPGSounds();
+  const { isEnabled: soundEnabled, toggleSound } = useRPGSounds();
   const { isEnabled: musicEnabled, toggleEnabled: toggleMusic } = useRPGBackgroundMusic();
   const [isHovered, setIsHovered] = useState(false);
+  const [localSoundEnabled, setLocalSoundEnabled] = useState(soundEnabled);
 
   const handleClick = () => {
-    toggleSound();
+    const newSoundState = toggleSound();
+    setLocalSoundEnabled(newSoundState);
     toggleMusic(); // Also toggle music
   };
 
+  // Update local state when sound state changes externally
+  useEffect(() => {
+    setLocalSoundEnabled(soundEnabled);
+  }, [soundEnabled]);
+
   // Combined state: both sound effects and music must be enabled
-  const isFullyEnabled = isEnabled && musicEnabled;
+  const isFullyEnabled = localSoundEnabled && musicEnabled;
 
   return (
     <button
