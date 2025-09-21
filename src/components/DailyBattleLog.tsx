@@ -132,7 +132,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
                     </div>
                   </div>
 
-                  <div className="text-xs text-text-muted mt-2">{day.playerCount} members</div>
+                  <div className="text-xs text-text-muted mt-2 whitespace-nowrap">{day.playerCount} members</div>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -163,11 +163,11 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
                   <div className="flex flex-col items-center space-y-1">
                     <div className="text-xs font-bold text-gray-300">Rate</div>
                     <div className="text-xs font-pixel px-2 py-0.5 rounded-full bg-gray-700/80 text-gray-400">
-                      No data
+                      0%
                     </div>
                   </div>
 
-                  <div className="text-xs text-text-muted mt-2">0 members</div>
+                  <div className="text-xs text-text-muted mt-2 whitespace-nowrap">0 members</div>
                 </div>
               )}
             </div>
