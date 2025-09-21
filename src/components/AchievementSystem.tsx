@@ -1,11 +1,11 @@
 "use client";
 
+import { formatDate, getCurrentWeekNumber, getWeekEnd, getWeekStart } from "@/lib/calculations";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationSystem";
-import { getCurrentWeekNumber, getWeekStart, getWeekEnd, formatDate } from "@/lib/calculations";
 
 interface Achievement {
   id: string;
@@ -88,7 +88,8 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "mythic",
     category: "weekly",
-    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyWinRate === 100 && weeklyStats?.weeklyAttacks >= 50,
+    condition: (stats, dailyStats, weeklyStats) =>
+      weeklyStats?.weeklyWinRate === 100 && weeklyStats?.weeklyAttacks >= 50,
   },
   {
     id: "weekly_all_days",
@@ -214,40 +215,41 @@ const ACHIEVEMENTS: Achievement[] = [
 function calculateConsecutiveWins(attacks: any[]): number {
   let maxConsecutive = 0;
   let currentConsecutive = 0;
-  
+
   // Sort attacks by date
   const sortedAttacks = [...attacks].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
+
   for (const attack of sortedAttacks) {
-    if (attack.wins === attack.attacks) { // Perfect win
+    if (attack.wins === attack.attacks) {
+      // Perfect win
       currentConsecutive += attack.attacks;
       maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
     } else {
       currentConsecutive = 0;
     }
   }
-  
+
   return maxConsecutive;
 }
 
 function calculateConsecutiveDays(attacks: any[]): number {
-  const uniqueDates = [...new Set(attacks.map(attack => attack.date))].sort();
+  const uniqueDates = [...new Set(attacks.map((attack) => attack.date))].sort();
   let maxConsecutive = 0;
   let currentConsecutive = 0;
-  
+
   for (let i = 0; i < uniqueDates.length; i++) {
     const currentDate = new Date(uniqueDates[i]);
     const nextDate = i < uniqueDates.length - 1 ? new Date(uniqueDates[i + 1]) : null;
-    
+
     currentConsecutive++;
-    
-    if (nextDate && (nextDate.getTime() - currentDate.getTime()) > 24 * 60 * 60 * 1000) {
+
+    if (nextDate && nextDate.getTime() - currentDate.getTime() > 24 * 60 * 60 * 1000) {
       // Gap of more than 1 day
       maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
       currentConsecutive = 0;
     }
   }
-  
+
   return Math.max(maxConsecutive, currentConsecutive);
 }
 
@@ -318,7 +320,11 @@ function AchievementBadge({ achievement, isNew = false, onClick, progress, maxPr
       </div>
 
       {/* Category Indicator */}
-      <div className={`absolute -bottom-1 -left-1 px-1 py-0.5 rounded text-xs font-pixel-operator ${categoryColors[achievement.category]}`}>
+      <div
+        className={`absolute -bottom-1 -left-1 px-1 py-0.5 rounded text-xs font-pixel-operator ${
+          categoryColors[achievement.category]
+        }`}
+      >
         {achievement.category.charAt(0).toUpperCase()}
       </div>
 

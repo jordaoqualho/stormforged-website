@@ -3,6 +3,7 @@
 import { getWeekNumberForDate, getWeekRange } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo, useState } from "react";
+import RPGWeekSelector from "./RPGWeekSelector";
 
 export default function CurrentWeekStats() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();
@@ -117,22 +118,17 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Week Selector */}
-          <div className="relative">
-            <select
-              value={selectedWeek || ""}
-              onChange={(e) => setSelectedWeek(e.target.value ? parseInt(e.target.value) : null)}
-              className="bg-[#2A2A2A] border border-gold text-gold px-3 py-2 rounded-pixel text-sm font-pixel-operator focus:outline-none focus:ring-2 focus:ring-gold transition-all duration-200 hover:bg-[#3A3A3A]"
-            >
-              <option value="">Current Week</option>
-              {availableWeeks.map((week) => {
-                const range = getWeekRange(week);
-                return (
-                  <option key={week} value={week}>
-                    Week {week} ({range.start} - {range.end})
-                  </option>
-                );
-              })}
-            </select>
+          <div className="flex items-center space-x-4">
+            <RPGWeekSelector
+              selectedWeek={selectedWeek}
+              onWeekChange={setSelectedWeek}
+              availableWeeks={availableWeeks}
+              getWeekRange={getWeekRange}
+              className="min-w-64"
+            />
+            <div className="text-sm text-text-muted font-pixel-operator">
+              {selectedWeek ? `Week ${selectedWeek}` : "Current Week"}
+            </div>
           </div>
         </div>
 
