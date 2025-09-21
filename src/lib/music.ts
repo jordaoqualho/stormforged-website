@@ -121,7 +121,7 @@ export function useRPGBackgroundMusic() {
       case "battle_theme":
         // Create epic 8-bit battle music with drums and arpeggios
         const battleNotes = [261.63, 329.63, 392.0, 523.25]; // C4, E4, G4, C5
-        
+
         // Main melody
         battleNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();
@@ -145,18 +145,18 @@ export function useRPGBackgroundMusic() {
         for (let i = 0; i < 4; i++) {
           const drumOsc = audioContextRef.current!.createOscillator();
           const drumGain = audioContextRef.current!.createGain();
-          
+
           drumOsc.type = "square";
           drumOsc.frequency.setValueAtTime(60, now + i * 0.6); // Low bass drum
           drumOsc.connect(drumGain);
           if (gainNodeRef.current) {
             drumGain.connect(gainNodeRef.current);
           }
-          
+
           // Drum pattern
           drumGain.gain.setValueAtTime(0.08, now + i * 0.6);
           drumGain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.6 + 0.1);
-          
+
           oscillators.push(drumOsc);
         }
         break;
@@ -164,7 +164,7 @@ export function useRPGBackgroundMusic() {
       case "victory_fanfare":
         // Create triumphant 8-bit fanfare with ascending arpeggios
         const fanfareNotes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-        
+
         // Main fanfare melody
         fanfareNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();

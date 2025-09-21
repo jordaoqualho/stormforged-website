@@ -398,43 +398,52 @@ body {
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #FFD700;
-  border: 2px solid #B8860B;
+  background: #ffd700;
+  border: 2px solid #b8860b;
   border-radius: 4px;
   cursor: pointer;
-  box-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
   transition: all 0.2s ease;
 }
 
 .slider-rpg::-webkit-slider-thumb:hover {
-  background: #FFF700;
+  background: #fff700;
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 2px 2px 0px rgba(0,0,0,0.8);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 2px 2px 0px rgba(0, 0, 0, 0.8);
 }
 
 .slider-rpg::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: #FFD700;
-  border: 2px solid #B8860B;
+  background: #ffd700;
+  border: 2px solid #b8860b;
   border-radius: 4px;
   cursor: pointer;
-  box-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
   transition: all 0.2s ease;
 }
 
 .slider-rpg::-moz-range-thumb:hover {
-  background: #FFF700;
+  background: #fff700;
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 2px 2px 0px rgba(0,0,0,0.8);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 2px 2px 0px rgba(0, 0, 0, 0.8);
 }
 
 /* 8-bit pixel waveform animation */
 @keyframes pixel-wave {
-  0%, 100% { height: 4px; }
-  25% { height: 8px; }
-  50% { height: 12px; }
-  75% { height: 6px; }
+  0%,
+  100% {
+    height: 4px;
+  }
+  25% {
+    height: 8px;
+  }
+  50% {
+    height: 12px;
+  }
+  75% {
+    height: 6px;
+  }
 }
 
 .pixel-waveform {
@@ -446,11 +455,35 @@ body {
 
 .pixel-waveform .wave-bar {
   width: 3px;
-  background: #FFD700;
+  background: #ffd700;
   animation: pixel-wave 1s ease-in-out infinite;
 }
 
-.pixel-waveform .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-.pixel-waveform .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-.pixel-waveform .wave-bar:nth-child(4) { animation-delay: 0.3s; }
-.pixel-waveform .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+.pixel-waveform .wave-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.pixel-waveform .wave-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.pixel-waveform .wave-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.pixel-waveform .wave-bar:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* Achievement container fixes */
+.achievement-container {
+  overflow: visible !important;
+  min-height: 120px;
+  padding: 1rem;
+}
+
+.achievement-badge {
+  position: relative;
+  overflow: visible;
+}
+
+.achievement-badge * {
+  overflow: visible;
+}

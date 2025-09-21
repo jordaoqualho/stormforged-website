@@ -113,13 +113,14 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
         transition-all duration-300
         hover:scale-110 hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]
         ${isNew ? "animate-success-pop ring-4 ring-success ring-opacity-50" : ""}
+        mx-auto my-2
       `}
       onClick={onClick}
     >
       <span className="text-xl">{achievement.icon}</span>
 
       {/* Achievement Counter */}
-      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-mystic-blue rounded-full flex items-center justify-center">
+      <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#0D0D0D] border-2 border-gold rounded-full flex items-center justify-center">
         <span className="text-xs text-gold font-pixel font-bold">!</span>
       </div>
 
@@ -129,7 +130,10 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
           <div className={`font-pixel text-xs ${achievement.color} mb-1 truncate`} title={achievement.title}>
             {achievement.title}
           </div>
-          <div className="text-xs text-text-secondary font-pixel-operator mb-1 leading-tight" title={achievement.description}>
+          <div
+            className="text-xs text-text-secondary font-pixel-operator mb-1 leading-tight"
+            title={achievement.description}
+          >
             {achievement.description}
           </div>
           <div
@@ -292,7 +296,7 @@ export default function AchievementSystem() {
 
   return (
     <>
-      <div className="card-rpg bg-battlefield">
+      <div className="card-rpg bg-battlefield overflow-visible">
         <div className="flex items-center space-x-3 mb-6">
           <div className="icon-rpg pixel-glow">🏆</div>
           <h3 className="text-lg font-pixel text-gold text-glow">Achievements</h3>
@@ -302,14 +306,15 @@ export default function AchievementSystem() {
           </div>
         </div>
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(64px,1fr))] gap-2 justify-items-center">
+        <div className="achievement-container grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-4 justify-items-center">
           {unlockedAchievementObjects.map((achievement) => (
-            <AchievementBadge
-              key={achievement.id}
-              achievement={achievement}
-              isNew={newAchievements.includes(achievement.id)}
-              onClick={() => handleAchievementClick(achievement)}
-            />
+            <div key={achievement.id} className="relative achievement-badge">
+              <AchievementBadge
+                achievement={achievement}
+                isNew={newAchievements.includes(achievement.id)}
+                onClick={() => handleAchievementClick(achievement)}
+              />
+            </div>
           ))}
         </div>
 
