@@ -3,7 +3,7 @@
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { AttackRecord } from "@/types";
 import { useState } from "react";
-import BattleResultSelector from "./BattleResultSelector";
+import BattleResultSelector, { BattleResult } from "./BattleResultSelector";
 import { useNotifications } from "./NotificationSystem";
 import PlayerAutocomplete from "./PlayerAutocomplete";
 import RPGConfirmModal from "./RPGConfirmModal";
@@ -259,14 +259,24 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
     draws: attack.draws,
   });
 
-  const handleBattleResultChange = (results: { wins: number; losses: number; draws: number }) => {
-    setBattleResults(results);
+  // Convert battle results to array format for BattleResultSelector
+  const battleResultsArray: BattleResult[] = Array(battleResults.wins).fill("victory")
+    .concat(Array(battleResults.draws).fill("draw"))
+    .concat(Array(battleResults.losses).fill("loss"));
+
+  const handleBattleResultChange = (results: BattleResult[]) => {
+    const wins = results.filter(r => r === "victory").length;
+    const draws = results.filter(r => r === "draw").length;
+    const losses = results.filter(r => r === "loss").length;
+    
+    const newResults = { wins, losses, draws };
+    setBattleResults(newResults);
     setFormData((prev) => ({
       ...prev,
-      wins: results.wins,
-      losses: results.losses,
-      draws: results.draws,
-      points: results.wins * 5 + results.losses * 2 + results.draws * 3,
+      wins,
+      losses,
+      draws,
+      points: wins * 5 + losses * 2 + draws * 3,
     }));
   };
 
@@ -313,10 +323,8 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
             <div className="space-y-1">
               <label className="text-gold font-pixel text-sm">Battle Results</label>
               <BattleResultSelector
-                wins={battleResults.wins}
-                losses={battleResults.losses}
-                draws={battleResults.draws}
-                onChange={handleBattleResultChange}
+                onResultsChange={handleBattleResultChange}
+                initialResults={battleResultsArray}
                 disabled={isSaving}
               />
             </div>

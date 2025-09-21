@@ -56,8 +56,13 @@ export default function PlayerAutocomplete({
   const filteredPlayers = fuzzySearch(players, query);
   const showRecent = !query && recentPlayers.length > 0;
 
-  const handleSelect = (player: Player | string) => {
-    if (!player) return; // Guard against null/undefined
+  const handleSelect = (value: string | null) => {
+    if (!value) return; // Guard against null/undefined
+    
+    // Find the player object if it's a string (from recent players)
+    const player = typeof value === "string" ? 
+      players.find(p => p.name === value) || { name: value } : 
+      value;
     
     const selectedName = typeof player === "string" ? player : player?.name || "";
     if (selectedName) {

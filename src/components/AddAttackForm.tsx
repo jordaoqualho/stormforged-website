@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/calculations";
 import { calculatePoints, getPointBreakdown } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BattleResultSelector, { BattleResult } from "./BattleResultSelector";
 import PlayerAutocomplete from "./PlayerAutocomplete";
 import RPGDatePicker from "./RPGDatePicker";
@@ -34,6 +34,16 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
   const { playClick, playSword, playSuccess, playError } = useRPGSounds();
+
+  // Check if current player/date combination already exists (debounced to prevent flashing)
+  const isDuplicateEntry = useMemo(() => {
+    const trimmedName = playerName.trim();
+    if (!trimmedName) return false;
+
+    return allAttacks.some(
+      (attack) => attack.playerName.toLowerCase() === trimmedName.toLowerCase() && attack.date === date
+    );
+  }, [playerName, date, allAttacks]);
 
   // Auto-complete player names
   useEffect(() => {
@@ -106,16 +116,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const isLoading = isSaving || isSubmitting;
 
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
-
-  // Check if current player/date combination already exists (debounced to prevent flashing)
-  const isDuplicateEntry = useMemo(() => {
-    const trimmedName = playerName.trim();
-    if (!trimmedName) return false;
-    
-    return allAttacks.some(
-      (attack) => attack.playerName.toLowerCase() === trimmedName.toLowerCase() && attack.date === date
-    );
-  }, [playerName, date, allAttacks]);
 
   return (
     <div className="card-rpg bg-battlefield p-4">

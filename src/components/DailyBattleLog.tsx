@@ -21,7 +21,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
   // Reorder days to start from Friday (war week starts on Friday)
   const reorderDaysForWarWeek = (dailyStats: any[], weekStart: string) => {
     const dayOrder = ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"];
-    const orderedDays = [];
+    const orderedDays: any[] = [];
 
     // Create a map for quick lookup
     const dayMap = new Map();
