@@ -320,14 +320,15 @@ body {
 /* RPG Achievement Badge */
 .achievement-badge {
   @apply relative;
-  @apply w-16 h-16;
+  @apply w-8 h-8;
   @apply bg-gradient-to-b from-[#FFD700] to-[#B8860B];
   @apply border-2 border-[#B8860B];
   @apply rounded-full;
   @apply shadow-glow-gold;
   @apply flex items-center justify-center;
-  @apply text-[#0D0D0D] font-pixel text-xs;
+  @apply text-[#0D0D0D] font-pixel text-base ;
   @apply animate-float;
+  @apply pr-[2px];
 }
 
 .achievement-badge::before {

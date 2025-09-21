@@ -147,15 +147,15 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     <td className="py-2 px-3 text-center">
                       <div className="flex items-center justify-center">
                         {index === 0 ? (
-                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-yellow-400 to-yellow-600 border-yellow-500 shadow-glow-gold">
+                          <div className="achievement-badge bg-gradient-to-b from-yellow-400 to-yellow-600 border-yellow-500 shadow-glow-gold">
                             🥇
                           </div>
                         ) : index === 1 ? (
-                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-gray-400 to-gray-600 border-gray-500">
+                          <div className="achievement-badge  bg-gradient-to-b from-gray-400 to-gray-600 border-gray-500">
                             🥈
                           </div>
                         ) : index === 2 ? (
-                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-yellow-600 to-yellow-800 border-yellow-700">
+                          <div className="achievement-badge bg-gradient-to-b from-yellow-600 to-yellow-800 border-yellow-700">
                             🥉
                           </div>
                         ) : (

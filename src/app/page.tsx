@@ -22,7 +22,7 @@ import { useEffect, useState, useCallback } from "react";
 export default function Home() {
   const { loadData, isLoading } = useGuildWarStore();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
-  const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(1);
+  const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(false); // Will be set based on first visit
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
@@ -145,7 +145,9 @@ export default function Home() {
                   })}
                 </div>
                 <div className="text-xs text-text-muted font-pixel-operator">
-                  {currentWeekNumber === 1
+                  {currentWeekNumber === null
+                    ? "Calculating..."
+                    : currentWeekNumber === 1
                     ? "First Week of Battle"
                     : currentWeekNumber <= 4
                     ? `Week ${currentWeekNumber} Campaign`
