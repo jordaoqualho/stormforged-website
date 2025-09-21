@@ -64,7 +64,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     setIsSubmitting(true);
     try {
       await addAttack({
-        playerName: trimmedPlayerName,
+        playerName: trimmedPlayerName.toLowerCase(),
         date,
         attacks,
         wins,

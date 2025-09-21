@@ -25,8 +25,12 @@ export const storage = {
 
   async addAttack(attack: AttackRecord): Promise<void> {
     const data = await this.getData();
+    const normalizedAttack = {
+      ...attack,
+      playerName: attack.playerName.toLowerCase().trim()
+    };
     const updatedData: GuildWarData = {
-      attacks: data ? [...data.attacks, attack] : [attack],
+      attacks: data ? [...data.attacks, normalizedAttack] : [normalizedAttack],
       lastUpdated: new Date().toISOString(),
     };
     await this.setData(updatedData);
@@ -36,8 +40,13 @@ export const storage = {
     const data = await this.getData();
     if (!data) return;
 
+    const normalizedUpdate = {
+      ...updatedAttack,
+      ...(updatedAttack.playerName && { playerName: updatedAttack.playerName.toLowerCase().trim() })
+    };
+
     const updatedAttacks = data.attacks.map((attack) =>
-      attack.id === attackId ? { ...attack, ...updatedAttack } : attack
+      attack.id === attackId ? { ...attack, ...normalizedUpdate } : attack
     );
 
     const updatedData: GuildWarData = {
@@ -76,7 +85,18 @@ export const storage = {
   async importData(jsonData: string): Promise<void> {
     try {
       const data = JSON.parse(jsonData) as GuildWarData;
-      await this.setData(data);
+      
+      // Normalize all player names to lowercase to prevent duplicates
+      const normalizedData: GuildWarData = {
+        ...data,
+        attacks: data.attacks.map(attack => ({
+          ...attack,
+          playerName: attack.playerName.toLowerCase().trim()
+        })),
+        lastUpdated: new Date().toISOString(),
+      };
+      
+      await this.setData(normalizedData);
     } catch (error) {
       console.error("Error importing data:", error);
       throw new Error("Invalid data format");

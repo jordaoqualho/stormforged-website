@@ -58,14 +58,14 @@ export default function PlayerAutocomplete({
 
   const handleSelect = (player: Player | string) => {
     const selectedName = typeof player === "string" ? player : player.name;
-    onChange(selectedName);
+    onChange(selectedName.toLowerCase().trim());
     setQuery("");
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setQuery(newValue);
-    onChange(newValue);
+    onChange(newValue.toLowerCase().trim());
   };
 
   return (

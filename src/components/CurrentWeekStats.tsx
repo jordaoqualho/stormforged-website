@@ -143,29 +143,6 @@ export default function CurrentWeekStats() {
             <div className="text-xs text-text-muted font-pixel-operator">Victory Rate</div>
           </div>
         </div>
-
-        {/* Weekly Progress Bar */}
-        <div className="panel-rpg mb-6">
-          <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2 text-left">
-            <span>📊</span>
-            <span>Weekly Performance</span>
-          </h3>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="font-pixel-operator text-text-secondary">Guild Victory Rate</span>
-              <span className={`font-pixel ${getWinRateColor(currentWeekStats.winRate)}`}>
-                {currentWeekStats.winRate}%
-              </span>
-            </div>
-            <div className="progress-rpg h-4 w-full">
-              <div className="progress-rpg-fill h-full" style={{ width: `${currentWeekStats.winRate}%` }} />
-            </div>
-            <div className="flex justify-between text-xs text-text-muted">
-              <span>0%</span>
-              <span>100%</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
