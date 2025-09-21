@@ -127,7 +127,7 @@ export default function Home() {
       <NotificationSystem notifications={notifications} onRemove={removeNotification} />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-b-2 border-gold shadow-[8px_8px_0px_rgba(0,0,0,0.8)] animate-slide-up">
+      <header className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-b-2 border-gold animate-slide-up">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-4">
@@ -178,7 +178,7 @@ export default function Home() {
 
       {/* Navigation Tabs */}
       <nav
-        className="bg-gradient-to-r from-dark via-darker to-dark border-b-2 border-mystic-blue animate-slide-up"
+        className="animate-slide-up"
         style={{ animationDelay: "0.1s" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

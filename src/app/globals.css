@@ -127,7 +127,6 @@ body {
 
 .card-rpg:hover {
   @apply border-gold shadow-glow-blue;
-  transform: translateY(-2px);
 }
 
 /* RPG Panel Styles */
@@ -208,7 +207,7 @@ body {
 .tab-rpg {
   @apply relative;
   @apply bg-gradient-to-b from-dark to-darker;
-  @apply border-2 border-mystic-blue border-b-0;
+  @apply border-2 border-mystic-blue border-t-0;
   @apply text-text-secondary font-pixel text-sm;
   @apply px-4 py-2;
   @apply transition-all duration-200;
