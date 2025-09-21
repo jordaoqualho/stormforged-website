@@ -121,7 +121,8 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               value={playerName}
               onChange={setPlayerName}
               placeholder="Enter warrior name..."
-              className="w-full"
+              className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
+              disabled={isLoading}
             />
           </div>
 
@@ -130,12 +131,22 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             <label htmlFor="date" className="block font-pixel text-gold text-left mb-1">
               📅 Battle Date
             </label>
-            <RPGDatePicker value={date} onChange={setDate} placeholder="Select battle date..." className="w-full" />
+            <RPGDatePicker
+              value={date}
+              onChange={setDate}
+              placeholder="Select battle date..."
+              className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
+              disabled={isLoading}
+            />
           </div>
 
           {/* Battle Results Selector */}
-          <div className="space-y-1">
-            <BattleResultSelector onResultsChange={setBattleResults} initialResults={battleResults} />
+          <div className={`space-y-1 transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}>
+            <BattleResultSelector
+              onResultsChange={setBattleResults}
+              initialResults={battleResults}
+              disabled={isLoading}
+            />
           </div>
 
           {/* Duplicate Entry Warning */}
@@ -163,8 +174,8 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
-                <div className="loading-rpg w-4 h-4" />
-                <span>Recording Battle...</span>
+                <div className="loading-rpg w-4 h-4 animate-spin" />
+                <span className="animate-pulse">Recording Battle...</span>
               </span>
             ) : isDuplicateEntry ? (
               <span className="flex items-center justify-center space-x-2">
