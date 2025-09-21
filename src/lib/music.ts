@@ -45,10 +45,11 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
 
 // Initialize Howler.js tracks with better error handling
 let tracks: Record<string, Howl> = {};
+let tracksInitialized = false;
 
 // Initialize tracks only when needed and in browser environment
 const initializeTracks = () => {
-  if (typeof window === "undefined" || Object.keys(tracks).length > 0) {
+  if (typeof window === "undefined" || tracksInitialized) {
     return tracks;
   }
 
@@ -70,16 +71,17 @@ const initializeTracks = () => {
         src: ["/music/tavern-ambience.mp3"],
         loop: true,
         volume: 0.3,
+        preload: false, // Don't preload to avoid AudioContext creation
         onload: () => console.log("Tavern ambience loaded"),
         onloaderror: (id: number, error: unknown) => {
           console.warn("Tavern ambience load error:", error);
-          // Don't throw error, just log warning
         },
       }),
       battle_theme: new Howl({
         src: ["/music/battle-theme.mp3"],
         loop: true,
         volume: 0.4,
+        preload: false, // Don't preload to avoid AudioContext creation
         onload: () => console.log("Battle theme loaded"),
         onloaderror: (id: number, error: unknown) => {
           console.warn("Battle theme load error:", error);
@@ -89,6 +91,7 @@ const initializeTracks = () => {
         src: ["/music/victory-fanfare.mp3"],
         loop: false,
         volume: 0.5,
+        preload: false, // Don't preload to avoid AudioContext creation
         onload: () => console.log("Victory fanfare loaded"),
         onloaderror: (id: number, error: unknown) => {
           console.warn("Victory fanfare load error:", error);
@@ -98,15 +101,16 @@ const initializeTracks = () => {
         src: ["/music/peaceful-village.mp3"],
         loop: true,
         volume: 0.2,
+        preload: false, // Don't preload to avoid AudioContext creation
         onload: () => console.log("Peaceful village loaded"),
         onloaderror: (id: number, error: unknown) => {
           console.warn("Peaceful village load error:", error);
         },
       }),
     };
+    tracksInitialized = true;
   } catch (error) {
     console.warn("Failed to initialize audio tracks:", error);
-    // Return empty tracks object if initialization fails
     tracks = {};
   }
 
@@ -138,19 +142,24 @@ export function useRPGBackgroundMusic() {
   const [audioContextResumed, setAudioContextResumed] = useState(false);
   const currentTrackRef = useRef<Howl | null>(null);
 
-  // Initialize tracks and volume
+  // Initialize volume for tracks when they become available
   useEffect(() => {
-    const initializedTracks = initializeTracks();
-    Object.values(initializedTracks).forEach((track) => {
-      track.volume(volume);
-    });
-  }, [volume]);
+    if (audioContextResumed) {
+      const initializedTracks = initializeTracks();
+      Object.values(initializedTracks).forEach((track) => {
+        track.volume(volume);
+      });
+    }
+  }, [volume, audioContextResumed]);
 
   // Resume audio context on first user interaction
   const resumeAudioContext = async () => {
     if (audioContextResumed) return true;
     
     try {
+      // Initialize tracks first (this will create Howler's AudioContext)
+      const initializedTracks = initializeTracks();
+      
       // Resume Howler's audio context
       if (typeof window !== "undefined" && (window as any).Howl) {
         const Howl = (window as any).Howl;
@@ -159,16 +168,13 @@ export function useRPGBackgroundMusic() {
         }
       }
       
-      // Also try to resume any existing AudioContext
-      if (typeof window !== "undefined") {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        if (AudioContext) {
-          const audioContext = new AudioContext();
-          if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-          }
+      // Preload all tracks now that we have user interaction
+      Object.values(initializedTracks).forEach((track) => {
+        if (track.state() === 'unloaded') {
+          track.load();
         }
-      }
+        track.volume(volume);
+      });
       
       setAudioContextResumed(true);
       return true;
@@ -214,10 +220,22 @@ export function useRPGBackgroundMusic() {
     }
 
     try {
-      track.play();
-      currentTrackRef.current = track;
-      setIsPlaying(true);
-      console.log(`Playing track: ${trackId}`);
+      // Ensure track is loaded before playing
+      if (track.state() === 'unloaded') {
+        track.load();
+        // Wait for track to load
+        track.once('load', () => {
+          track.play();
+          currentTrackRef.current = track;
+          setIsPlaying(true);
+          console.log(`Playing track: ${trackId}`);
+        });
+      } else {
+        track.play();
+        currentTrackRef.current = track;
+        setIsPlaying(true);
+        console.log(`Playing track: ${trackId}`);
+      }
     } catch (error) {
       console.warn(`Error playing track ${trackId}:`, error);
     }
