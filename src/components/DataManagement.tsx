@@ -80,26 +80,26 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   const isLoading = isExporting || isImporting || isSaving;
 
   return (
-    <div className="card-rpg bg-battlefield">
+    <div className="card-rpg bg-battlefield p-6">
       <div className="relative">
         {/* RPG Header */}
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="icon-rpg pixel-glow">📚</div>
-          <h2 className="text-xl font-pixel text-gold text-glow">Stormforged Archives</h2>
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="icon-rpg pixel-glow text-2xl">📚</div>
+          <h2 className="text-2xl font-pixel text-gold text-glow">Stormforged Archives</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-10">
           {/* Export Section */}
-          <div className="panel-rpg">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="icon-rpg">📜</div>
-              <h3 className="text-lg font-pixel text-gold">Export Battle Records</h3>
+          <div className="panel-rpg p-6">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="icon-rpg text-xl">📜</div>
+              <h3 className="text-xl font-pixel text-gold">Export Battle Records</h3>
             </div>
-            <p className="text-sm text-text-secondary font-pixel-operator mb-4">
+            <p className="text-sm text-text-secondary font-pixel-operator mb-6 leading-relaxed">
               Download all of Stormforged's battle data as a sacred scroll for backup or sharing with other guilds.
             </p>
-            <button onClick={handleExport} disabled={isLoading} className="btn-rpg">
+            <button onClick={handleExport} disabled={isLoading} className="btn-rpg w-full py-4 px-6 text-lg">
               {isExporting ? (
                 <span className="flex items-center space-x-2">
                   <div className="loading-rpg w-4 h-4" />
@@ -116,37 +116,41 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
           </div>
 
           {/* Import Section */}
-          <div className="panel-rpg">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="icon-rpg">🏰</div>
-                <h3 className="text-lg font-pixel text-gold">Import Battle Records</h3>
+          <div className="panel-rpg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-4">
+                <div className="icon-rpg text-xl">🏰</div>
+                <h3 className="text-xl font-pixel text-gold">Import Battle Records</h3>
               </div>
-              <button onClick={() => setShowImportSection(!showImportSection)} className="btn-rpg text-sm px-3 py-1">
+              <button onClick={() => setShowImportSection(!showImportSection)} className="btn-rpg text-sm px-4 py-2">
                 {showImportSection ? "Hide Archive" : "Open Archive"}
               </button>
             </div>
-            <p className="text-sm text-text-secondary font-pixel-operator mb-4">
+            <p className="text-sm text-text-secondary font-pixel-operator mb-6 leading-relaxed">
               Import previously exported battle records. This will replace all current data in Stormforged's archives.
             </p>
 
             {showImportSection && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="relative">
                   <textarea
                     value={importData}
                     onChange={(e) => setImportData(e.target.value)}
                     placeholder="Paste your exported battle scroll here..."
-                    className="input-rpg w-full h-32 resize-none"
-                    rows={6}
+                    className="input-rpg w-full h-40 resize-none p-4"
+                    rows={8}
                   />
-                  <div className="absolute top-2 right-2 text-xs text-text-muted font-pixel-operator">
+                  <div className="absolute top-3 right-3 text-xs text-text-muted font-pixel-operator bg-[#1A1A1A] px-2 py-1 rounded-pixel border border-mystic-blue">
                     {importData.length} characters
                   </div>
                 </div>
 
-                <div className="flex space-x-3">
-                  <button onClick={handleImport} disabled={isLoading || !importData.trim()} className="btn-rpg flex-1">
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleImport}
+                    disabled={isLoading || !importData.trim()}
+                    className="btn-rpg flex-1 py-3 px-6"
+                  >
                     {isImporting ? (
                       <span className="flex items-center justify-center space-x-2">
                         <div className="loading-rpg w-4 h-4" />
@@ -173,18 +177,18 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
           </div>
 
           {/* Clear Data Section */}
-          <div className="panel-rpg border-danger">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="icon-rpg text-danger">💀</div>
-              <h3 className="text-lg font-pixel text-danger">Clear All Records</h3>
+          <div className="panel-rpg border-danger p-6">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="icon-rpg text-danger text-xl">💀</div>
+              <h3 className="text-xl font-pixel text-danger">Clear All Records</h3>
             </div>
-            <p className="text-sm text-text-secondary font-pixel-operator mb-4">
+            <p className="text-sm text-text-secondary font-pixel-operator mb-6 leading-relaxed">
               Permanently delete all battle records from Stormforged's archives. This action cannot be undone and will
               erase all history!
             </p>
 
-            <div className="bg-danger bg-opacity-20 border border-danger rounded-pixel p-3 mb-4">
-              <p className="text-xs font-pixel text-danger">
+            <div className="bg-danger bg-opacity-20 border border-danger rounded-pixel p-4 mb-6">
+              <p className="text-sm font-pixel text-danger">
                 ⚠️ WARNING: This will destroy all battle data including statistics, charts, and player records!
               </p>
             </div>
@@ -192,7 +196,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
             <button
               onClick={handleClearData}
               disabled={isLoading}
-              className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark w-full"
+              className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark w-full py-4 px-6 text-lg"
             >
               {isSaving ? (
                 <span className="flex items-center justify-center space-x-2">
@@ -210,22 +214,22 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
           </div>
 
           {/* Archive Stats */}
-          <div className="panel-rpg">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="icon-rpg">📊</div>
-              <h3 className="text-lg font-pixel text-gold">Archive Statistics</h3>
+          <div className="panel-rpg p-6">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="icon-rpg text-xl">📊</div>
+              <h3 className="text-xl font-pixel text-gold">Archive Statistics</h3>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="stat-rpg">
-                <div className="text-2xl font-pixel text-gold">{useGuildWarStore.getState().attacks.length}</div>
-                <div className="text-xs text-text-muted font-pixel-operator">Battle Records</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+              <div className="stat-rpg min-h-[100px] py-4">
+                <div className="text-3xl font-pixel text-gold mb-2">{useGuildWarStore.getState().attacks.length}</div>
+                <div className="text-sm text-text-muted font-pixel-operator">Battle Records</div>
               </div>
-              <div className="stat-rpg">
-                <div className="text-2xl font-pixel text-mystic-blue-light">
+              <div className="stat-rpg min-h-[100px] py-4">
+                <div className="text-3xl font-pixel text-mystic-blue-light mb-2">
                   {new Set(useGuildWarStore.getState().attacks.map((a) => a.playerName)).size}
                 </div>
-                <div className="text-xs text-text-muted font-pixel-operator">Unique Warriors</div>
+                <div className="text-sm text-text-muted font-pixel-operator">Unique Warriors</div>
               </div>
             </div>
           </div>
