@@ -67,22 +67,15 @@ export default function MusicPlayer() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 pointer-events-none"
+      className="fixed bottom-4 right-2 pointer-events-none"
       style={{
         position: "fixed",
         bottom: "1rem",
-        right: "1rem",
+        right: "0.5rem",
         zIndex: 9999,
-        pointerEvents: "none"
+        pointerEvents: "none",
       }}
     >
-      {/* Audio Context Status Indicator */}
-      {!audioContextResumed && (
-        <div className="mb-2 p-2 bg-yellow-600/20 border border-yellow-600 rounded-md text-xs text-yellow-300 font-pixel-operator pointer-events-auto">
-          🔊 Click any music control to enable audio
-        </div>
-      )}
-
       {/* Main Music Control Button */}
       <div className="flex items-center space-x-2 pointer-events-auto">
         <button
