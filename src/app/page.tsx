@@ -1,15 +1,19 @@
 "use client";
 
 import AchievementSystem from "@/components/AchievementSystem";
+import AchievementSystemSkeleton from "@/components/AchievementSystemSkeleton";
 import AddAttackForm from "@/components/AddAttackForm";
 import Charts from "@/components/Charts";
 import CurrentWeekStats from "@/components/CurrentWeekStats";
+import CurrentWeekStatsSkeleton from "@/components/CurrentWeekStatsSkeleton";
 import DailyBattleLog from "@/components/DailyBattleLog";
+import DailyBattleLogSkeleton from "@/components/DailyBattleLogSkeleton";
 import DataManagement from "@/components/DataManagement";
 import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
 import WarriorRankings from "@/components/WarriorRankings";
+import WarriorRankingsSkeleton from "@/components/WarriorRankingsSkeleton";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -35,14 +39,20 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-battlefield flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center animate-fade-in">
           <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
           <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-gold font-pixel-operator">Loading Stormforged battle data...</p>
-          <div className="mt-4 flex justify-center space-x-1">
-            <div className="w-2 h-2 bg-gold rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-            <div className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+          <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged battle data...</p>
+          <div className="mt-6 flex justify-center space-x-1">
+            <div className="w-3 h-3 bg-gold rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+            <div className="w-3 h-3 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+          </div>
+          <div className="mt-8 max-w-md mx-auto">
+            <div className="progress-rpg h-3">
+              <div className="progress-rpg-fill animate-progress-load"></div>
+            </div>
+            <p className="text-text-muted font-pixel-operator text-sm mt-2">Preparing your command center...</p>
           </div>
         </div>
       </div>
@@ -50,7 +60,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-battlefield">
+    <div className="min-h-screen bg-battlefield animate-fade-in">
       {/* Notification System */}
       <NotificationSystem notifications={notifications} onRemove={removeNotification} />
 
@@ -133,21 +143,31 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
         {activeTab === "overview" && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-slide-up">
             {/* Battle Log Entry - Compact */}
-            <AddAttackForm onSuccess={showSuccess} onError={showError} />
+            <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              <AddAttackForm onSuccess={showSuccess} onError={showError} />
+            </div>
 
             {/* Current Week Stats - Compact */}
-            <CurrentWeekStats />
+            <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <CurrentWeekStats />
+            </div>
 
             {/* Daily Battle Log - Full Width */}
-            <DailyBattleLog />
+            <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+              <DailyBattleLog />
+            </div>
 
             {/* Warrior Rankings - Full Width */}
-            <WarriorRankings />
+            <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              <WarriorRankings />
+            </div>
 
             {/* Achievement System */}
-            <AchievementSystem />
+            <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
+              <AchievementSystem />
+            </div>
 
             {/* Quick Stats Banner */}
             <div className="card-rpg bg-gradient-to-r from-mystic-blue to-mystic-blue-light">
@@ -176,13 +196,13 @@ export default function Home() {
         )}
 
         {activeTab === "charts" && (
-          <div className="space-y-8">
+          <div className="space-y-8 animate-slide-up">
             <Charts />
           </div>
         )}
 
         {activeTab === "data" && (
-          <div className="max-w-4xl">
+          <div className="max-w-4xl animate-slide-up">
             <DataManagement onSuccess={showSuccess} onError={showError} />
           </div>
         )}
