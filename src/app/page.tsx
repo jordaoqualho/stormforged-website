@@ -1,22 +1,18 @@
 "use client";
 
 import AchievementSystem from "@/components/AchievementSystem";
-import AchievementSystemSkeleton from "@/components/AchievementSystemSkeleton";
 import AddAttackForm from "@/components/AddAttackForm";
 import Charts from "@/components/Charts";
 import CurrentWeekStats from "@/components/CurrentWeekStats";
-import CurrentWeekStatsSkeleton from "@/components/CurrentWeekStatsSkeleton";
 import DailyBattleLog from "@/components/DailyBattleLog";
-import DailyBattleLogSkeleton from "@/components/DailyBattleLogSkeleton";
 import DataManagement from "@/components/DataManagement";
 import InitialLoadingScreen from "@/components/InitialLoadingScreen";
 import MemberRankings from "@/components/MemberRankings";
-import MemberRankingsSkeleton from "@/components/MemberRankingsSkeleton";
 import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
-import { useRPGSounds } from "@/lib/sounds";
 import { getCurrentWeekNumber } from "@/lib/calculations";
+import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useCallback, useEffect, useState } from "react";
 
@@ -165,10 +161,7 @@ export default function Home() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav
-        className="animate-slide-up"
-        style={{ animationDelay: "0.1s" }}
-      >
+      <nav className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1">
             {[

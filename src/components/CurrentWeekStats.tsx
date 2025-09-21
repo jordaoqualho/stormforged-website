@@ -1,8 +1,8 @@
 "use client";
 
+import { getWeekNumberForDate, getWeekRange } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo, useState } from "react";
-import { getWeekNumberForDate, getWeekRange } from "@/lib/calculations";
 
 export default function CurrentWeekStats() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();

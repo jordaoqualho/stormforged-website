@@ -208,3 +208,24 @@ export function getWeekRange(weekNumber: number, year?: number): { start: string
     end: weekEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
   };
 }
+
+export function getPreviousWeekStats(attacks: AttackRecord[]): WeeklyStats | null {
+  const today = formatDate(new Date());
+  const currentWeekStart = new Date(getWeekStart(today));
+  const previousWeekStart = new Date(currentWeekStart);
+  previousWeekStart.setDate(currentWeekStart.getDate() - 7);
+
+  const previousWeekStartStr = formatDate(previousWeekStart);
+  const previousWeekEnd = getWeekEnd(previousWeekStartStr);
+
+  // Check if there are any attacks in the previous week
+  const hasPreviousWeekData = attacks.some(
+    (attack) => attack.date >= previousWeekStartStr && attack.date <= previousWeekEnd
+  );
+
+  if (!hasPreviousWeekData) {
+    return null;
+  }
+
+  return calculateWeeklyStats(attacks, previousWeekStartStr);
+}
