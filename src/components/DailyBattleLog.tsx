@@ -1,9 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import RPGConfirmModal from "./RPGConfirmModal";
 
-export default function DailyBattleLog() {
-  const { currentWeekStats } = useGuildWarStore();
+interface DailyBattleLogProps {
+  onDayClick?: (date: string) => void;
+  selectedDate?: string | null;
+}
+
+export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattleLogProps) {
+  const { currentWeekStats, attacks, deleteAttack } = useGuildWarStore();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [attackToDelete, setAttackToDelete] = useState<string | null>(null);
 
   if (!currentWeekStats) {
     return null;
@@ -55,6 +64,39 @@ export default function DailyBattleLog() {
 
   const orderedDays = reorderDaysForWarWeek(currentWeekStats.dailyStats, currentWeekStats.weekStart);
 
+  const handleDayClick = (date: string) => {
+    if (onDayClick) {
+      onDayClick(date);
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, attackId: string) => {
+    e.stopPropagation(); // Prevent day click
+    setAttackToDelete(attackId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (attackToDelete) {
+      try {
+        await deleteAttack(attackToDelete);
+        setShowDeleteModal(false);
+        setAttackToDelete(null);
+      } catch (error) {
+        console.error("Error deleting attack:", error);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setAttackToDelete(null);
+  };
+
+  const getAttacksForDate = (date: string) => {
+    return attacks.filter(attack => attack.date === date);
+  };
+
   return (
     <div className="card-rpg bg-battlefield p-6">
       <div className="flex items-center space-x-4 mb-6">
@@ -63,11 +105,20 @@ export default function DailyBattleLog() {
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
       <div className="grid grid-cols-7 gap-2">
-        {orderedDays.map((day, index) => (
-          <div
-            key={day.date}
-            className="panel-rpg p-3 text-center w-full aspect-[3/4] hover:brightness-110 transition-all duration-300 group"
-          >
+        {orderedDays.map((day, index) => {
+          const dayAttacks = getAttacksForDate(day.date);
+          const isSelected = selectedDate === day.date;
+          
+          return (
+            <div
+              key={day.date}
+              className={`panel-rpg p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer ${
+                isSelected 
+                  ? "ring-2 ring-gold bg-gold/10 brightness-110" 
+                  : "hover:brightness-110"
+              }`}
+              onClick={() => handleDayClick(day.date)}
+            >
             <div className="text-sm font-pixel text-gold mb-2 font-bold">
               {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}
             </div>
@@ -75,6 +126,7 @@ export default function DailyBattleLog() {
 
             {day.totalAttacks > 0 ? (
               <div className="space-y-2">
+                {/* Summary Stats */}
                 <div className="flex flex-col items-center space-y-1">
                   <div className="text-xs font-bold text-gray-300">Points</div>
                   <div className="flex items-center space-x-1">
@@ -114,6 +166,28 @@ export default function DailyBattleLog() {
                   </div>
                 </div>
 
+                {/* Individual Attacks */}
+                {dayAttacks.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {dayAttacks.map((attack) => (
+                      <div
+                        key={attack.id}
+                        className="flex items-center justify-between bg-gray-800/50 rounded px-2 py-1 text-xs"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span className="font-pixel text-gold truncate">{attack.playerName}</span>
+                        <button
+                          onClick={(e) => handleDeleteClick(e, attack.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded px-1 transition-colors"
+                          title="Delete attack"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="text-xs text-text-muted mt-2">{day.playerCount} members</div>
               </div>
             ) : (
@@ -121,9 +195,22 @@ export default function DailyBattleLog() {
                 <div className="text-xs font-pixel-operator">No data</div>
               </div>
             )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <RPGConfirmModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Battle Record"
+        message="Are you sure you want to delete this battle record? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+      />
     </div>
   );
 }

@@ -24,6 +24,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(1);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
@@ -31,6 +32,17 @@ export default function Home() {
   const handleLoadingComplete = useCallback(() => {
     setIsInitialLoading(false);
   }, []);
+
+  // Handle day click in Daily Battle Log
+  const handleDayClick = useCallback((date: string) => {
+    if (selectedDate === date) {
+      // If clicking the same day, toggle back to week view
+      setSelectedDate(null);
+    } else {
+      // Select the clicked day
+      setSelectedDate(date);
+    }
+  }, [selectedDate]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -193,12 +205,12 @@ export default function Home() {
 
             {/* Daily Battle Log - Full Width */}
             <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
-              <DailyBattleLog />
+              <DailyBattleLog onDayClick={handleDayClick} selectedDate={selectedDate} />
             </div>
 
             {/* Member Rankings - Full Width */}
             <div className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
-              <MemberRankings />
+              <MemberRankings selectedDate={selectedDate} />
             </div>
 
             {/* Achievement System */}

@@ -2,18 +2,93 @@
 
 import { useGuildWarStore } from "@/store/guildWarStore";
 
-export default function MemberRankings() {
-  const { currentWeekStats } = useGuildWarStore();
+interface MemberRankingsProps {
+  selectedDate?: string | null;
+}
+
+export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
+  const { currentWeekStats, attacks } = useGuildWarStore();
 
   if (!currentWeekStats || currentWeekStats.playerStats.length === 0) {
     return null;
+  }
+
+  // Filter player stats by selected date if provided
+  const getFilteredPlayerStats = () => {
+    if (!selectedDate) {
+      return currentWeekStats.playerStats;
+    }
+
+    // Get attacks for the selected date
+    const dayAttacks = attacks.filter(attack => attack.date === selectedDate);
+    
+    if (dayAttacks.length === 0) {
+      return [];
+    }
+
+    // Calculate stats for each player for the selected date
+    const playerStatsMap = new Map();
+    
+    dayAttacks.forEach(attack => {
+      const playerName = attack.playerName;
+      if (!playerStatsMap.has(playerName)) {
+        playerStatsMap.set(playerName, {
+          playerName,
+          totalAttacks: 0,
+          totalWins: 0,
+          totalLosses: 0,
+          totalDraws: 0,
+          totalPoints: 0,
+          winRate: 0,
+          dailyAttacks: []
+        });
+      }
+      
+      const stats = playerStatsMap.get(playerName);
+      stats.totalAttacks += attack.attacks;
+      stats.totalWins += attack.wins;
+      stats.totalLosses += attack.losses;
+      stats.totalDraws += attack.draws;
+      stats.totalPoints += attack.points;
+      stats.dailyAttacks.push(attack);
+    });
+
+    // Calculate win rates
+    const playerStats = Array.from(playerStatsMap.values()).map(stats => ({
+      ...stats,
+      winRate: stats.totalAttacks > 0 ? Math.round((stats.totalWins / stats.totalAttacks) * 100) : 0
+    }));
+
+    return playerStats;
+  };
+
+  const playerStats = getFilteredPlayerStats();
+  const isDayView = selectedDate !== null;
+
+  if (isDayView && playerStats.length === 0) {
+    return (
+      <div className="card-rpg bg-battlefield p-6">
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="icon-rpg pixel-glow text-xl">👑</div>
+          <h3 className="text-xl font-pixel text-gold text-glow">
+            {isDayView ? `Member Rankings - ${new Date(selectedDate).toLocaleDateString()}` : "Member Rankings"}
+          </h3>
+          <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
+        </div>
+        <div className="text-center py-8">
+          <div className="text-text-muted font-pixel-operator">No battles recorded for this day</div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="card-rpg bg-battlefield p-6">
       <div className="flex items-center space-x-4 mb-6">
         <div className="icon-rpg pixel-glow text-xl">👑</div>
-        <h3 className="text-xl font-pixel text-gold text-glow">Member Rankings</h3>
+        <h3 className="text-xl font-pixel text-gold text-glow">
+          {isDayView ? `Member Rankings - ${new Date(selectedDate).toLocaleDateString()}` : "Member Rankings"}
+        </h3>
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
       <div className="panel-rpg overflow-hidden rounded-md border border-gray-700">
@@ -30,7 +105,7 @@ export default function MemberRankings() {
               </tr>
             </thead>
             <tbody>
-              {currentWeekStats.playerStats
+              {playerStats
                 .sort((a, b) => b.winRate - a.winRate)
                 .map((player, index) => (
                   <tr
