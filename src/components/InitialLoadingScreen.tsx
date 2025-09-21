@@ -4,33 +4,49 @@ import { useEffect, useState } from "react";
 
 interface InitialLoadingScreenProps {
   onComplete: () => void;
+  minDuration?: number; // Minimum duration in milliseconds
 }
 
-export default function InitialLoadingScreen({ onComplete }: InitialLoadingScreenProps) {
+export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }: InitialLoadingScreenProps) {
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("Initializing Stormforged...");
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const loadingSteps = [
-    { text: "Initializing Stormforged...", duration: 800 },
-    { text: "Loading battle data...", duration: 600 },
-    { text: "Preparing command center...", duration: 500 },
-    { text: "Activating guild systems...", duration: 400 },
-    { text: "Ready for battle!", duration: 300 },
+    { text: "Initializing Stormforged...", duration: 1000 },
+    { text: "Loading battle data...", duration: 800 },
+    { text: "Preparing command center...", duration: 700 },
+    { text: "Activating guild systems...", duration: 600 },
+    { text: "Synchronizing warriors...", duration: 500 },
+    { text: "Ready for battle!", duration: 400 },
   ];
 
   useEffect(() => {
     let currentStep = 0;
     let progressInterval: NodeJS.Timeout;
     let stepTimeout: NodeJS.Timeout;
+    let minDurationTimeout: NodeJS.Timeout;
+    let isCompleted = false;
+
+    const completeLoading = () => {
+      if (!isCompleted) {
+        isCompleted = true;
+        setIsCompleting(true);
+        setLoadingText("Welcome to Stormforged!");
+        clearInterval(progressInterval);
+        clearTimeout(stepTimeout);
+        clearTimeout(minDurationTimeout);
+        setTimeout(() => {
+          onComplete();
+        }, 1200);
+      }
+    };
 
     const updateProgress = () => {
       setProgress((prev) => {
-        const newProgress = prev + 2;
-        if (newProgress >= 100) {
-          clearInterval(progressInterval);
-          setTimeout(() => {
-            onComplete();
-          }, 500);
+        const newProgress = prev + 1.2;
+        if (newProgress >= 100 && !isCompleted) {
+          // Don't complete immediately, wait for minimum duration
           return 100;
         }
         return newProgress;
@@ -46,14 +62,20 @@ export default function InitialLoadingScreen({ onComplete }: InitialLoadingScree
     };
 
     // Start the loading process
-    progressInterval = setInterval(updateProgress, 50);
-    stepTimeout = setTimeout(nextStep, 100);
+    progressInterval = setInterval(updateProgress, 60);
+    stepTimeout = setTimeout(nextStep, 200);
+
+    // Set minimum duration timer
+    minDurationTimeout = setTimeout(() => {
+      completeLoading();
+    }, minDuration);
 
     return () => {
       clearInterval(progressInterval);
       clearTimeout(stepTimeout);
+      clearTimeout(minDurationTimeout);
     };
-  }, [onComplete]);
+  }, [onComplete, minDuration]);
 
   return (
     <div className="fixed inset-0 bg-battlefield flex items-center justify-center z-[9999]">
@@ -72,21 +94,25 @@ export default function InitialLoadingScreen({ onComplete }: InitialLoadingScree
 
         {/* Loading Animation */}
         <div className="mb-8">
-          <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-gold font-pixel-operator text-lg animate-pulse">{loadingText}</p>
+          <div className={`loading-rpg w-16 h-16 mx-auto mb-4 ${isCompleting ? 'animate-pulse-glow' : ''}`}></div>
+          <p className={`font-pixel-operator text-lg ${isCompleting ? 'text-gold animate-pulse-glow' : 'text-gold animate-pulse'}`}>
+            {loadingText}
+          </p>
         </div>
 
         {/* Progress Bar */}
         <div className="max-w-md mx-auto mb-6">
           <div className="progress-rpg h-4">
             <div
-              className="progress-rpg-fill bg-gradient-to-r from-gold to-yellow-400"
+              className={`progress-rpg-fill ${isCompleting ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gradient-to-r from-gold to-yellow-400'}`}
               style={{ width: `${progress}%` }}
             ></div>
           </div>
           <div className="flex justify-between mt-2">
-            <span className="text-xs text-text-muted font-pixel-operator">Loading...</span>
-            <span className="text-xs text-gold font-pixel">{progress}%</span>
+            <span className="text-xs text-text-muted font-pixel-operator">
+              {isCompleting ? 'Complete!' : 'Loading...'}
+            </span>
+            <span className="text-xs text-gold font-pixel">{Math.round(progress)}%</span>
           </div>
         </div>
 

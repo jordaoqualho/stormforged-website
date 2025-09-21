@@ -47,10 +47,10 @@ export default function Home() {
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
-      // Add a small delay to ensure smooth transition
+      // Reduced delay since InitialLoadingScreen handles the timing
       setTimeout(() => {
         setIsInitialLoading(false);
-      }, 500);
+      }, 200);
     };
 
     initializeApp();
@@ -58,7 +58,7 @@ export default function Home() {
 
   // Show initial loading screen
   if (isInitialLoading) {
-    return <InitialLoadingScreen onComplete={() => setIsInitialLoading(false)} />;
+    return <InitialLoadingScreen onComplete={() => setIsInitialLoading(false)} minDuration={4500} />;
   }
 
   // Show data loading screen
