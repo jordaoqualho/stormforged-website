@@ -1,10 +1,11 @@
 "use client";
 
+import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationSystem";
-import { useRPGSounds } from "@/lib/sounds";
+import { getCurrentWeekNumber, getWeekStart, getWeekEnd, formatDate } from "@/lib/calculations";
 
 interface Achievement {
   id: string;
@@ -12,11 +13,95 @@ interface Achievement {
   description: string;
   icon: string;
   color: string;
-  condition: (stats: any) => boolean;
-  rarity: "common" | "rare" | "epic" | "legendary";
+  condition: (stats: any, dailyStats?: any, weeklyStats?: any) => boolean;
+  rarity: "common" | "rare" | "epic" | "legendary" | "mythic";
+  category: "daily" | "weekly" | "lifetime" | "special";
+  progress?: (stats: any, dailyStats?: any, weeklyStats?: any) => number;
+  maxProgress?: number;
 }
 
 const ACHIEVEMENTS: Achievement[] = [
+  // DAILY ACHIEVEMENTS
+  {
+    id: "daily_30_members",
+    title: "Daily Assault",
+    description: "Have 30 members attack in a single day",
+    icon: "⚔️",
+    color: "text-gold",
+    rarity: "epic",
+    category: "daily",
+    condition: (stats, dailyStats) => dailyStats?.dailyMembers >= 30,
+    progress: (stats, dailyStats) => dailyStats?.dailyMembers || 0,
+    maxProgress: 30,
+  },
+  {
+    id: "daily_perfect_day",
+    title: "Perfect Day",
+    description: "Achieve 100% win rate with 20+ attacks in a day",
+    icon: "🌟",
+    color: "text-gold",
+    rarity: "legendary",
+    category: "daily",
+    condition: (stats, dailyStats) => dailyStats?.dailyWinRate === 100 && dailyStats?.dailyAttacks >= 20,
+  },
+  {
+    id: "daily_massive_attack",
+    title: "Massive Attack",
+    description: "Record 50+ attacks in a single day",
+    icon: "💥",
+    color: "text-danger",
+    rarity: "epic",
+    category: "daily",
+    condition: (stats, dailyStats) => dailyStats?.dailyAttacks >= 50,
+    progress: (stats, dailyStats) => dailyStats?.dailyAttacks || 0,
+    maxProgress: 50,
+  },
+
+  // WEEKLY ACHIEVEMENTS
+  {
+    id: "weekly_complete_war",
+    title: "War Week Complete",
+    description: "Complete a full war week (Friday-Thursday) with activity",
+    icon: "🏰",
+    color: "text-mystic-blue-light",
+    rarity: "rare",
+    category: "weekly",
+    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.weekComplete === true,
+  },
+  {
+    id: "weekly_200_attacks",
+    title: "War Machine",
+    description: "Record 200+ attacks in a single war week",
+    icon: "🔥",
+    color: "text-danger",
+    rarity: "epic",
+    category: "weekly",
+    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyAttacks >= 200,
+    progress: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyAttacks || 0,
+    maxProgress: 200,
+  },
+  {
+    id: "weekly_perfect_week",
+    title: "Perfect War Week",
+    description: "Achieve 100% win rate for an entire war week",
+    icon: "👑",
+    color: "text-gold",
+    rarity: "mythic",
+    category: "weekly",
+    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyWinRate === 100 && weeklyStats?.weeklyAttacks >= 50,
+  },
+  {
+    id: "weekly_all_days",
+    title: "Daily Warrior",
+    description: "Have activity on all 7 days of a war week",
+    icon: "📅",
+    color: "text-warning",
+    rarity: "rare",
+    category: "weekly",
+    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.activeDays === 7,
+  },
+
+  // LIFETIME ACHIEVEMENTS
   {
     id: "first_battle",
     title: "First Blood",
@@ -24,76 +109,163 @@ const ACHIEVEMENTS: Achievement[] = [
     icon: "⚔️",
     color: "text-gold",
     rarity: "common",
+    category: "lifetime",
     condition: (stats) => stats.totalAttacks >= 1,
-  },
-  {
-    id: "perfect_week",
-    title: "Perfect Victory",
-    description: "Achieve 100% win rate in a week",
-    icon: "👑",
-    color: "text-gold",
-    rarity: "legendary",
-    condition: (stats) => stats.winRate === 100 && stats.totalAttacks >= 5,
   },
   {
     id: "warrior_spirit",
     title: "Member Spirit",
-    description: "Complete 50 total attacks",
+    description: "Complete 100 total attacks",
     icon: "🏆",
     color: "text-success",
     rarity: "rare",
-    condition: (stats) => stats.totalAttacks >= 50,
+    category: "lifetime",
+    condition: (stats) => stats.totalAttacks >= 100,
+    progress: (stats) => stats.totalAttacks,
+    maxProgress: 100,
   },
   {
     id: "guild_master",
     title: "Guild Master",
-    description: "Have 10+ members in your guild",
+    description: "Have 25+ unique members in your guild",
     icon: "🏰",
     color: "text-mystic-blue-light",
     rarity: "epic",
-    condition: (stats) => stats.uniquePlayers >= 10,
+    category: "lifetime",
+    condition: (stats) => stats.uniquePlayers >= 25,
+    progress: (stats) => stats.uniquePlayers,
+    maxProgress: 25,
   },
   {
     id: "consecutive_wins",
     title: "Unstoppable Force",
-    description: "Win 10 battles in a row",
+    description: "Win 15 battles in a row",
     icon: "🔥",
     color: "text-danger",
     rarity: "epic",
-    condition: (stats) => stats.consecutiveWins >= 10,
-  },
-  {
-    id: "daily_warrior",
-    title: "Daily Member",
-    description: "Battle for 7 consecutive days",
-    icon: "📅",
-    color: "text-warning",
-    rarity: "rare",
-    condition: (stats) => stats.consecutiveDays >= 7,
+    category: "lifetime",
+    condition: (stats) => stats.consecutiveWins >= 15,
+    progress: (stats) => stats.consecutiveWins,
+    maxProgress: 15,
   },
   {
     id: "efficient_fighter",
     title: "Efficient Fighter",
-    description: "Maintain 80%+ win rate over 20 battles",
+    description: "Maintain 85%+ win rate over 100 battles",
     icon: "⚡",
     color: "text-success",
     rarity: "rare",
-    condition: (stats) => stats.winRate >= 80 && stats.totalAttacks >= 20,
+    category: "lifetime",
+    condition: (stats) => stats.winRate >= 85 && stats.totalAttacks >= 100,
+  },
+  {
+    id: "battle_veteran",
+    title: "Battle Veteran",
+    description: "Complete 500+ total attacks",
+    icon: "🛡️",
+    color: "text-gold",
+    rarity: "legendary",
+    category: "lifetime",
+    condition: (stats) => stats.totalAttacks >= 500,
+    progress: (stats) => stats.totalAttacks,
+    maxProgress: 500,
+  },
+  {
+    id: "war_legend",
+    title: "War Legend",
+    description: "Complete 1000+ total attacks",
+    icon: "⚔️",
+    color: "text-gold",
+    rarity: "mythic",
+    category: "lifetime",
+    condition: (stats) => stats.totalAttacks >= 1000,
+    progress: (stats) => stats.totalAttacks,
+    maxProgress: 1000,
+  },
+
+  // SPECIAL ACHIEVEMENTS
+  {
+    id: "perfect_streak",
+    title: "Perfect Streak",
+    description: "Win 25 battles in a row",
+    icon: "💎",
+    color: "text-gold",
+    rarity: "mythic",
+    category: "special",
+    condition: (stats) => stats.consecutiveWins >= 25,
+    progress: (stats) => stats.consecutiveWins,
+    maxProgress: 25,
+  },
+  {
+    id: "guild_empire",
+    title: "Guild Empire",
+    description: "Have 50+ unique members",
+    icon: "🏛️",
+    color: "text-mystic-blue-light",
+    rarity: "mythic",
+    category: "special",
+    condition: (stats) => stats.uniquePlayers >= 50,
+    progress: (stats) => stats.uniquePlayers,
+    maxProgress: 50,
   },
 ];
+
+// Helper functions for calculating stats
+function calculateConsecutiveWins(attacks: any[]): number {
+  let maxConsecutive = 0;
+  let currentConsecutive = 0;
+  
+  // Sort attacks by date
+  const sortedAttacks = [...attacks].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  for (const attack of sortedAttacks) {
+    if (attack.wins === attack.attacks) { // Perfect win
+      currentConsecutive += attack.attacks;
+      maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+    } else {
+      currentConsecutive = 0;
+    }
+  }
+  
+  return maxConsecutive;
+}
+
+function calculateConsecutiveDays(attacks: any[]): number {
+  const uniqueDates = [...new Set(attacks.map(attack => attack.date))].sort();
+  let maxConsecutive = 0;
+  let currentConsecutive = 0;
+  
+  for (let i = 0; i < uniqueDates.length; i++) {
+    const currentDate = new Date(uniqueDates[i]);
+    const nextDate = i < uniqueDates.length - 1 ? new Date(uniqueDates[i + 1]) : null;
+    
+    currentConsecutive++;
+    
+    if (nextDate && (nextDate.getTime() - currentDate.getTime()) > 24 * 60 * 60 * 1000) {
+      // Gap of more than 1 day
+      maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+      currentConsecutive = 0;
+    }
+  }
+  
+  return Math.max(maxConsecutive, currentConsecutive);
+}
 
 interface AchievementBadgeProps {
   achievement: Achievement;
   isNew?: boolean;
   onClick?: () => void;
+  progress?: number;
+  maxProgress?: number;
 }
 
-function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBadgeProps) {
+function AchievementBadge({ achievement, isNew = false, onClick, progress, maxProgress }: AchievementBadgeProps) {
   const rarityColors = {
     common: "border-gray-400 bg-gray-600/80",
     rare: "border-blue-400 bg-blue-600/80",
     epic: "border-purple-400 bg-purple-600/80",
     legendary: "border-gold bg-gold-dark/80",
+    mythic: "border-pink-400 bg-pink-600/80",
   };
 
   const rarityGlow = {
@@ -101,6 +273,7 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     rare: "shadow-glow-blue",
     epic: "shadow-glow-blue",
     legendary: "shadow-glow-gold",
+    mythic: "shadow-pink-500/50",
   };
 
   const rarityIcons = {
@@ -108,7 +281,17 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     rare: "💙",
     epic: "💜",
     legendary: "🌟",
+    mythic: "💎",
   };
+
+  const categoryColors = {
+    daily: "bg-green-600/20 border-green-500/50",
+    weekly: "bg-blue-600/20 border-blue-500/50",
+    lifetime: "bg-purple-600/20 border-purple-500/50",
+    special: "bg-gold/20 border-gold/50",
+  };
+
+  const progressPercentage = progress && maxProgress ? (progress / maxProgress) * 100 : 0;
 
   return (
     <div
@@ -132,6 +315,11 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
       {/* Rarity Indicator */}
       <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-gold rounded-full flex items-center justify-center">
         <span className="text-xs">{rarityIcons[achievement.rarity]}</span>
+      </div>
+
+      {/* Category Indicator */}
+      <div className={`absolute -bottom-1 -left-1 px-1 py-0.5 rounded text-xs font-pixel-operator ${categoryColors[achievement.category]}`}>
+        {achievement.category.charAt(0).toUpperCase()}
       </div>
 
       {/* Achievement Title (visible on hover) */}
