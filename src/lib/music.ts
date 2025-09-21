@@ -1,51 +1,79 @@
 "use client";
 
+import { Howl } from "howler";
 import { useEffect, useRef, useState } from "react";
 
 interface MusicTrack {
   id: string;
   name: string;
-  url: string;
+  description: string;
   volume: number;
   loop: boolean;
-  description: string;
 }
 
-// Pre-generated RPG-style music tracks using Web Audio API
+// Music track definitions
 const RPG_MUSIC_TRACKS: MusicTrack[] = [
   {
     id: "tavern_ambience",
     name: "Tavern Ambience",
-    url: "", // Will be generated procedurally
+    description: "Cozy 8-bit tavern with crackling fire & NES-style melody",
     volume: 0.3,
     loop: true,
-    description: "Cozy 8-bit tavern with crackling fire & NES-style melody",
   },
   {
     id: "battle_theme",
     name: "Battle Theme",
-    url: "", // Will be generated procedurally
+    description: "Epic 8-bit battle music with drums & arpeggios",
     volume: 0.4,
     loop: true,
-    description: "Epic 8-bit battle music with drums & arpeggios",
   },
   {
     id: "victory_fanfare",
     name: "Victory Fanfare",
-    url: "", // Will be generated procedurally
+    description: "Triumphant chiptune fanfare for achievements",
     volume: 0.5,
     loop: false,
-    description: "Triumphant chiptune fanfare for achievements",
   },
   {
     id: "peaceful_village",
     name: "Peaceful Village",
-    url: "", // Will be generated procedurally
+    description: "Soft retro background with gentle 8-bit harmonies",
     volume: 0.2,
     loop: true,
-    description: "Soft retro background with gentle 8-bit harmonies",
   },
 ];
+
+// Initialize Howler.js tracks
+const tracks: Record<string, Howl> = {
+  tavern_ambience: new Howl({
+    src: ["/music/tavern-ambience.mp3"],
+    loop: true,
+    volume: 0.3,
+    onload: () => console.log("Tavern ambience loaded"),
+    onloaderror: (id: number, error: unknown) => console.error("Tavern ambience load error:", error),
+  }),
+  battle_theme: new Howl({
+    src: ["/music/battle-theme.mp3"],
+    loop: true,
+    volume: 0.4,
+    onload: () => console.log("Battle theme loaded"),
+    onloaderror: (id: number, error: unknown) => console.error("Battle theme load error:", error),
+  }),
+  victory_fanfare: new Howl({
+    src: ["/music/victory-fanfare.mp3"],
+    loop: false,
+    volume: 0.5,
+    onload: () => console.log("Victory fanfare loaded"),
+    onloaderror: (id: number, error: unknown) => console.error("Victory fanfare load error:", error),
+  }),
+  peaceful_village: new Howl({
+    src: ["/music/peaceful-village.mp3"],
+    loop: true,
+    volume: 0.2,
+    onload: () => console.log("Peaceful village loaded"),
+    onloaderror: (id: number, error: unknown) => console.error("Peaceful village load error:", error),
+  }),
+};
 
 export function useRPGBackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -69,212 +97,50 @@ export function useRPGBackgroundMusic() {
     }
     return true;
   });
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const oscillatorRefs = useRef<OscillatorNode[]>([]);
+  const currentTrackRef = useRef<Howl | null>(null);
 
-  // Initialize Web Audio API
+  // Initialize volume for all tracks
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-        gainNodeRef.current = audioContextRef.current.createGain();
-        gainNodeRef.current.connect(audioContextRef.current.destination);
-        gainNodeRef.current.gain.value = volume;
-      } catch (error) {
-        console.warn("Web Audio API not supported:", error);
-        setIsEnabled(false);
-      }
+    Object.values(tracks).forEach((track) => {
+      track.volume(volume);
+    });
+  }, [volume]);
+
+  // Start playing if enabled and not already playing
+  useEffect(() => {
+    if (isEnabled && !isPlaying) {
+      playTrack(currentTrack);
     }
-  }, []);
+  }, [isEnabled, isPlaying, currentTrack]);
 
-  // Generate procedural RPG music
-  const generateRPGSound = (trackId: string): OscillatorNode[] => {
-    if (!audioContextRef.current || !gainNodeRef.current) return [];
-
-    const oscillators: OscillatorNode[] = [];
-    const now = audioContextRef.current.currentTime;
-
-    switch (trackId) {
-      case "tavern_ambience":
-        // Create warm, cozy tavern sounds
-        for (let i = 0; i < 3; i++) {
-          const oscillator = audioContextRef.current.createOscillator();
-          const gain = audioContextRef.current.createGain();
-
-          oscillator.type = "sine";
-          oscillator.frequency.setValueAtTime(220 + i * 110, now); // A3, A4, A5
-          oscillator.connect(gain);
-          if (gainNodeRef.current) {
-            gain.connect(gainNodeRef.current);
-          }
-
-          // Gentle volume modulation for crackling fire effect
-          gain.gain.setValueAtTime(0.1, now);
-          gain.gain.linearRampToValueAtTime(0.05, now + 2);
-          gain.gain.linearRampToValueAtTime(0.1, now + 4);
-
-          oscillators.push(oscillator);
-        }
-        break;
-
-      case "battle_theme":
-        // Create epic 8-bit battle music with drums and arpeggios
-        const battleNotes = [261.63, 329.63, 392.0, 523.25]; // C4, E4, G4, C5
-
-        // Main melody
-        battleNotes.forEach((freq, index) => {
-          const oscillator = audioContextRef.current!.createOscillator();
-          const gain = audioContextRef.current!.createGain();
-
-          oscillator.type = "square";
-          oscillator.frequency.setValueAtTime(freq, now);
-          oscillator.connect(gain);
-          if (gainNodeRef.current) {
-            gain.connect(gainNodeRef.current);
-          }
-
-          // 8-bit battle rhythm with staccato
-          gain.gain.setValueAtTime(0.12, now + index * 0.3);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.3 + 0.2);
-
-          oscillators.push(oscillator);
-        });
-
-        // Add bass drum (low frequency square wave)
-        for (let i = 0; i < 4; i++) {
-          const drumOsc = audioContextRef.current!.createOscillator();
-          const drumGain = audioContextRef.current!.createGain();
-
-          drumOsc.type = "square";
-          drumOsc.frequency.setValueAtTime(60, now + i * 0.6); // Low bass drum
-          drumOsc.connect(drumGain);
-          if (gainNodeRef.current) {
-            drumGain.connect(gainNodeRef.current);
-          }
-
-          // Drum pattern
-          drumGain.gain.setValueAtTime(0.08, now + i * 0.6);
-          drumGain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.6 + 0.1);
-
-          oscillators.push(drumOsc);
-        }
-        break;
-
-      case "victory_fanfare":
-        // Create triumphant 8-bit fanfare with ascending arpeggios
-        const fanfareNotes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-
-        // Main fanfare melody
-        fanfareNotes.forEach((freq, index) => {
-          const oscillator = audioContextRef.current!.createOscillator();
-          const gain = audioContextRef.current!.createGain();
-
-          oscillator.type = "square";
-          oscillator.frequency.setValueAtTime(freq, now);
-          oscillator.connect(gain);
-          if (gainNodeRef.current) {
-            gain.connect(gainNodeRef.current);
-          }
-
-          // Triumphant rhythm with longer notes
-          gain.gain.setValueAtTime(0.15, now + index * 0.3);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.3 + 0.6);
-
-          oscillators.push(oscillator);
-        });
-
-        // Add harmony notes for fuller sound
-        const harmonyNotes = [392.0, 493.88, 587.33, 783.99]; // G4, B4, D5, G5
-        harmonyNotes.forEach((freq, index) => {
-          const harmonyOsc = audioContextRef.current!.createOscillator();
-          const harmonyGain = audioContextRef.current!.createGain();
-
-          harmonyOsc.type = "triangle";
-          harmonyOsc.frequency.setValueAtTime(freq, now + 0.1);
-          harmonyOsc.connect(harmonyGain);
-          if (gainNodeRef.current) {
-            harmonyGain.connect(gainNodeRef.current);
-          }
-
-          // Softer harmony
-          harmonyGain.gain.setValueAtTime(0.08, now + 0.1 + index * 0.3);
-          harmonyGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1 + index * 0.3 + 0.5);
-
-          oscillators.push(harmonyOsc);
-        });
-        break;
-
-      case "peaceful_village":
-        // Create peaceful village sounds
-        const villageNotes = [196.0, 246.94, 293.66, 349.23]; // G3, B3, D4, F4
-        villageNotes.forEach((freq, index) => {
-          const oscillator = audioContextRef.current!.createOscillator();
-          const gain = audioContextRef.current!.createGain();
-
-          oscillator.type = "sine";
-          oscillator.frequency.setValueAtTime(freq, now);
-          oscillator.connect(gain);
-          if (gainNodeRef.current) {
-            gain.connect(gainNodeRef.current);
-          }
-
-          // Gentle, slow rhythm
-          gain.gain.setValueAtTime(0.08, now);
-          gain.gain.linearRampToValueAtTime(0.04, now + 3);
-          gain.gain.linearRampToValueAtTime(0.08, now + 6);
-
-          oscillators.push(oscillator);
-        });
-        break;
+  const stopMusic = () => {
+    if (currentTrackRef.current) {
+      currentTrackRef.current.stop();
+      currentTrackRef.current = null;
     }
-
-    return oscillators;
+    setIsPlaying(false);
   };
 
   const playTrack = (trackId: string) => {
-    if (!audioContextRef.current || !isEnabled) return;
+    if (!isEnabled) return;
 
     // Stop current track
     stopMusic();
 
-    // Resume audio context if suspended
-    if (audioContextRef.current.state === "suspended") {
-      audioContextRef.current.resume();
+    const track = tracks[trackId];
+    if (!track) {
+      console.error(`Track not found: ${trackId}`);
+      return;
     }
 
-    const oscillators = generateRPGSound(trackId);
-    oscillatorRefs.current = oscillators;
-
-    oscillators.forEach((oscillator) => {
-      oscillator.start();
-    });
-
-    const track = RPG_MUSIC_TRACKS.find((t) => t.id === trackId);
-    if (track?.loop) {
-      // Schedule restart for looping tracks
-      const duration = 8; // 8 seconds loop
-      setTimeout(() => {
-        if (isPlaying && currentTrack === trackId) {
-          playTrack(trackId);
-        }
-      }, duration * 1000);
+    try {
+      track.play();
+      currentTrackRef.current = track;
+      setIsPlaying(true);
+      console.log(`Playing track: ${trackId}`);
+    } catch (error) {
+      console.error(`Error playing track ${trackId}:`, error);
     }
-
-    setCurrentTrack(trackId);
-    setIsPlaying(true);
-  };
-
-  const stopMusic = () => {
-    oscillatorRefs.current.forEach((oscillator) => {
-      try {
-        oscillator.stop();
-      } catch (error) {
-        // Oscillator might already be stopped
-      }
-    });
-    oscillatorRefs.current = [];
-    setIsPlaying(false);
   };
 
   const toggleMusic = () => {
@@ -300,9 +166,11 @@ export function useRPGBackgroundMusic() {
     if (typeof window !== "undefined") {
       localStorage.setItem("rpg-music-volume", newVolume.toString());
     }
-    if (gainNodeRef.current) {
-      gainNodeRef.current.gain.value = newVolume;
-    }
+    
+    // Update volume for all tracks
+    Object.values(tracks).forEach((track) => {
+      track.volume(newVolume);
+    });
   };
 
   const toggleEnabled = () => {
@@ -319,13 +187,17 @@ export function useRPGBackgroundMusic() {
   // Play victory fanfare for achievements
   const playVictoryFanfare = () => {
     if (isEnabled) {
-      playTrack("victory_fanfare");
-      // Return to previous track after fanfare
-      setTimeout(() => {
-        if (isPlaying) {
-          playTrack(currentTrack);
+      const victoryTrack = tracks.victory_fanfare;
+      if (victoryTrack) {
+        victoryTrack.play();
+        
+        // Return to previous track after fanfare (if it was playing)
+        if (isPlaying && currentTrack !== "victory_fanfare") {
+          victoryTrack.once("end", () => {
+            playTrack(currentTrack);
+          });
         }
-      }, 3000);
+      }
     }
   };
 
