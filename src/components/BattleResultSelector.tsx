@@ -9,6 +9,7 @@ interface BattleResultSelectorProps {
   onResultsChange: (results: BattleResult[]) => void;
   initialResults?: BattleResult[];
   className?: string;
+  disabled?: boolean;
 }
 
 const BATTLE_ICONS = {
@@ -29,6 +30,7 @@ export default function BattleResultSelector({
   onResultsChange,
   initialResults = Array(5).fill("victory" as BattleResult),
   className = "",
+  disabled = false,
 }: BattleResultSelectorProps) {
   const [results, setResults] = useState<BattleResult[]>(initialResults);
   const { playClick, playSword } = useRPGSounds();
@@ -39,6 +41,8 @@ export default function BattleResultSelector({
   }, [results, onResultsChange]);
 
   const cycleState = (index: number) => {
+    if (disabled) return;
+
     playClick();
 
     setResults((prev) => {
@@ -58,6 +62,8 @@ export default function BattleResultSelector({
   };
 
   const resetAll = () => {
+    if (disabled) return;
+
     playClick();
     setResults(Array(5).fill("victory"));
   };
@@ -81,8 +87,11 @@ export default function BattleResultSelector({
           <button
             type="button"
             onClick={resetAll}
-            className="btn-rpg text-sm px-3 py-1 hover:scale-105"
+            className={`btn-rpg text-sm px-3 py-1 hover:scale-105 transition-opacity duration-200 ${
+              disabled ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             title="Reset all to victories"
+            disabled={disabled}
           >
             Reset
           </button>
@@ -104,10 +113,12 @@ export default function BattleResultSelector({
                 ${result === "victory" ? "hover:shadow-[0_0_15px_rgba(34,197,94,0.6)]" : ""}
                 ${result === "draw" ? "hover:shadow-[0_0_15px_rgba(245,158,11,0.6)]" : ""}
                 ${result === "loss" ? "hover:shadow-[0_0_15px_rgba(239,68,68,0.6)]" : ""}
+                ${disabled ? "opacity-50 cursor-not-allowed hover:scale-100" : ""}
               `}
               title={`Attack ${index + 1}: Click to cycle ${result} → ${
                 BATTLE_STATES[(BATTLE_STATES.indexOf(result) + 1) % BATTLE_STATES.length]
               }`}
+              disabled={disabled}
             >
               {BATTLE_ICONS[result]}
 
