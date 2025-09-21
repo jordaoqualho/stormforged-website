@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { useRPGSounds } from "@/lib/sounds";
+import { useEffect, useRef, useState } from "react";
 
 interface RPGDatePickerProps {
   value: string;
@@ -131,9 +131,7 @@ export default function RPGDatePicker({
 
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
-      days.push(
-        <div key={`empty-${i}`} className="w-8 h-8"></div>
-      );
+      days.push(<div key={`empty-${i}`} className="w-8 h-8"></div>);
     }
 
     // Add days of the month
@@ -151,13 +149,14 @@ export default function RPGDatePicker({
           className={`
             w-8 h-8 text-xs font-pixel border border-mystic-blue rounded-pixel
             transition-all duration-200 flex items-center justify-center
-            ${isSelectedDate 
-              ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110" 
-              : isTodayDate
-              ? "bg-mystic-blue text-text-primary shadow-glow-blue"
-              : isPast
-              ? "bg-[#1A1A1A] text-text-disabled cursor-not-allowed opacity-50"
-              : "bg-[#2A2A2A] text-text-secondary hover:bg-mystic-blue hover:text-text-primary hover:scale-105"
+            ${
+              isSelectedDate
+                ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110"
+                : isTodayDate
+                ? "bg-mystic-blue text-text-primary shadow-glow-blue"
+                : isPast
+                ? "bg-[#1A1A1A] text-text-disabled cursor-not-allowed opacity-50"
+                : "bg-[#2A2A2A] text-text-secondary hover:bg-mystic-blue hover:text-text-primary hover:scale-105"
             }
           `}
         >
@@ -170,8 +169,18 @@ export default function RPGDatePicker({
   };
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -188,9 +197,7 @@ export default function RPGDatePicker({
           transition-colors duration-200
         `}
       >
-        <span className={displayValue ? "text-text-primary" : "text-text-muted"}>
-          {displayValue || placeholder}
-        </span>
+        <span className={displayValue ? "text-text-primary" : "text-text-muted"}>{displayValue || placeholder}</span>
         <span className="text-gold text-lg">📅</span>
       </div>
 
@@ -200,19 +207,13 @@ export default function RPGDatePicker({
           <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)] p-4 calendar-enter">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={() => navigateMonth("prev")}
-                className="btn-rpg text-sm px-3 py-1 hover:scale-105"
-              >
+              <button onClick={() => navigateMonth("prev")} className="btn-rpg text-sm px-3 py-1 hover:scale-105">
                 ◀
               </button>
               <h3 className="font-pixel text-gold text-lg">
                 {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
               </h3>
-              <button
-                onClick={() => navigateMonth("next")}
-                className="btn-rpg text-sm px-3 py-1 hover:scale-105"
-              >
+              <button onClick={() => navigateMonth("next")} className="btn-rpg text-sm px-3 py-1 hover:scale-105">
                 ▶
               </button>
             </div>
@@ -227,9 +228,7 @@ export default function RPGDatePicker({
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {renderCalendarDays()}
-            </div>
+            <div className="grid grid-cols-7 gap-1">{renderCalendarDays()}</div>
 
             {/* Footer */}
             <div className="mt-4 pt-3 border-t border-mystic-blue">

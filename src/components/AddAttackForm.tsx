@@ -100,50 +100,89 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             <label htmlFor="date" className="block font-pixel text-lg text-gold">
               📅 Battle Date
             </label>
-            <RPGDatePicker
-              value={date}
-              onChange={setDate}
-              placeholder="Select battle date..."
-              className="w-full"
-            />
+            <RPGDatePicker value={date} onChange={setDate} placeholder="Select battle date..." className="w-full" />
           </div>
 
-          {/* Victories Input with Visual Indicators */}
+          {/* Victories Selection with Interactive Sword Icons */}
           <div className="space-y-3">
             <label htmlFor="wins" className="block font-pixel text-lg text-gold">
               🏆 Victories (out of 5)
             </label>
             <div className="relative">
+              {/* Hidden input for form validation */}
               <input
                 type="number"
                 id="wins"
                 min="0"
                 max={attacks}
                 value={wins}
-                onChange={(e) => setWins(Math.max(0, Math.min(attacks, parseInt(e.target.value) || 0)))}
-                className="input-rpg w-full px-4 py-3 text-base"
+                onChange={() => {}} // Controlled by sword clicks
+                className="sr-only"
                 required
               />
-              {/* Victory Progress Bar */}
-              <div className="mt-3">
-                <div className="flex space-x-2 justify-center">
+              
+              {/* Interactive Sword Selection */}
+              <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
+                <div className="flex space-x-3 justify-center mb-3">
                   {Array.from({ length: attacks }, (_, i) => (
-                    <div
+                    <button
                       key={i}
-                      className={`w-8 h-8 border-2 border-mystic-blue rounded-pixel flex items-center justify-center text-sm font-pixel transition-all duration-300 ${
-                        i < wins
-                          ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110"
-                          : "bg-[#2A2A2A] text-text-muted hover:bg-[#3A3A3A]"
-                      }`}
+                      type="button"
+                      onClick={() => {
+                        const newWins = i + 1;
+                        setWins(newWins);
+                        playClick();
+                        if (newWins > 0) playSword();
+                      }}
+                      className={`
+                        w-12 h-12 border-2 border-mystic-blue rounded-pixel 
+                        flex items-center justify-center text-lg font-pixel
+                        transition-all duration-300 cursor-pointer
+                        ${
+                          i < wins 
+                            ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110 border-gold" 
+                            : "bg-[#1A1A1A] text-text-muted hover:bg-[#3A3A3A] hover:text-text-secondary hover:scale-105"
+                        }
+                      `}
+                      title={`Select ${i + 1} victories`}
                     >
-                      {i < wins ? "⚔️" : "⚪"}
-                    </div>
+                      ⚔️
+                    </button>
                   ))}
                 </div>
-                <div className="text-center mt-2">
-                  <span className="text-sm text-text-muted font-pixel-operator">
-                    {wins} victories • {attacks - wins} defeats
-                  </span>
+                
+                {/* Victory Counter and Reset */}
+                <div className="flex items-center justify-between">
+                  <div className="text-center">
+                    <div className="text-lg font-pixel text-gold">{wins}</div>
+                    <div className="text-xs text-text-muted font-pixel-operator">Victories</div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWins(0);
+                      playClick();
+                    }}
+                    className="btn-rpg text-sm px-3 py-1 hover:scale-105"
+                    disabled={wins === 0}
+                  >
+                    Reset
+                  </button>
+                  
+                  <div className="text-center">
+                    <div className="text-lg font-pixel text-danger">{attacks - wins}</div>
+                    <div className="text-xs text-text-muted font-pixel-operator">Defeats</div>
+                  </div>
+                </div>
+                
+                {/* Win Rate Display */}
+                <div className="mt-3 text-center">
+                  <div className="text-sm font-pixel-operator text-text-muted">
+                    Win Rate: <span className={`font-pixel ${
+                      winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
+                    }`}>{winRate}%</span>
+                  </div>
                 </div>
               </div>
             </div>
