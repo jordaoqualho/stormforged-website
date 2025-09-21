@@ -7,9 +7,9 @@ import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationSystem";
 
 // Import types, constants, data, and utilities
-import type { Achievement, AchievementBadgeProps, AchievementModalProps } from "@/types/achievements";
-import { RARITY_CONFIG, CATEGORY_CONFIG } from "@/constants/achievements";
+import { CATEGORY_CONFIG, RARITY_CONFIG } from "@/constants/achievements";
 import { ACHIEVEMENTS } from "@/data/achievements";
+import type { Achievement, AchievementBadgeProps, AchievementModalProps } from "@/types/achievements";
 import { calculateStats } from "@/utils/achievements";
 
 function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBadgeProps) {

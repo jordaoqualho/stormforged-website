@@ -23,6 +23,7 @@ export interface AchievementStats {
   uniquePlayers: number;
   consecutiveWins: number;
   consecutiveDays: number;
+  totalPoints: number;
 }
 
 export interface DailyStats {
@@ -30,6 +31,7 @@ export interface DailyStats {
   dailyWins: number;
   dailyMembers: number;
   dailyWinRate: number;
+  dailyPoints: number;
 }
 
 export interface WeeklyStats {
@@ -38,6 +40,7 @@ export interface WeeklyStats {
   weeklyWinRate: number;
   activeDays: number;
   weekComplete: boolean;
+  weeklyPoints: number;
 }
 
 export interface AchievementBadgeProps {

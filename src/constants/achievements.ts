@@ -1,17 +1,32 @@
 // Achievement System Constants
 
 export const ACHIEVEMENT_CONFIG = {
-  DAILY_MEMBERS_THRESHOLD: 30,
-  DAILY_ATTACKS_THRESHOLD: 50,
-  DAILY_PERFECT_ATTACKS_THRESHOLD: 20,
-  WEEKLY_ATTACKS_THRESHOLD: 200,
-  WEEKLY_PERFECT_ATTACKS_THRESHOLD: 50,
+  // Guild Structure
+  MAX_MEMBERS: 30,
+  MAX_ATTACKS_PER_MEMBER_PER_DAY: 5,
+  MAX_ATTACKS_PER_DAY: 150, // 30 members × 5 attacks
+  MAX_ATTACKS_PER_WEEK: 1050, // 30 members × 5 attacks × 7 days
+  MAX_POINTS_PER_WEEK: 5250, // 1050 attacks × 5 points per attack
+  
+  // Daily Achievement Thresholds
+  DAILY_MEMBERS_THRESHOLD: 20, // 2/3 of max members
+  DAILY_ATTACKS_THRESHOLD: 100, // 2/3 of max daily attacks
+  DAILY_PERFECT_ATTACKS_THRESHOLD: 50, // 1/3 of max daily attacks
+  DAILY_POINTS_THRESHOLD: 500, // 100 attacks × 5 points
+  
+  // Weekly Achievement Thresholds
+  WEEKLY_ATTACKS_THRESHOLD: 700, // 2/3 of max weekly attacks
+  WEEKLY_PERFECT_ATTACKS_THRESHOLD: 350, // 1/3 of max weekly attacks
+  WEEKLY_POINTS_THRESHOLD: 3500, // 700 attacks × 5 points
   WEEKLY_ACTIVE_DAYS: 7,
-  LIFETIME_ATTACKS_THRESHOLDS: [1, 100, 500, 1000],
-  LIFETIME_MEMBERS_THRESHOLDS: [25, 50],
-  CONSECUTIVE_WINS_THRESHOLDS: [15, 25],
-  WIN_RATE_THRESHOLD: 85,
-  WIN_RATE_MIN_ATTACKS: 100,
+  
+  // Lifetime Achievement Thresholds
+  LIFETIME_ATTACKS_THRESHOLDS: [1, 50, 200, 500, 1000], // More realistic progression
+  LIFETIME_MEMBERS_THRESHOLDS: [5, 15, 25, 30], // Realistic member milestones
+  LIFETIME_POINTS_THRESHOLDS: [100, 500, 2000, 4000, 5000], // Point-based achievements
+  CONSECUTIVE_WINS_THRESHOLDS: [5, 10, 15, 20], // More achievable streaks
+  WIN_RATE_THRESHOLD: 80, // Slightly more achievable
+  WIN_RATE_MIN_ATTACKS: 50, // Lower minimum for meaningful stats
 } as const;
 
 export const RARITY_CONFIG = {
