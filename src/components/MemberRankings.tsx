@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import RPGConfirmModal from "./RPGConfirmModal";
 
 interface MemberRankingsProps {
   selectedDate?: string | null;
 }
 
 export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
-  const { currentWeekStats, attacks } = useGuildWarStore();
+  const { currentWeekStats, attacks, deleteAttack } = useGuildWarStore();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [attackToDelete, setAttackToDelete] = useState<string | null>(null);
 
   if (!currentWeekStats || currentWeekStats.playerStats.length === 0) {
     return null;
@@ -65,6 +69,29 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
   const playerStats = getFilteredPlayerStats();
   const isDayView = selectedDate !== null;
 
+  const handleDeleteClick = (e: React.MouseEvent, attackId: string) => {
+    e.stopPropagation(); // Prevent row click
+    setAttackToDelete(attackId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (attackToDelete) {
+      try {
+        await deleteAttack(attackToDelete);
+        setShowDeleteModal(false);
+        setAttackToDelete(null);
+      } catch (error) {
+        console.error("Error deleting attack:", error);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setAttackToDelete(null);
+  };
+
   if (isDayView && playerStats.length === 0) {
     return (
       <div className="card-rpg bg-battlefield p-6">
@@ -96,58 +123,43 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mystic-blue">
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rank</th>
+                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Date</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Member</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Attacks</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Victories</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Defeats</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rate</th>
+                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Points</th>
+                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {playerStats
-                .sort((a, b) => b.winRate - a.winRate)
-                .map((player, index) => (
+                .flatMap(player => 
+                  player.dailyAttacks.map(attack => ({ ...attack, playerName: player.playerName }))
+                )
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .map((attack, index) => (
                   <tr
-                    key={player.playerName}
+                    key={attack.id}
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
-                    title={`${player.playerName} – ${player.winRate}% Win Rate`}
+                    title={`${attack.playerName} - ${new Date(attack.date).toLocaleDateString()}`}
                   >
-                    <td className="py-2 px-3 text-center">
-                      <div className="flex items-center justify-center">
-                        {index === 0 ? (
-                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-yellow-400 to-yellow-600 border-yellow-500 shadow-glow-gold">
-                            🥇
-                          </div>
-                        ) : index === 1 ? (
-                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-gray-400 to-gray-600 border-gray-500">
-                            🥈
-                          </div>
-                        ) : index === 2 ? (
-                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-yellow-600 to-yellow-800 border-yellow-700">
-                            🥉
-                          </div>
-                        ) : (
-                          <span className="font-pixel text-text-muted text-sm">#{index + 1}</span>
-                        )}
-                      </div>
+                    <td className="py-2 px-3 text-center text-xs text-text-muted font-pixel-operator">
+                      {new Date(attack.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </td>
-                    <td className="py-2 px-3 font-pixel text-text-primary text-sm">{player.playerName}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-gold text-sm">{player.totalAttacks}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-success text-sm">{player.totalWins}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-danger text-sm">{player.totalLosses}</td>
+                    <td className="py-2 px-3 font-pixel text-text-primary text-sm">{attack.playerName}</td>
+                    <td className="py-2 px-3 text-center font-pixel text-gold text-sm">{attack.attacks}</td>
+                    <td className="py-2 px-3 text-center font-pixel text-success text-sm">{attack.wins}</td>
+                    <td className="py-2 px-3 text-center font-pixel text-danger text-sm">{attack.losses}</td>
+                    <td className="py-2 px-3 text-center font-pixel text-gold text-sm">{attack.points}</td>
                     <td className="py-2 px-3 text-center">
-                      <span
-                        className={`font-pixel text-sm px-2 py-1 rounded-full ${
-                          player.winRate >= 80
-                            ? "bg-green-700/80 text-white"
-                            : player.winRate >= 60
-                            ? "bg-yellow-700/80 text-white"
-                            : "bg-red-700/80 text-white"
-                        }`}
+                      <button
+                        onClick={(e) => handleDeleteClick(e, attack.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded px-2 py-1 transition-colors text-xs"
+                        title="Delete attack record"
                       >
-                        {player.winRate}%
-                      </span>
+                        🗑️ Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -155,6 +167,18 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <RPGConfirmModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Battle Record"
+        message="Are you sure you want to delete this battle record? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+      />
     </div>
   );
 }
