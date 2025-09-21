@@ -183,13 +183,25 @@ export default function CurrentWeekStats() {
             <div className="text-2xl font-pixel text-danger text-center">{displayData.totalLosses}</div>
             <div className="text-xs text-text-muted font-pixel-operator text-center">Defeats</div>
           </div>
+
+          {/* Draws - Mobile Only */}
+          <div
+            className="stat-rpg border-warning min-h-[90px] py-2 px-3 sm:hidden"
+            title="Draws: Number of battles that ended in a tie"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-2xl">🤝</div>
+            </div>
+            <div className="text-2xl font-pixel text-warning text-center">{displayData.totalDraws}</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Draws</div>
+          </div>
         </div>
 
         {/* Secondary Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
-          {/* Draws */}
+          {/* Draws - Desktop Only */}
           <div
-            className="stat-rpg border-warning min-h-[90px] py-2 px-3"
+            className="stat-rpg border-warning min-h-[90px] py-2 px-3 hidden sm:block"
             title="Draws: Number of battles that ended in a tie"
           >
             <div className="flex items-center justify-between mb-2">
