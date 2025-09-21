@@ -19,7 +19,7 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.3,
     loop: true,
-    description: "Cozy tavern atmosphere with crackling fire and distant chatter",
+    description: "Cozy 8-bit tavern with crackling fire & NES-style melody",
   },
   {
     id: "battle_theme",
@@ -27,7 +27,7 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.4,
     loop: true,
-    description: "Epic battle music for intense guild wars",
+    description: "Epic 8-bit battle music with drums & arpeggios",
   },
   {
     id: "victory_fanfare",
@@ -35,7 +35,7 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.5,
     loop: false,
-    description: "Triumphant fanfare for achievements and victories",
+    description: "Triumphant chiptune fanfare for achievements",
   },
   {
     id: "peaceful_village",
@@ -43,15 +43,32 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.2,
     loop: true,
-    description: "Calm village music for peaceful moments",
+    description: "Soft retro background with gentle 8-bit harmonies",
   },
 ];
 
 export function useRPGBackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<string>("tavern_ambience");
-  const [volume, setVolume] = useState(0.3);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [currentTrack, setCurrentTrack] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("rpg-music-track") || "tavern_ambience";
+    }
+    return "tavern_ambience";
+  });
+  const [volume, setVolume] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rpg-music-volume");
+      return saved ? parseFloat(saved) : 0.3;
+    }
+    return 0.3;
+  });
+  const [isEnabled, setIsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rpg-music-enabled");
+      return saved ? JSON.parse(saved) : true;
+    }
+    return true;
+  });
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const oscillatorRefs = useRef<OscillatorNode[]>([]);
@@ -102,30 +119,53 @@ export function useRPGBackgroundMusic() {
         break;
 
       case "battle_theme":
-        // Create epic battle music
+        // Create epic 8-bit battle music with drums and arpeggios
         const battleNotes = [261.63, 329.63, 392.0, 523.25]; // C4, E4, G4, C5
+        
+        // Main melody
         battleNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();
           const gain = audioContextRef.current!.createGain();
 
-          oscillator.type = "triangle";
+          oscillator.type = "square";
           oscillator.frequency.setValueAtTime(freq, now);
           oscillator.connect(gain);
           if (gainNodeRef.current) {
             gain.connect(gainNodeRef.current);
           }
 
-          // Battle rhythm
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.linearRampToValueAtTime(0, now + 0.5);
+          // 8-bit battle rhythm with staccato
+          gain.gain.setValueAtTime(0.12, now + index * 0.3);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.3 + 0.2);
 
           oscillators.push(oscillator);
         });
+
+        // Add bass drum (low frequency square wave)
+        for (let i = 0; i < 4; i++) {
+          const drumOsc = audioContextRef.current!.createOscillator();
+          const drumGain = audioContextRef.current!.createGain();
+          
+          drumOsc.type = "square";
+          drumOsc.frequency.setValueAtTime(60, now + i * 0.6); // Low bass drum
+          drumOsc.connect(drumGain);
+          if (gainNodeRef.current) {
+            drumGain.connect(gainNodeRef.current);
+          }
+          
+          // Drum pattern
+          drumGain.gain.setValueAtTime(0.08, now + i * 0.6);
+          drumGain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.6 + 0.1);
+          
+          oscillators.push(drumOsc);
+        }
         break;
 
       case "victory_fanfare":
-        // Create triumphant fanfare
+        // Create triumphant 8-bit fanfare with ascending arpeggios
         const fanfareNotes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+        
+        // Main fanfare melody
         fanfareNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();
           const gain = audioContextRef.current!.createGain();
@@ -137,11 +177,31 @@ export function useRPGBackgroundMusic() {
             gain.connect(gainNodeRef.current);
           }
 
-          // Fanfare rhythm
-          gain.gain.setValueAtTime(0.2, now + index * 0.2);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.2 + 0.8);
+          // Triumphant rhythm with longer notes
+          gain.gain.setValueAtTime(0.15, now + index * 0.3);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.3 + 0.6);
 
           oscillators.push(oscillator);
+        });
+
+        // Add harmony notes for fuller sound
+        const harmonyNotes = [392.0, 493.88, 587.33, 783.99]; // G4, B4, D5, G5
+        harmonyNotes.forEach((freq, index) => {
+          const harmonyOsc = audioContextRef.current!.createOscillator();
+          const harmonyGain = audioContextRef.current!.createGain();
+
+          harmonyOsc.type = "triangle";
+          harmonyOsc.frequency.setValueAtTime(freq, now + 0.1);
+          harmonyOsc.connect(harmonyGain);
+          if (gainNodeRef.current) {
+            harmonyGain.connect(gainNodeRef.current);
+          }
+
+          // Softer harmony
+          harmonyGain.gain.setValueAtTime(0.08, now + 0.1 + index * 0.3);
+          harmonyGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1 + index * 0.3 + 0.5);
+
+          oscillators.push(harmonyOsc);
         });
         break;
 
@@ -227,6 +287,9 @@ export function useRPGBackgroundMusic() {
 
   const changeTrack = (trackId: string) => {
     setCurrentTrack(trackId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("rpg-music-track", trackId);
+    }
     if (isPlaying) {
       playTrack(trackId);
     }
@@ -234,14 +297,21 @@ export function useRPGBackgroundMusic() {
 
   const updateVolume = (newVolume: number) => {
     setVolume(newVolume);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("rpg-music-volume", newVolume.toString());
+    }
     if (gainNodeRef.current) {
       gainNodeRef.current.gain.value = newVolume;
     }
   };
 
   const toggleEnabled = () => {
-    setIsEnabled(!isEnabled);
-    if (!isEnabled && isPlaying) {
+    const newEnabled = !isEnabled;
+    setIsEnabled(newEnabled);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("rpg-music-enabled", JSON.stringify(newEnabled));
+    }
+    if (!newEnabled && isPlaying) {
       stopMusic();
     }
   };

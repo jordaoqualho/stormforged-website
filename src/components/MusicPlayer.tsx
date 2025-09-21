@@ -68,12 +68,13 @@ export default function MusicPlayer() {
         <div className="absolute bottom-full right-0 mb-2 bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)] p-4 min-w-80 music-controls-enter">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-pixel text-gold text-lg">🎵 Music Player</h3>
+            <h3 className="font-pixel text-gold text-lg text-glow">🎵 8-BIT MUSIC</h3>
             <button
               onClick={handleEnabledToggle}
               className={`
-                btn-rpg text-sm px-2 py-1
-                ${isEnabled ? "bg-success" : "bg-danger"}
+                btn-rpg text-sm px-2 py-1 font-pixel
+                ${isEnabled ? "bg-success text-[#0D0D0D]" : "bg-danger text-white"}
+                hover:scale-105 transition-transform
               `}
               title={isEnabled ? "Disable Music" : "Enable Music"}
             >
@@ -119,24 +120,32 @@ export default function MusicPlayer() {
 
           {/* Volume Control */}
           <div className="mb-4">
-            <label className="block font-pixel text-sm text-gold mb-2">🔊 Volume: {Math.round(volume * 100)}%</label>
-            <div className="flex items-center space-x-2">
-              <span className="text-text-muted">🔇</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={volume}
-                onChange={handleVolumeChange}
-                className="flex-1 h-2 bg-[#1A1A1A] border border-mystic-blue rounded-pixel appearance-none cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right, #FFD700 0%, #FFD700 ${volume * 100}%, #1A1A1A ${
-                    volume * 100
-                  }%, #1A1A1A 100%)`,
-                }}
-              />
-              <span className="text-text-muted">🔊</span>
+            <label className="block font-pixel text-sm text-gold mb-2">
+              {volume > 0 ? "🔊" : "🔇"} VOLUME: {Math.round(volume * 100)}%
+            </label>
+            <div className="flex items-center space-x-3">
+              <span className="text-text-muted font-pixel text-sm">🔇</span>
+              <div className="flex-1 relative">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  className="w-full h-3 bg-[#1A1A1A] border-2 border-mystic-blue rounded-pixel appearance-none cursor-pointer slider-rpg"
+                  style={{
+                    background: `linear-gradient(to right, #FFD700 0%, #FFD700 ${volume * 100}%, #1A1A1A ${
+                      volume * 100
+                    }%, #1A1A1A 100%)`,
+                  }}
+                />
+                <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-text-muted font-pixel-operator">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+              <span className="text-text-muted font-pixel text-sm">🔊</span>
             </div>
           </div>
 
@@ -145,8 +154,21 @@ export default function MusicPlayer() {
             <span className="font-pixel-operator">
               Status: {isEnabled ? (isPlaying ? "Playing" : "Paused") : "Disabled"}
             </span>
-            <span className="font-pixel-operator">🎮 RPG Mode</span>
+            <span className="font-pixel-operator">🎮 8-BIT MODE</span>
           </div>
+
+          {/* Pixel Waveform Animation */}
+          {isPlaying && (
+            <div className="mt-3 flex items-center justify-center">
+              <div className="pixel-waveform">
+                <div className="wave-bar"></div>
+                <div className="wave-bar"></div>
+                <div className="wave-bar"></div>
+                <div className="wave-bar"></div>
+                <div className="wave-bar"></div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

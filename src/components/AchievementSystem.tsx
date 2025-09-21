@@ -106,31 +106,34 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     <div
       className={`
         relative group cursor-pointer
-        w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2
+        w-16 h-16 rounded-full border-2
         ${rarityColors[achievement.rarity]}
         ${rarityGlow[achievement.rarity]}
         flex items-center justify-center
         transition-all duration-300
-        hover:scale-110 hover:rotate-3
+        hover:scale-110 hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]
         ${isNew ? "animate-success-pop ring-4 ring-success ring-opacity-50" : ""}
       `}
       onClick={onClick}
     >
-      <span className="text-xl sm:text-2xl">{achievement.icon}</span>
+      <span className="text-xl">{achievement.icon}</span>
 
-      {isNew && (
-        <div className="absolute -top-2 -right-2 w-5 h-5 bg-success rounded-full animate-bounce flex items-center justify-center">
-          <span className="text-xs text-[#0D0D0D] font-pixel font-bold">!</span>
-        </div>
-      )}
+      {/* Achievement Counter */}
+      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-mystic-blue rounded-full flex items-center justify-center">
+        <span className="text-xs text-gold font-pixel font-bold">!</span>
+      </div>
 
-      {/* Enhanced Tooltip */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-10">
-        <div className="bg-[#0D0D0D] border-2 border-gold rounded-pixel p-3 shadow-[8px_8px_0px_rgba(0,0,0,0.8)] whitespace-nowrap min-w-max">
-          <div className={`font-pixel text-sm ${achievement.color} mb-1`}>{achievement.title}</div>
-          <div className="text-xs text-text-secondary font-pixel-operator mb-1">{achievement.description}</div>
+      {/* Fixed Tooltip - No rotation, contained within bounds */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 max-w-48">
+        <div className="bg-[#0D0D0D] border-2 border-gold rounded-pixel p-2 shadow-[8px_8px_0px_rgba(0,0,0,0.8)]">
+          <div className={`font-pixel text-xs ${achievement.color} mb-1 truncate`} title={achievement.title}>
+            {achievement.title}
+          </div>
+          <div className="text-xs text-text-secondary font-pixel-operator mb-1 leading-tight" title={achievement.description}>
+            {achievement.description}
+          </div>
           <div
-            className={`text-xs font-pixel-operator capitalize px-2 py-1 rounded-pixel ${
+            className={`text-xs font-pixel-operator capitalize px-1 py-0.5 rounded-pixel ${
               achievement.rarity === "legendary"
                 ? "bg-gold text-[#0D0D0D]"
                 : achievement.rarity === "epic"
@@ -299,7 +302,7 @@ export default function AchievementSystem() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 justify-center">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(64px,1fr))] gap-2 justify-items-center">
           {unlockedAchievementObjects.map((achievement) => (
             <AchievementBadge
               key={achievement.id}
