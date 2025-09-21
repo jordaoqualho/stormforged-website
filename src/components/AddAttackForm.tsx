@@ -1,10 +1,11 @@
 "use client";
 
 import { formatDate } from "@/lib/calculations";
-import { calculateDraws, calculatePoints, getPointBreakdown } from "@/lib/points";
+import { calculatePoints } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
+import BattleResultSelector, { BattleResult } from "./BattleResultSelector";
 import PlayerAutocomplete from "./PlayerAutocomplete";
 import RPGDatePicker from "./RPGDatePicker";
 
@@ -16,18 +17,18 @@ interface AddAttackFormProps {
 export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps) {
   const [playerName, setPlayerName] = useState("");
   const [date, setDate] = useState(formatDate(new Date()));
-  const [wins, setWins] = useState<number>(0);
-  const [losses, setLosses] = useState<number>(0);
+  const [battleResults, setBattleResults] = useState<BattleResult[]>(Array(5).fill("victory"));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [playerSuggestions, setPlayerSuggestions] = useState<string[]>([]);
 
   // Fixed attacks per entry (always 5)
   const attacks = 5;
-  
-  // Calculate draws and points
-  const draws = calculateDraws(attacks, wins, losses);
+
+  // Calculate stats from battle results
+  const wins = battleResults.filter((r) => r === "victory").length;
+  const draws = battleResults.filter((r) => r === "draw").length;
+  const losses = battleResults.filter((r) => r === "loss").length;
   const points = calculatePoints(wins, losses, draws);
-  const pointBreakdown = getPointBreakdown(wins, losses, draws);
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
   const { playClick, playSword, playSuccess, playError } = useRPGSounds();
@@ -41,7 +42,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!playerName.trim() || wins < 0 || losses < 0 || wins + losses > attacks) {
+    if (!playerName.trim()) {
       playError();
       onError?.("Invalid input! Check your values, warrior!");
       return;
@@ -61,8 +62,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
       // Reset form
       setPlayerName("");
-      setWins(0);
-      setLosses(0);
+      setBattleResults(Array(5).fill("victory"));
 
       playSuccess();
       playSword();
@@ -76,7 +76,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     }
   };
 
-  const isFormValid = playerName.trim() && wins >= 0 && losses >= 0 && wins + losses <= attacks;
+  const isFormValid = playerName.trim();
   const isLoading = isSaving || isSubmitting;
 
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
@@ -90,6 +90,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           <h2 className="text-2xl font-pixel text-gold text-glow">Battle Log Entry</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
+        
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Player Name Input */}
@@ -113,87 +114,14 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             <RPGDatePicker value={date} onChange={setDate} placeholder="Select battle date..." className="w-full" />
           </div>
 
-          {/* Battle Results Input */}
-          <div className="space-y-3">
-            <label className="block font-pixel text-lg text-gold">
-              ⚔️ Battle Results (out of 5)
-            </label>
-            <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                {/* Wins Input */}
-                <div className="text-center">
-                  <label className="block font-pixel text-sm text-gold mb-2">🏆 Wins</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max={attacks}
-                    value={wins}
-                    onChange={(e) => {
-                      const value = Math.max(0, Math.min(attacks, parseInt(e.target.value) || 0));
-                      setWins(value);
-                      playClick();
-                    }}
-                    className="input-rpg w-full text-center text-lg font-pixel"
-                    placeholder="0"
-                  />
-                </div>
-
-                {/* Losses Input */}
-                <div className="text-center">
-                  <label className="block font-pixel text-sm text-danger mb-2">💀 Losses</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max={attacks}
-                    value={losses}
-                    onChange={(e) => {
-                      const value = Math.max(0, Math.min(attacks, parseInt(e.target.value) || 0));
-                      setLosses(value);
-                      playClick();
-                    }}
-                    className="input-rpg w-full text-center text-lg font-pixel"
-                    placeholder="0"
-                  />
-                </div>
-
-                {/* Draws Display */}
-                <div className="text-center">
-                  <label className="block font-pixel text-sm text-warning mb-2">🤝 Draws</label>
-                  <div className="input-rpg w-full text-center text-lg font-pixel text-warning bg-[#1A1A1A]">
-                    {draws}
-                  </div>
-                </div>
-              </div>
-
-              {/* Point Breakdown */}
-              <div className="border-t border-mystic-blue pt-3">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-sm font-pixel-operator text-text-muted mb-1">Total Points</div>
-                    <div className="text-2xl font-pixel text-gold">{points}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-pixel-operator text-text-muted mb-1">Win Rate</div>
-                    <div className={`text-xl font-pixel ${
-                      winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
-                    }`}>
-                      {winRate}%
-                    </div>
-                  </div>
-                </div>
-
-                {/* Point Breakdown Details */}
-                <div className="mt-3 text-center">
-                  <div className="text-xs font-pixel-operator text-text-muted">
-                    ({wins}×5) + ({losses}×2) + ({draws}×3) = {pointBreakdown.winPoints + pointBreakdown.lossPoints + pointBreakdown.drawPoints} points
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Battle Results Selector */}
+          <BattleResultSelector
+            onResultsChange={setBattleResults}
+            initialResults={battleResults}
+          />
 
           {/* Battle Summary */}
-          {(wins > 0 || losses > 0) && (
+          {battleResults.some(r => r !== "victory") && (
             <div className="panel-rpg">
               <h3 className="font-pixel text-sm text-gold mb-3">📊 Battle Summary</h3>
               <div className="grid grid-cols-4 gap-3 text-center">
@@ -225,13 +153,16 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                   <div className="text-sm font-pixel text-gold mb-2">Point Breakdown</div>
                   <div className="grid grid-cols-3 gap-4 text-xs font-pixel-operator">
                     <div>
-                      <span className="text-gold">{wins} wins</span> × 5 = <span className="text-gold">{pointBreakdown.winPoints}</span>
+                      <span className="text-gold">{wins} wins</span> × 5 ={" "}
+                      <span className="text-gold">{pointBreakdown.winPoints}</span>
                     </div>
                     <div>
-                      <span className="text-danger">{losses} losses</span> × 2 = <span className="text-danger">{pointBreakdown.lossPoints}</span>
+                      <span className="text-danger">{losses} losses</span> × 2 ={" "}
+                      <span className="text-danger">{pointBreakdown.lossPoints}</span>
                     </div>
                     <div>
-                      <span className="text-warning">{draws} draws</span> × 3 = <span className="text-warning">{pointBreakdown.drawPoints}</span>
+                      <span className="text-warning">{draws} draws</span> × 3 ={" "}
+                      <span className="text-warning">{pointBreakdown.drawPoints}</span>
                     </div>
                   </div>
                 </div>
