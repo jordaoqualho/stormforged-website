@@ -27,6 +27,11 @@ export default function Home() {
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
+  // Memoize the loading completion callback
+  const handleLoadingComplete = useCallback(() => {
+    setIsInitialLoading(false);
+  }, []);
+
   useEffect(() => {
     const initializeApp = async () => {
       // Calculate week number on client side to prevent hydration mismatch
@@ -55,7 +60,7 @@ export default function Home() {
 
   // Show initial loading screen
   if (isInitialLoading) {
-    return <InitialLoadingScreen onComplete={useCallback(() => setIsInitialLoading(false), [])} minDuration={4500} />;
+    return <InitialLoadingScreen onComplete={handleLoadingComplete} minDuration={4500} />;
   }
 
   // Show data loading screen
