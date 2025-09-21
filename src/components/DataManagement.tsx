@@ -14,6 +14,8 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   const [importData, setImportData] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [showImportSection, setShowImportSection] = useState(false);
+  const [importMethod, setImportMethod] = useState<"text" | "file">("text");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Confirmation modal states
   const [showImportConfirm, setShowImportConfirm] = useState(false);
@@ -45,19 +47,57 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   };
 
   const handleImport = async () => {
-    if (!importData.trim()) {
+    if (importMethod === "text" && !importData.trim()) {
       onError?.("Please paste the battle data to import!");
+      return;
+    }
+
+    if (importMethod === "file" && !selectedFile) {
+      onError?.("Please select a file to import!");
       return;
     }
 
     setShowImportConfirm(true);
   };
 
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.name.endsWith('.json')) {
+      onError?.("Please select a valid JSON file!");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      onError?.("File is too large! Please select a file smaller than 10MB.");
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      setImportData(text);
+      setSelectedFile(file);
+      setImportMethod("file");
+    } catch (error) {
+      console.error("Error reading file:", error);
+      onError?.("Failed to read the file. Please try again.");
+    }
+  };
+
+  const resetImport = () => {
+    setImportData("");
+    setSelectedFile(null);
+    setImportMethod("text");
+  };
+
   const confirmImport = async () => {
     setIsImporting(true);
     try {
       await importDataAction(importData);
-      setImportData("");
+      resetImport();
       setShowImportSection(false);
       onSuccess?.("Battle records imported successfully! The archives have been restored! 🏰");
     } catch (error) {
@@ -137,23 +177,104 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
 
             {showImportSection && (
               <div className="space-y-6">
-                <div className="relative">
-                  <textarea
-                    value={importData}
-                    onChange={(e) => setImportData(e.target.value)}
-                    placeholder="Paste your exported battle scroll here..."
-                    className="input-rpg w-full h-40 resize-none p-4"
-                    rows={8}
-                  />
-                  <div className="absolute top-3 right-3 text-xs text-text-muted font-pixel-operator bg-[#1A1A1A] px-2 py-1 rounded-pixel border border-mystic-blue">
-                    {importData.length} characters
-                  </div>
+                {/* Import Method Selection */}
+                <div className="flex space-x-2 mb-4">
+                  <button
+                    onClick={() => setImportMethod("text")}
+                    className={`btn-rpg flex-1 py-2 px-4 ${
+                      importMethod === "text" 
+                        ? "bg-gold text-[#0D0D0D] border-gold" 
+                        : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
+                    }`}
+                  >
+                    📜 Paste Text
+                  </button>
+                  <button
+                    onClick={() => setImportMethod("file")}
+                    className={`btn-rpg flex-1 py-2 px-4 ${
+                      importMethod === "file" 
+                        ? "bg-gold text-[#0D0D0D] border-gold" 
+                        : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
+                    }`}
+                  >
+                    📁 Upload File
+                  </button>
                 </div>
 
+                {/* File Upload Section */}
+                {importMethod === "file" && (
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <label
+                        htmlFor="file-upload"
+                        className="btn-rpg w-full py-4 px-6 text-lg cursor-pointer flex items-center justify-center space-x-2 hover:bg-gold hover:text-[#0D0D0D] transition-all duration-200"
+                      >
+                        <span>📁</span>
+                        <span>Choose JSON File</span>
+                        <span>📜</span>
+                      </label>
+                    </div>
+
+                    {selectedFile && (
+                      <div className="bg-success bg-opacity-20 border border-success rounded-pixel p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-success">✅</span>
+                            <span className="text-success font-pixel-operator">
+                              Selected: {selectedFile.name}
+                            </span>
+                          </div>
+                          <div className="text-xs text-text-muted">
+                            {(selectedFile.size / 1024).toFixed(1)} KB
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {importData && (
+                      <div className="bg-mystic-blue bg-opacity-20 border border-mystic-blue rounded-pixel p-4">
+                        <div className="text-sm text-text-secondary font-pixel-operator mb-2">
+                          File Preview ({importData.length} characters):
+                        </div>
+                        <div className="bg-[#1A1A1A] border border-mystic-blue rounded-pixel p-3 max-h-32 overflow-y-auto">
+                          <pre className="text-xs text-text-primary font-mono whitespace-pre-wrap">
+                            {importData.substring(0, 500)}
+                            {importData.length > 500 && "..."}
+                          </pre>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Text Input Section */}
+                {importMethod === "text" && (
+                  <div className="relative">
+                    <textarea
+                      value={importData}
+                      onChange={(e) => setImportData(e.target.value)}
+                      placeholder="Paste your exported battle scroll here..."
+                      className="input-rpg w-full h-40 resize-none p-4"
+                      rows={8}
+                    />
+                    <div className="absolute top-3 right-3 text-xs text-text-muted font-pixel-operator bg-[#1A1A1A] px-2 py-1 rounded-pixel border border-mystic-blue">
+                      {importData.length} characters
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
                 <div className="flex space-x-4">
                   <button
                     onClick={handleImport}
-                    disabled={isLoading || !importData.trim()}
+                    disabled={isLoading || (importMethod === "text" ? !importData.trim() : !selectedFile)}
                     className="btn-rpg flex-1 py-3 px-6"
                   >
                     {isImporting ? (
@@ -171,7 +292,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                   </button>
 
                   <button
-                    onClick={() => setImportData("")}
+                    onClick={resetImport}
                     className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark"
                   >
                     Clear

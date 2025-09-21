@@ -94,7 +94,7 @@ export default function MusicPlayer() {
         <div className="absolute bottom-full right-0 mb-2 bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)] p-4 min-w-80 max-w-sm sm:max-w-md music-controls-enter space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-yellow-600 pb-4">
-            <h3 className="font-pixel text-gold text-lg text-glow">🎵 8-BIT MUSIC</h3>
+            <h3 className="font-pixel text-gold text-lg text-glow">🎵 MUSIC</h3>
             <button
               onClick={handleEnabledToggle}
               className={`
@@ -107,17 +107,6 @@ export default function MusicPlayer() {
               {isEnabled ? "ON" : "OFF"}
             </button>
           </div>
-
-          {/* Current Track Info */}
-          {currentTrackInfo && (
-            <div className="mb-4 p-3 bg-[#1A1A1A] border border-mystic-blue rounded-pixel">
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="text-gold text-lg">🎼</span>
-                <span className="font-pixel text-text-primary">{currentTrackInfo.name}</span>
-              </div>
-              <p className="text-xs text-text-muted font-pixel-operator">{currentTrackInfo.description}</p>
-            </div>
-          )}
 
           {/* Track Selection */}
           <div>
