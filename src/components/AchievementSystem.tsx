@@ -105,8 +105,8 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
   return (
     <div
       className={`
-        relative group cursor-pointer
-        w-20 h-20 rounded-full border-2
+        relative group cursor-pointer overflow-visible
+        w-24 h-24 rounded-full border-2
         ${rarityColors[achievement.rarity]}
         ${rarityGlow[achievement.rarity]}
         flex items-center justify-center
@@ -117,28 +117,31 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
       `}
       onClick={onClick}
     >
-      <span className="text-xl">{achievement.icon}</span>
+      <span className="text-2xl">{achievement.icon}</span>
 
       {/* Achievement Counter */}
       <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#0D0D0D] border-2 border-gold rounded-full flex items-center justify-center">
         <span className="text-xs text-gold font-pixel font-bold">!</span>
       </div>
 
-      {/* Fixed Tooltip - No rotation, contained within bounds */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 max-w-48">
-        <div className="bg-[#0D0D0D] border-2 border-gold rounded-pixel p-3 shadow-[8px_8px_0px_rgba(0,0,0,0.8)]">
-          <div className={`font-pixel text-sm ${achievement.color} mb-2 truncate`} title={achievement.title}>
+      {/* Enhanced Tooltip - Smart positioning with overflow handling */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-[9999] max-w-64 w-max">
+        {/* Tooltip Arrow */}
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gold"></div>
+
+        <div className="bg-[#0D0D0D] border-2 border-gold rounded-pixel p-4 shadow-[8px_8px_0px_rgba(0,0,0,0.8)] relative">
+          <div className={`font-pixel text-base ${achievement.color} mb-2 truncate`} title={achievement.title}>
             {achievement.title}
           </div>
           <div
-            className="text-xs text-text-secondary font-pixel-operator mb-2 leading-tight"
+            className="text-sm text-text-secondary font-pixel-operator mb-3 leading-relaxed"
             title={achievement.description}
           >
             {achievement.description}
           </div>
           <div className="flex items-center justify-between">
             <div
-              className={`text-xs font-pixel-operator capitalize px-2 py-1 rounded-pixel ${
+              className={`text-sm font-pixel-operator capitalize px-3 py-1 rounded-pixel ${
                 achievement.rarity === "legendary"
                   ? "bg-gold text-[#0D0D0D]"
                   : achievement.rarity === "epic"
@@ -289,15 +292,16 @@ export default function AchievementSystem() {
 
   if (unlockedAchievementObjects.length === 0) {
     return (
-      <div className="card-rpg bg-battlefield p-6">
-        <div className="text-center py-12">
-          <div className="icon-rpg text-5xl mb-6">🏆</div>
-          <h3 className="font-pixel text-gold mb-4 text-xl">Achievements</h3>
-          <p className="text-text-muted font-pixel-operator text-sm leading-relaxed">
-            No achievements unlocked yet.
-            <br />
-            Keep battling to earn your first badge!
-          </p>
+      <div className="card-rpg bg-battlefield p-8">
+        <div className="text-center py-16">
+          <div className="icon-rpg text-6xl mb-8 animate-float">🏆</div>
+          <h3 className="font-pixel text-gold mb-6 text-2xl">Achievements</h3>
+          <div className="bg-[#1A1A1A] border border-mystic-blue rounded-pixel p-6 max-w-md mx-auto">
+            <p className="text-text-muted font-pixel-operator text-sm leading-relaxed mb-4">
+              No achievements unlocked yet.
+            </p>
+            <p className="text-text-secondary font-pixel-operator text-xs">Keep battling to earn your first badge!</p>
+          </div>
         </div>
       </div>
     );
@@ -306,18 +310,18 @@ export default function AchievementSystem() {
   return (
     <>
       <div className="card-rpg bg-battlefield overflow-visible p-6">
-        <div className="flex items-center space-x-3 mb-8">
-          <div className="icon-rpg pixel-glow">🏆</div>
-          <h3 className="text-lg font-pixel text-gold text-glow">Achievements</h3>
+        <div className="flex items-center space-x-4 mb-10">
+          <div className="icon-rpg pixel-glow text-2xl">🏆</div>
+          <h3 className="text-xl font-pixel text-gold text-glow">Achievements</h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
-          <div className="text-sm text-text-muted font-pixel-operator">
+          <div className="text-sm text-text-muted font-pixel-operator bg-[#1A1A1A] px-3 py-1 rounded-pixel border border-mystic-blue">
             {unlockedAchievementObjects.length}/{ACHIEVEMENTS.length}
           </div>
         </div>
 
-        <div className="achievement-container grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-6 justify-items-center py-4">
+        <div className="achievement-container grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8 justify-items-center py-6 overflow-visible">
           {unlockedAchievementObjects.map((achievement) => (
-            <div key={achievement.id} className="relative achievement-badge">
+            <div key={achievement.id} className="relative achievement-badge overflow-visible">
               <AchievementBadge
                 achievement={achievement}
                 isNew={newAchievements.includes(achievement.id)}
@@ -328,8 +332,12 @@ export default function AchievementSystem() {
         </div>
 
         {newAchievements.length > 1 && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-success font-pixel">+{newAchievements.length - 1} more achievements unlocked!</p>
+          <div className="mt-8 text-center">
+            <div className="bg-success/20 border-2 border-success rounded-pixel p-4">
+              <p className="text-sm text-success font-pixel">
+                🎉 +{newAchievements.length - 1} more achievements unlocked!
+              </p>
+            </div>
           </div>
         )}
       </div>
