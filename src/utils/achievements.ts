@@ -8,7 +8,7 @@ export const calculateStats = (attacks: any[]): AchievementStats => {
   const winRate = totalAttacks > 0 ? Math.round((totalWins / totalAttacks) * 100) : 0;
   const uniquePlayers = new Set(attacks.map((attack) => attack.playerName)).size;
   const totalPoints = attacks.reduce((sum, attack) => sum + (attack.points ?? 0), 0);
-  
+
   return {
     totalAttacks,
     totalWins,

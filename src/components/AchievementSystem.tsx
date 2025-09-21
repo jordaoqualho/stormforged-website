@@ -17,7 +17,7 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     <div
       className={`
         relative group cursor-pointer
-        w-20 h-20 rounded-full border-2
+        w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2
         ${RARITY_CONFIG.colors[achievement.rarity]}
         ${RARITY_CONFIG.glow[achievement.rarity]}
         flex flex-col items-center justify-center
@@ -30,10 +30,10 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
       title={`${achievement.title} - ${achievement.description}`}
     >
       {/* Achievement Icon */}
-      <span className="text-xl mb-1">{achievement.icon}</span>
+      <span className="text-lg sm:text-xl mb-1">{achievement.icon}</span>
 
       {/* Rarity Indicator */}
-      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-gold rounded-full flex items-center justify-center">
+      <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-[#0D0D0D] border border-gold rounded-full flex items-center justify-center">
         <span className="text-xs">{RARITY_CONFIG.icons[achievement.rarity]}</span>
       </div>
 
@@ -225,7 +225,7 @@ export default function AchievementSystem() {
         </div>
 
         {/* Achievement Grid */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-6 justify-items-center py-4">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-3 sm:gap-4 md:gap-6 justify-items-center py-4">
           {unlockedAchievementObjects.map((achievement) => (
             <div key={achievement.id} className="relative">
               <AchievementBadge

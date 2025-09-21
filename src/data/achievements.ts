@@ -108,7 +108,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     color: "text-success",
     rarity: "epic",
     category: "weekly",
-    condition: (stats, dailyStats, weeklyStats) => (weeklyStats?.weeklyPoints ?? 0) >= ACHIEVEMENT_CONFIG.WEEKLY_POINTS_THRESHOLD,
+    condition: (stats, dailyStats, weeklyStats) =>
+      (weeklyStats?.weeklyPoints ?? 0) >= ACHIEVEMENT_CONFIG.WEEKLY_POINTS_THRESHOLD,
     progress: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyPoints ?? 0,
     maxProgress: ACHIEVEMENT_CONFIG.WEEKLY_POINTS_THRESHOLD,
   },

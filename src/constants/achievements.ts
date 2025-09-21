@@ -7,19 +7,19 @@ export const ACHIEVEMENT_CONFIG = {
   MAX_ATTACKS_PER_DAY: 150, // 30 members × 5 attacks
   MAX_ATTACKS_PER_WEEK: 1050, // 30 members × 5 attacks × 7 days
   MAX_POINTS_PER_WEEK: 5250, // 1050 attacks × 5 points per attack
-  
+
   // Daily Achievement Thresholds
   DAILY_MEMBERS_THRESHOLD: 20, // 2/3 of max members
   DAILY_ATTACKS_THRESHOLD: 100, // 2/3 of max daily attacks
   DAILY_PERFECT_ATTACKS_THRESHOLD: 50, // 1/3 of max daily attacks
   DAILY_POINTS_THRESHOLD: 500, // 100 attacks × 5 points
-  
+
   // Weekly Achievement Thresholds
   WEEKLY_ATTACKS_THRESHOLD: 700, // 2/3 of max weekly attacks
   WEEKLY_PERFECT_ATTACKS_THRESHOLD: 350, // 1/3 of max weekly attacks
   WEEKLY_POINTS_THRESHOLD: 3500, // 700 attacks × 5 points
   WEEKLY_ACTIVE_DAYS: 7,
-  
+
   // Lifetime Achievement Thresholds
   LIFETIME_ATTACKS_THRESHOLDS: [1, 50, 200, 500, 1000], // More realistic progression
   LIFETIME_MEMBERS_THRESHOLDS: [5, 15, 25, 30], // Realistic member milestones
