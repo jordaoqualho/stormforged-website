@@ -102,19 +102,19 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     );
 
   return (
-    <div className="card-rpg bg-battlefield">
-      <div className="relative p-4 sm:p-6">
+    <div className="card-rpg bg-battlefield p-4">
+      <div className="relative">
         {/* RPG Header */}
-        <div className="flex items-center space-x-4 mb-6">
-          <div className="icon-rpg pixel-glow">⚔️</div>
-          <h2 className="text-2xl font-pixel text-gold text-glow">Battle Log Entry</h2>
+        <div className="flex items-center space-x-4 mb-4">
+          <div className="icon-rpg pixel-glow text-xl">⚔️</div>
+          <h2 className="text-xl font-pixel text-gold text-glow">Battle Log Entry</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Player Name Input */}
-          <div className="space-y-2">
-            <label htmlFor="playerName" className="block font-pixel text-lg text-gold text-left mb-1">
+          <div className="space-y-1">
+            <label htmlFor="playerName" className="block font-pixel text-gold text-left mb-1">
               🛡️ Warrior Name
             </label>
             <PlayerAutocomplete
@@ -126,15 +126,15 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           </div>
 
           {/* Date Input */}
-          <div className="space-y-2">
-            <label htmlFor="date" className="block font-pixel text-lg text-gold text-left mb-1">
+          <div className="space-y-1">
+            <label htmlFor="date" className="block font-pixel text-gold text-left mb-1">
               📅 Battle Date
             </label>
             <RPGDatePicker value={date} onChange={setDate} placeholder="Select battle date..." className="w-full" />
           </div>
 
           {/* Battle Results Selector */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <BattleResultSelector onResultsChange={setBattleResults} initialResults={battleResults} />
           </div>
 
@@ -157,7 +157,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           <button
             type="submit"
             disabled={!isFormValid || isLoading || isDuplicateEntry}
-            className={`btn-rpg w-full text-lg py-4 px-6 mt-6 ${
+            className={`btn-rpg w-full text-lg py-3 px-6 mt-4 ${
               isDuplicateEntry ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

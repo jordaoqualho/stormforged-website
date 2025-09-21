@@ -4,10 +4,12 @@ import AchievementSystem from "@/components/AchievementSystem";
 import AddAttackForm from "@/components/AddAttackForm";
 import Charts from "@/components/Charts";
 import CurrentWeekStats from "@/components/CurrentWeekStats";
+import DailyBattleLog from "@/components/DailyBattleLog";
 import DataManagement from "@/components/DataManagement";
 import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
+import WarriorRankings from "@/components/WarriorRankings";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -131,11 +133,18 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
         {activeTab === "overview" && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <AddAttackForm onSuccess={showSuccess} onError={showError} />
-              <CurrentWeekStats />
-            </div>
+          <div className="space-y-6">
+            {/* Battle Log Entry - Compact */}
+            <AddAttackForm onSuccess={showSuccess} onError={showError} />
+
+            {/* Current Week Stats - Compact */}
+            <CurrentWeekStats />
+
+            {/* Daily Battle Log - Full Width */}
+            <DailyBattleLog />
+
+            {/* Warrior Rankings - Full Width */}
+            <WarriorRankings />
 
             {/* Achievement System */}
             <AchievementSystem />
