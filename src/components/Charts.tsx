@@ -219,7 +219,7 @@ export default function Charts() {
     <div className="space-y-6 overflow-visible">
       {/* Week Selector */}
       {availableWeeks.length > 0 && (
-        <div className="card-rpg bg-battlefield p-6 overflow-visible">
+        <div className="card-rpg bg-battlefield p-6 overflow-initial">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="icon-rpg pixel-glow text-xl">📅</div>

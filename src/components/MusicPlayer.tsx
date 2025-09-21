@@ -7,18 +7,18 @@ import { useState } from "react";
 export default function MusicPlayer() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { 
-    isPlaying, 
-    currentTrack, 
-    volume, 
-    isEnabled, 
+  const {
+    isPlaying,
+    currentTrack,
+    volume,
+    isEnabled,
     audioContextResumed,
-    tracks, 
-    toggleMusic, 
-    changeTrack, 
-    updateVolume, 
+    tracks,
+    toggleMusic,
+    changeTrack,
+    updateVolume,
     toggleEnabled,
-    resumeAudioContext
+    resumeAudioContext,
   } = useRPGBackgroundMusic();
 
   const { playClick } = useRPGSounds();
@@ -64,7 +64,7 @@ export default function MusicPlayer() {
           🔊 Click any music control to enable audio
         </div>
       )}
-      
+
       {/* Main Music Control Button */}
       <div className="flex items-center space-x-2">
         <button

@@ -105,11 +105,11 @@ export default function CurrentWeekStats() {
 
   if (!displayData) {
     return (
-      <div className="bg-[#1E1E2E] border-2 border-[#FFD700] rounded-lg p-6 shadow-lg">
+      <div className="card-rpg bg-battlefield">
         <div className="text-center py-12">
-          <div className="text-6xl mb-4 animate-float">⚔️</div>
-          <h2 className="text-xl font-bold text-[#F1FA8C] mb-2">Battle Command Center</h2>
-          <p className="text-[#8BE9FD] text-sm">
+          <div className="icon-rpg text-6xl mb-4 animate-float">⚔️</div>
+          <h2 className="text-xl font-pixel text-gold mb-2">Battle Command Center</h2>
+          <p className="text-text-muted font-pixel-operator">
             No battles recorded this week yet.
             <br />
             Ready your members for combat!
@@ -127,9 +127,9 @@ export default function CurrentWeekStats() {
   };
 
   const getImprovementColor = (value: number) => {
-    if (value > 0) return "text-[#50FA7B]";
-    if (value < 0) return "text-[#FF5555]";
-    return "text-[#F1FA8C]";
+    if (value > 0) return "text-success";
+    if (value < 0) return "text-danger";
+    return "text-gold";
   };
 
   const getImprovementIcon = (value: number) => {
@@ -139,9 +139,9 @@ export default function CurrentWeekStats() {
   };
 
   const getWinRateColor = (rate: number) => {
-    if (rate >= 80) return "text-[#8BE9FD]";
-    if (rate >= 60) return "text-[#F1FA8C]";
-    return "text-[#FF79C6]";
+    if (rate >= 80) return "text-success";
+    if (rate >= 60) return "text-warning";
+    return "text-danger";
   };
 
   const getWinRateIcon = (rate: number) => {
@@ -151,15 +151,15 @@ export default function CurrentWeekStats() {
   };
 
   return (
-    <div className="bg-[#1E1E2E] border-2 border-[#FFD700] rounded-lg p-6 shadow-lg transition-all duration-300 hover:bg-[#282A36]">
-      <div className="relative">
-        {/* Enhanced Header with Week Selector */}
+    <div className="card-rpg bg-battlefield">
+      <div className="relative p-4 sm:p-6">
+        {/* RPG Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
-            <div className="text-3xl">🏰</div>
+            <div className="icon-rpg pixel-glow">🏰</div>
             <div>
-              <h2 className="text-2xl font-bold text-[#F1FA8C]">Command Center</h2>
-              <div className="text-sm text-[#8BE9FD]">
+              <h2 className="text-2xl font-pixel text-gold text-glow">Command Center</h2>
+              <div className="text-sm text-text-muted font-pixel-operator">
                 {selectedWeek ? `Week ${selectedWeek}` : "Current Week"} • {formatDate(displayData.weekStart)} -{" "}
                 {formatDate(displayData.weekEnd)}
               </div>
@@ -171,7 +171,7 @@ export default function CurrentWeekStats() {
             <select
               value={selectedWeek || ""}
               onChange={(e) => setSelectedWeek(e.target.value ? parseInt(e.target.value) : null)}
-              className="bg-[#282A36] border border-[#FFD700] text-[#F1FA8C] px-3 py-2 rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FFD700] transition-all duration-200"
+              className="bg-[#2A2A2A] border border-gold text-gold px-3 py-2 rounded-pixel text-sm font-pixel-operator focus:outline-none focus:ring-2 focus:ring-gold transition-all duration-200 hover:bg-[#3A3A3A]"
             >
               <option value="">Current Week</option>
               {availableWeeks.map((week) => {
@@ -187,12 +187,9 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
           {/* Total Attacks */}
-          <div
-            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
-            title="Total Attacks: Number of battles launched this week"
-          >
+          <div className="stat-rpg border-mystic-blue min-h-[90px] py-2 px-3" title="Total Attacks: Number of battles launched this week">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⚔️</div>
               {comparison?.improvement.totalAttacksChange !== undefined &&
@@ -203,15 +200,12 @@ export default function CurrentWeekStats() {
                   </div>
                 )}
             </div>
-            <div className="text-2xl font-bold text-[#F1FA8C] text-center">{displayData.totalAttacks}</div>
-            <div className="text-xs text-[#8BE9FD] text-center font-medium">Total Attacks</div>
+            <div className="text-2xl font-pixel text-gold text-center">{displayData.totalAttacks}</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Total Attacks</div>
           </div>
 
           {/* Victories */}
-          <div
-            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
-            title="Victories: Number of battles won this week"
-          >
+          <div className="stat-rpg border-success min-h-[90px] py-2 px-3" title="Victories: Number of battles won this week">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🏆</div>
               {comparison?.improvement.totalWinsChange !== undefined &&
@@ -222,56 +216,44 @@ export default function CurrentWeekStats() {
                   </div>
                 )}
             </div>
-            <div className="text-2xl font-bold text-[#50FA7B] text-center">{displayData.totalWins}</div>
-            <div className="text-xs text-[#8BE9FD] text-center font-medium">Victories</div>
+            <div className="text-2xl font-pixel text-success text-center">{displayData.totalWins}</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Victories</div>
           </div>
 
           {/* Defeats */}
-          <div
-            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
-            title="Defeats: Number of battles lost this week"
-          >
+          <div className="stat-rpg border-danger min-h-[90px] py-2 px-3" title="Defeats: Number of battles lost this week">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">💀</div>
             </div>
-            <div className="text-2xl font-bold text-[#FF5555] text-center">{displayData.totalLosses}</div>
-            <div className="text-xs text-[#8BE9FD] text-center font-medium">Defeats</div>
+            <div className="text-2xl font-pixel text-danger text-center">{displayData.totalLosses}</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Defeats</div>
           </div>
         </div>
 
         {/* Secondary Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
           {/* Draws */}
-          <div
-            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
-            title="Draws: Number of battles that ended in a tie"
-          >
+          <div className="stat-rpg border-warning min-h-[90px] py-2 px-3" title="Draws: Number of battles that ended in a tie">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🤝</div>
             </div>
-            <div className="text-2xl font-bold text-[#F1FA8C] text-center">{displayData.totalDraws}</div>
-            <div className="text-xs text-[#8BE9FD] text-center font-medium">Draws</div>
+            <div className="text-2xl font-pixel text-warning text-center">{displayData.totalDraws}</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Draws</div>
           </div>
 
           {/* Total Points */}
-          <div
-            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
-            title="Total Points: Points earned from all battles this week"
-          >
+          <div className="stat-rpg border-gold min-h-[90px] py-2 px-3" title="Total Points: Points earned from all battles this week">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⭐</div>
             </div>
-            <div className="text-2xl font-bold text-[#F1FA8C] text-center">{displayData.totalPoints}</div>
-            <div className="text-xs text-[#8BE9FD] text-center font-medium">Total Points</div>
+            <div className="text-2xl font-pixel text-gold text-center">{displayData.totalPoints}</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Total Points</div>
           </div>
         </div>
 
         {/* Victory Rate Display */}
         <div className="mb-6">
-          <div
-            className="bg-[#282A36] border border-[#FFD700] max-w-xs mx-auto rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
-            title="Victory Rate: Percentage of battles won this week"
-          >
+          <div className="stat-rpg border-gold max-w-xs mx-auto my-4 min-h-[90px] py-2 px-3" title="Victory Rate: Percentage of battles won this week">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">{getWinRateIcon(displayData.winRate)}</div>
               {comparison?.improvement.winRateChange !== undefined && comparison.improvement.winRateChange !== 0 && (
@@ -281,10 +263,10 @@ export default function CurrentWeekStats() {
                 </div>
               )}
             </div>
-            <div className={`text-2xl font-bold text-center ${getWinRateColor(displayData.winRate)}`}>
+            <div className={`text-2xl font-pixel text-center ${getWinRateColor(displayData.winRate)}`}>
               {displayData.winRate}%
             </div>
-            <div className="text-xs text-[#8BE9FD] text-center font-medium">Victory Rate</div>
+            <div className="text-xs text-text-muted font-pixel-operator text-center">Victory Rate</div>
           </div>
         </div>
       </div>
