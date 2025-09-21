@@ -9,6 +9,7 @@ import CurrentWeekStatsSkeleton from "@/components/CurrentWeekStatsSkeleton";
 import DailyBattleLog from "@/components/DailyBattleLog";
 import DailyBattleLogSkeleton from "@/components/DailyBattleLogSkeleton";
 import DataManagement from "@/components/DataManagement";
+import InitialLoadingScreen from "@/components/InitialLoadingScreen";
 import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
@@ -21,6 +22,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const { loadData, isLoading } = useGuildWarStore();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
@@ -43,20 +45,34 @@ export default function Home() {
   };
 
   useEffect(() => {
-    loadData();
+    const initializeApp = async () => {
+      await loadData();
+      // Add a small delay to ensure smooth transition
+      setTimeout(() => {
+        setIsInitialLoading(false);
+      }, 500);
+    };
+    
+    initializeApp();
   }, [loadData]);
 
+  // Show initial loading screen
+  if (isInitialLoading) {
+    return <InitialLoadingScreen onComplete={() => setIsInitialLoading(false)} />;
+  }
+
+  // Show data loading screen
   if (isLoading) {
     return (
       <div className="min-h-screen bg-battlefield flex items-center justify-center">
-        <div className="text-center animate-fade-in">
+        <div className="text-center animate-initial-load">
           <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
           <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
           <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged battle data...</p>
           <div className="mt-6 flex justify-center space-x-1">
-            <div className="w-3 h-3 bg-gold rounded-full animate-bounce"></div>
-            <div className="w-3 h-3 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-            <div className="w-3 h-3 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+            <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle"></div>
+            <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle" style={{ animationDelay: "0.1s" }}></div>
+            <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle" style={{ animationDelay: "0.2s" }}></div>
           </div>
           <div className="mt-8 max-w-md mx-auto">
             <div className="progress-rpg h-3">
@@ -70,12 +86,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-battlefield animate-fade-in">
+    <div className="min-h-screen bg-battlefield">
       {/* Notification System */}
       <NotificationSystem notifications={notifications} onRemove={removeNotification} />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-b-2 border-gold shadow-[8px_8px_0px_rgba(0,0,0,0.8)]">
+      <header className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-b-2 border-gold shadow-[8px_8px_0px_rgba(0,0,0,0.8)] animate-slide-up">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-4">
@@ -123,7 +139,7 @@ export default function Home() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-gradient-to-r from-dark via-darker to-dark border-b-2 border-mystic-blue">
+      <nav className="bg-gradient-to-r from-dark via-darker to-dark border-b-2 border-mystic-blue animate-slide-up" style={{ animationDelay: "0.1s" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1">
             {[
@@ -153,34 +169,34 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
         {activeTab === "overview" && (
-          <div className="space-y-6 animate-slide-up">
+          <div className="space-y-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             {/* Battle Log Entry - Compact */}
-            <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+            <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <AddAttackForm onSuccess={showSuccess} onError={showError} />
             </div>
 
             {/* Current Week Stats - Compact */}
-            <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
               <CurrentWeekStats />
             </div>
 
             {/* Daily Battle Log - Full Width */}
-            <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
               <DailyBattleLog />
             </div>
 
             {/* Warrior Rankings - Full Width */}
-            <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <div className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
               <WarriorRankings />
             </div>
 
             {/* Achievement System */}
-            <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
+            <div className="animate-fade-in" style={{ animationDelay: "0.7s" }}>
               <AchievementSystem />
             </div>
 
             {/* Quick Stats Banner */}
-            <div className="card-rpg bg-gradient-to-r from-mystic-blue to-mystic-blue-light">
+            <div className="card-rpg bg-gradient-to-r from-mystic-blue to-mystic-blue-light animate-fade-in" style={{ animationDelay: "0.8s" }}>
               <div className="flex items-center justify-center space-x-8 py-4">
                 <div className="text-center">
                   <div className="text-3xl font-pixel text-gold">{useGuildWarStore.getState().attacks.length}</div>
@@ -206,20 +222,20 @@ export default function Home() {
         )}
 
         {activeTab === "charts" && (
-          <div className="space-y-8 animate-slide-up">
+          <div className="space-y-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Charts />
           </div>
         )}
 
         {activeTab === "data" && (
-          <div className="max-w-4xl animate-slide-up">
+          <div className="max-w-4xl animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <DataManagement onSuccess={showSuccess} onError={showError} />
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-t-2 border-mystic-blue mt-16">
+      <footer className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-t-2 border-mystic-blue mt-16 animate-slide-up" style={{ animationDelay: "0.3s" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -254,7 +270,9 @@ export default function Home() {
       </footer>
 
       {/* Music Player */}
-      <MusicPlayer />
+      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+        <MusicPlayer />
+      </div>
     </div>
   );
 }

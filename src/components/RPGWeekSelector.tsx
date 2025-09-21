@@ -1,7 +1,7 @@
 "use client";
 
 import { useRPGSounds } from "@/lib/sounds";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface WeekOption {
   value: number;
@@ -43,9 +43,10 @@ export default function RPGWeekSelector({
   ];
 
   // Filter options based on search
-  const filteredOptions = weekOptions.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    option.range.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredOptions = weekOptions.filter(
+    (option) =>
+      option.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      option.range.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handle click outside to close
@@ -92,9 +93,9 @@ export default function RPGWeekSelector({
     setSearchQuery("");
   };
 
-  const selectedOption = weekOptions.find(option => 
-    option.value === selectedWeek || (selectedWeek === null && option.value === 0)
-  ) || weekOptions[0];
+  const selectedOption =
+    weekOptions.find((option) => option.value === selectedWeek || (selectedWeek === null && option.value === 0)) ||
+    weekOptions[0];
 
   return (
     <div className={`relative overflow-visible ${className}`} ref={dropdownRef}>
@@ -154,9 +155,10 @@ export default function RPGWeekSelector({
                       transition-all duration-200
                       hover:bg-mystic-blue hover:bg-opacity-20
                       border-b border-dark-gray last:border-b-0
-                      ${selectedWeek === option.value || (selectedWeek === null && option.value === 0)
-                        ? "bg-gold bg-opacity-20 text-gold"
-                        : "text-text-primary"
+                      ${
+                        selectedWeek === option.value || (selectedWeek === null && option.value === 0)
+                          ? "bg-gold bg-opacity-20 text-gold"
+                          : "text-text-primary"
                       }
                     `}
                   >
@@ -172,16 +174,14 @@ export default function RPGWeekSelector({
                   </button>
                 ))
               ) : (
-                <div className="px-4 py-3 text-text-muted text-sm text-center">
-                  No weeks found
-                </div>
+                <div className="px-4 py-3 text-text-muted text-sm text-center">No weeks found</div>
               )}
             </div>
 
             {/* Footer */}
             <div className="p-3 border-t border-mystic-blue bg-[#1A1A1A]">
               <div className="text-xs text-text-muted font-pixel-operator text-center">
-                {filteredOptions.length} week{filteredOptions.length !== 1 ? 's' : ''} available
+                {filteredOptions.length} week{filteredOptions.length !== 1 ? "s" : ""} available
               </div>
             </div>
           </div>

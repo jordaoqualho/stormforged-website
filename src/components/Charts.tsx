@@ -2,7 +2,6 @@
 
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo, useState } from "react";
-import RPGWeekSelector from "./RPGWeekSelector";
 import {
   Bar,
   BarChart,
@@ -15,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import RPGWeekSelector from "./RPGWeekSelector";
 
 export default function Charts() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();
@@ -28,16 +28,16 @@ export default function Charts() {
     attacks.forEach((attack) => {
       const date = new Date(attack.date);
       const startOfYear = new Date(date.getFullYear(), 0, 1);
-      
+
       // Find the first Friday of the year
       const firstFriday = new Date(startOfYear);
       const firstFridayDay = firstFriday.getDay();
       const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
       firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-      
+
       // Calculate days since first Friday
       const daysSinceFirstFriday = Math.floor((date.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
-      
+
       // Calculate week number (war weeks start on Friday)
       const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
       weeks.add(weekNumber);
@@ -50,17 +50,17 @@ export default function Charts() {
   const getWeekRange = (weekNumber: number) => {
     const year = new Date().getFullYear();
     const startOfYear = new Date(year, 0, 1);
-    
+
     // Find the first Friday of the year
     const firstFriday = new Date(startOfYear);
     const firstFridayDay = firstFriday.getDay();
     const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
     firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-    
+
     // Calculate the start of the specified week (Friday)
     const weekStart = new Date(firstFriday);
     weekStart.setDate(firstFriday.getDate() + (weekNumber - 1) * 7);
-    
+
     // Calculate the end of the week (Thursday)
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
@@ -79,16 +79,16 @@ export default function Charts() {
     const weekAttacks = attacks.filter((attack) => {
       const date = new Date(attack.date);
       const startOfYear = new Date(date.getFullYear(), 0, 1);
-      
+
       // Find the first Friday of the year
       const firstFriday = new Date(startOfYear);
       const firstFridayDay = firstFriday.getDay();
       const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
       firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-      
+
       // Calculate days since first Friday
       const daysSinceFirstFriday = Math.floor((date.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
-      
+
       // Calculate week number (war weeks start on Friday)
       const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
       return weekNumber === selectedWeek;
