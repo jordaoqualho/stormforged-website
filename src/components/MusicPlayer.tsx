@@ -57,7 +57,7 @@ export default function MusicPlayer() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-40">
       {/* Audio Context Status Indicator */}
       {!audioContextResumed && (
         <div className="mb-2 p-2 bg-yellow-600/20 border border-yellow-600 rounded-md text-xs text-yellow-300 font-pixel-operator">

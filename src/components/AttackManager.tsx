@@ -276,7 +276,7 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 p-4">
       <div className="card-rpg bg-battlefield max-w-2xl w-full border-2 border-gold animate-slide-up">
         <div className="p-6">
           <div className="flex items-center space-x-4 mb-6">

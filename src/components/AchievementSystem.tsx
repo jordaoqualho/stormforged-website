@@ -3,6 +3,7 @@
 import { useRPGBackgroundMusic } from "@/lib/music";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationSystem";
 
 interface Achievement {
@@ -161,8 +162,8 @@ function AchievementModal({ achievement, isOpen, onClose }: AchievementModalProp
     legendary: "border-gold",
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[10000] p-4">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[99999] p-4">
       <div
         className={`card-rpg bg-battlefield max-w-md w-full border-2 ${
           rarityColors[achievement.rarity]
@@ -207,6 +208,9 @@ function AchievementModal({ achievement, isOpen, onClose }: AchievementModalProp
       </div>
     </div>
   );
+
+  // Use portal to render modal at document root level
+  return createPortal(modalContent, document.body);
 }
 
 export default function AchievementSystem() {

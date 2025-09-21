@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import { useMemo, useState } from "react";
 
 export default function CurrentWeekStats() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();
@@ -160,11 +160,12 @@ export default function CurrentWeekStats() {
             <div>
               <h2 className="text-2xl font-bold text-[#F1FA8C]">Command Center</h2>
               <div className="text-sm text-[#8BE9FD]">
-                {selectedWeek ? `Week ${selectedWeek}` : "Current Week"} • {formatDate(displayData.weekStart)} - {formatDate(displayData.weekEnd)}
+                {selectedWeek ? `Week ${selectedWeek}` : "Current Week"} • {formatDate(displayData.weekStart)} -{" "}
+                {formatDate(displayData.weekEnd)}
               </div>
             </div>
           </div>
-          
+
           {/* Week Selector */}
           <div className="relative">
             <select
@@ -188,7 +189,10 @@ export default function CurrentWeekStats() {
         {/* Main Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           {/* Total Attacks */}
-          <div className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group" title="Total Attacks: Number of battles launched this week">
+          <div
+            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
+            title="Total Attacks: Number of battles launched this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⚔️</div>
               {comparison?.improvement.totalAttacksChange !== undefined &&
@@ -204,7 +208,10 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Victories */}
-          <div className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group" title="Victories: Number of battles won this week">
+          <div
+            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
+            title="Victories: Number of battles won this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🏆</div>
               {comparison?.improvement.totalWinsChange !== undefined &&
@@ -220,7 +227,10 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Defeats */}
-          <div className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group" title="Defeats: Number of battles lost this week">
+          <div
+            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
+            title="Defeats: Number of battles lost this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">💀</div>
             </div>
@@ -232,7 +242,10 @@ export default function CurrentWeekStats() {
         {/* Secondary Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {/* Draws */}
-          <div className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group" title="Draws: Number of battles that ended in a tie">
+          <div
+            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
+            title="Draws: Number of battles that ended in a tie"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🤝</div>
             </div>
@@ -241,7 +254,10 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Total Points */}
-          <div className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group" title="Total Points: Points earned from all battles this week">
+          <div
+            className="bg-[#282A36] border border-[#FFD700] rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
+            title="Total Points: Points earned from all battles this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⭐</div>
             </div>
@@ -252,7 +268,10 @@ export default function CurrentWeekStats() {
 
         {/* Victory Rate Display */}
         <div className="mb-6">
-          <div className="bg-[#282A36] border border-[#FFD700] max-w-xs mx-auto rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group" title="Victory Rate: Percentage of battles won this week">
+          <div
+            className="bg-[#282A36] border border-[#FFD700] max-w-xs mx-auto rounded-lg p-4 hover:bg-[#2A2A3A] transition-all duration-200 group"
+            title="Victory Rate: Percentage of battles won this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">{getWinRateIcon(displayData.winRate)}</div>
               {comparison?.improvement.winRateChange !== undefined && comparison.improvement.winRateChange !== 0 && (
