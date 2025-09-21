@@ -166,7 +166,7 @@ export function useRPGBackgroundMusic() {
     if (typeof window !== "undefined") {
       localStorage.setItem("rpg-music-volume", newVolume.toString());
     }
-    
+
     // Update volume for all tracks
     Object.values(tracks).forEach((track) => {
       track.volume(newVolume);
@@ -190,7 +190,7 @@ export function useRPGBackgroundMusic() {
       const victoryTrack = tracks.victory_fanfare;
       if (victoryTrack) {
         victoryTrack.play();
-        
+
         // Return to previous track after fanfare (if it was playing)
         if (isPlaying && currentTrack !== "victory_fanfare") {
           victoryTrack.once("end", () => {
