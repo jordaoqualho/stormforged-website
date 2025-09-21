@@ -10,6 +10,7 @@ interface PlayerAutocompleteProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export default function PlayerAutocomplete({
@@ -17,6 +18,7 @@ export default function PlayerAutocomplete({
   onChange,
   placeholder = "Enter warrior name...",
   className = "",
+  disabled = false,
 }: PlayerAutocompleteProps) {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
@@ -72,6 +74,7 @@ export default function PlayerAutocomplete({
         <div className="relative">
           <Combobox.Input
             ref={inputRef}
+            disabled={disabled}
             className={`
               w-full px-4 py-3
               bg-[#2A2A2A] border-2 border-mystic-blue
@@ -82,6 +85,7 @@ export default function PlayerAutocomplete({
               focus:border-gold focus:shadow-glow-gold focus:outline-none
               placeholder:text-text-muted
               hover:border-mystic-blue-light
+              ${disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
             displayValue={() => value}
             onChange={handleInputChange}
