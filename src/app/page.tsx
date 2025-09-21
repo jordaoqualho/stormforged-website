@@ -20,7 +20,7 @@ import { useGuildWarStore } from "@/store/guildWarStore";
 import { useCallback, useEffect, useState } from "react";
 
 export default function Home() {
-  const { loadData, isLoading } = useGuildWarStore();
+  const { loadData, isLoading, attacks } = useGuildWarStore();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(false); // Will be set based on first visit
@@ -243,20 +243,20 @@ export default function Home() {
             >
               <div className="flex items-center justify-center space-x-8 py-4">
                 <div className="text-center">
-                  <div className="text-3xl font-pixel text-gold">{useGuildWarStore.getState().attacks.length}</div>
+                  <div className="text-3xl font-pixel text-gold">{attacks.length}</div>
                   <div className="text-xs text-text-secondary font-pixel-operator">Total Battles</div>
                 </div>
                 <div className="w-px h-12 bg-gold opacity-50"></div>
                 <div className="text-center">
                   <div className="text-3xl font-pixel text-success">
-                    {new Set(useGuildWarStore.getState().attacks.map((a) => a.playerName)).size}
+                    {new Set(attacks.map((a) => a.playerName)).size}
                   </div>
                   <div className="text-xs text-text-secondary font-pixel-operator">Active Members</div>
                 </div>
                 <div className="w-px h-12 bg-gold opacity-50"></div>
                 <div className="text-center">
                   <div className="text-3xl font-pixel text-warning">
-                    {useGuildWarStore.getState().attacks.reduce((sum, a) => sum + a.attacks, 0)}
+                    {attacks.reduce((sum, a) => sum + a.attacks, 0)}
                   </div>
                   <div className="text-xs text-text-secondary font-pixel-operator">Total Attacks</div>
                 </div>

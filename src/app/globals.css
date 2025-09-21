@@ -108,7 +108,6 @@ body {
 
 /* RPG Card Styles */
 .card-rpg {
-  @apply relative overflow-hidden;
   @apply bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A];
   @apply border-2 border-mystic-blue;
   @apply shadow-[8px_8px_0px_rgba(0,0,0,0.8)];

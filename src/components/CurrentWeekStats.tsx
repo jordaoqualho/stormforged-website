@@ -189,7 +189,10 @@ export default function CurrentWeekStats() {
         {/* Main Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
           {/* Total Attacks */}
-          <div className="stat-rpg border-mystic-blue min-h-[90px] py-2 px-3" title="Total Attacks: Number of battles launched this week">
+          <div
+            className="stat-rpg border-mystic-blue min-h-[90px] py-2 px-3"
+            title="Total Attacks: Number of battles launched this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⚔️</div>
               {comparison?.improvement.totalAttacksChange !== undefined &&
@@ -205,7 +208,10 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Victories */}
-          <div className="stat-rpg border-success min-h-[90px] py-2 px-3" title="Victories: Number of battles won this week">
+          <div
+            className="stat-rpg border-success min-h-[90px] py-2 px-3"
+            title="Victories: Number of battles won this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🏆</div>
               {comparison?.improvement.totalWinsChange !== undefined &&
@@ -221,7 +227,10 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Defeats */}
-          <div className="stat-rpg border-danger min-h-[90px] py-2 px-3" title="Defeats: Number of battles lost this week">
+          <div
+            className="stat-rpg border-danger min-h-[90px] py-2 px-3"
+            title="Defeats: Number of battles lost this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">💀</div>
             </div>
@@ -233,7 +242,10 @@ export default function CurrentWeekStats() {
         {/* Secondary Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
           {/* Draws */}
-          <div className="stat-rpg border-warning min-h-[90px] py-2 px-3" title="Draws: Number of battles that ended in a tie">
+          <div
+            className="stat-rpg border-warning min-h-[90px] py-2 px-3"
+            title="Draws: Number of battles that ended in a tie"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🤝</div>
             </div>
@@ -242,7 +254,10 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Total Points */}
-          <div className="stat-rpg border-gold min-h-[90px] py-2 px-3" title="Total Points: Points earned from all battles this week">
+          <div
+            className="stat-rpg border-gold min-h-[90px] py-2 px-3"
+            title="Total Points: Points earned from all battles this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⭐</div>
             </div>
@@ -253,7 +268,10 @@ export default function CurrentWeekStats() {
 
         {/* Victory Rate Display */}
         <div className="mb-6">
-          <div className="stat-rpg border-gold max-w-xs mx-auto my-4 min-h-[90px] py-2 px-3" title="Victory Rate: Percentage of battles won this week">
+          <div
+            className="stat-rpg border-gold max-w-xs mx-auto my-4 min-h-[90px] py-2 px-3"
+            title="Victory Rate: Percentage of battles won this week"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">{getWinRateIcon(displayData.winRate)}</div>
               {comparison?.improvement.winRateChange !== undefined && comparison.improvement.winRateChange !== 0 && (
