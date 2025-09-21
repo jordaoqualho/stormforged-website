@@ -164,23 +164,47 @@ export function getCurrentWeekStats(attacks: AttackRecord[]): WeeklyStats {
   return calculateWeeklyStats(attacks, weekStart);
 }
 
-export function getPreviousWeekStats(attacks: AttackRecord[]): WeeklyStats | null {
-  const today = formatDate(new Date());
-  const currentWeekStart = new Date(getWeekStart(today));
-  const previousWeekStart = new Date(currentWeekStart);
-  previousWeekStart.setDate(currentWeekStart.getDate() - 7);
+export function getCurrentWeekNumber(date?: Date): number {
+  const targetDate = date || new Date();
+  const startOfYear = new Date(targetDate.getFullYear(), 0, 1);
 
-  const previousWeekStartStr = formatDate(previousWeekStart);
-  const previousWeekEnd = getWeekEnd(previousWeekStartStr);
+  // Find the first Friday of the year
+  const firstFriday = new Date(startOfYear);
+  const firstFridayDay = firstFriday.getDay(); // 0 = Sunday, 5 = Friday
+  const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+  firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
 
-  // Check if there are any attacks in the previous week
-  const hasPreviousWeekData = attacks.some(
-    (attack) => attack.date >= previousWeekStartStr && attack.date <= previousWeekEnd
-  );
+  // Calculate days since first Friday
+  const daysSinceFirstFriday = Math.floor((targetDate.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
 
-  if (!hasPreviousWeekData) {
-    return null;
-  }
+  // Calculate week number (war weeks start on Friday)
+  return Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
+}
 
-  return calculateWeeklyStats(attacks, previousWeekStartStr);
+export function getWeekNumberForDate(date: string): number {
+  return getCurrentWeekNumber(new Date(date));
+}
+
+export function getWeekRange(weekNumber: number, year?: number): { start: string; end: string } {
+  const targetYear = year || new Date().getFullYear();
+  const startOfYear = new Date(targetYear, 0, 1);
+
+  // Find the first Friday of the year
+  const firstFriday = new Date(startOfYear);
+  const firstFridayDay = firstFriday.getDay();
+  const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+  firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+
+  // Calculate the start date for the selected week
+  const weekStart = new Date(firstFriday);
+  weekStart.setDate(firstFriday.getDate() + (weekNumber - 1) * 7);
+
+  // Calculate the end date (Thursday)
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+
+  return {
+    start: weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    end: weekEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+  };
 }

@@ -16,6 +16,7 @@ import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
 import { useRPGSounds } from "@/lib/sounds";
+import { getCurrentWeekNumber } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useCallback, useEffect, useState } from "react";
 
@@ -58,20 +59,7 @@ export default function Home() {
 
     const initializeApp = async () => {
       // Calculate week number on client side to prevent hydration mismatch
-      const now = new Date();
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-      // Find the first Friday of the year
-      const firstFriday = new Date(startOfYear);
-      const firstFridayDay = firstFriday.getDay(); // 0 = Sunday, 5 = Friday
-      const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
-      firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-
-      // Calculate days since first Friday
-      const daysSinceFirstFriday = Math.floor((now.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
-
-      // Calculate week number (war weeks start on Friday)
-      const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
+      const weekNumber = getCurrentWeekNumber();
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
