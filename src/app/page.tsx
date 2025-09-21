@@ -112,19 +112,19 @@ export default function Home() {
 
         {/* Header */}
         <header className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-b-2 border-gold animate-slide-up">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div className="flex items-center space-x-4">
-                <div className="icon-rpg text-4xl pixel-glow">🏰</div>
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 sm:h-20">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="icon-rpg text-2xl sm:text-4xl pixel-glow">🏰</div>
                 <div>
-                  <h1 className="text-2xl font-pixel text-gold text-glow">Stormforged</h1>
-                  <p className="text-sm text-text-secondary font-pixel-operator">
+                  <h1 className="text-lg sm:text-2xl font-pixel text-gold text-glow">Stormforged</h1>
+                  <p className="text-xs sm:text-sm text-text-secondary font-pixel-operator hidden sm:block">
                     Idle Horizon Guild War Command Center
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="text-right hidden sm:block">
                   <div className="text-sm text-gold font-pixel">
                     {new Date().toLocaleDateString("en-US", {
                       weekday: "long",
@@ -151,12 +151,39 @@ export default function Home() {
                       : `Week ${currentWeekNumber} Epic`}
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 sm:space-x-3">
                   <SoundToggle />
-                  <div className="w-12 h-12 bg-gradient-to-b from-[#FFD700] to-[#B8860B] border-2 border-[#B8860B] rounded-full flex items-center justify-center shadow-glow-gold">
-                    <span className="text-xl">⚔️</span>
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-b from-[#FFD700] to-[#B8860B] border-2 border-[#B8860B] rounded-full flex items-center justify-center shadow-glow-gold">
+                    <span className="text-sm sm:text-xl">⚔️</span>
                   </div>
                 </div>
+              </div>
+            </div>
+            {/* Mobile Date Display */}
+            <div className="sm:hidden pb-3">
+              <div className="text-sm text-gold font-pixel text-center">
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </div>
+              <div className="text-xs text-text-muted font-pixel-operator text-center">
+                {currentWeekNumber === null
+                  ? "Calculating..."
+                  : currentWeekNumber === 1
+                  ? "First Week of Battle"
+                  : currentWeekNumber <= 4
+                  ? `Week ${currentWeekNumber} Campaign`
+                  : currentWeekNumber <= 12
+                  ? `Week ${currentWeekNumber} Siege`
+                  : currentWeekNumber <= 26
+                  ? `Week ${currentWeekNumber} War`
+                  : currentWeekNumber <= 39
+                  ? `Week ${currentWeekNumber} Crusade`
+                  : currentWeekNumber <= 52
+                  ? `Week ${currentWeekNumber} Legend`
+                  : `Week ${currentWeekNumber} Epic`}
               </div>
             </div>
           </div>
@@ -164,7 +191,7 @@ export default function Home() {
 
         {/* Navigation Tabs */}
         <nav className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div className="flex space-x-1">
               {[
                 { id: "overview", label: "Battle Command", icon: "⚔️", desc: "Record & Monitor" },
@@ -180,9 +207,9 @@ export default function Home() {
                   className={`tab-rpg flex-1 ${activeTab === tab.id ? "active" : ""}`}
                 >
                   <div className="flex flex-col items-center space-y-1">
-                    <span className="text-2xl">{tab.icon}</span>
-                    <span className="font-pixel text-sm">{tab.label}</span>
-                    <span className="font-pixel-operator text-xs opacity-75">{tab.desc}</span>
+                    <span className="text-xl sm:text-2xl">{tab.icon}</span>
+                    <span className="font-pixel text-xs sm:text-sm">{tab.label}</span>
+                    <span className="font-pixel-operator text-xs opacity-75 hidden sm:block">{tab.desc}</span>
                   </div>
                 </button>
               ))}
@@ -191,9 +218,9 @@ export default function Home() {
         </nav>
 
         {/* Main Content */}
-        <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
+        <main className="max-w-screen-xl mx-auto px-3 sm:px-4 md:px-8 py-4 sm:py-8">
           {activeTab === "overview" && (
-            <div className="space-y-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+            <div className="space-y-4 sm:space-y-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
               {/* Battle Log Entry - Compact */}
               <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
                 <AddAttackForm onSuccess={showSuccess} onError={showError} />
@@ -224,21 +251,21 @@ export default function Home() {
                 className="card-rpg bg-gradient-to-r from-mystic-blue to-mystic-blue-light animate-fade-in"
                 style={{ animationDelay: "0.8s" }}
               >
-                <div className="flex items-center justify-center space-x-8 py-4">
+                <div className="flex items-center justify-center space-x-4 sm:space-x-8 py-3 sm:py-4">
                   <div className="text-center">
-                    <div className="text-3xl font-pixel text-gold">{attacks.length}</div>
+                    <div className="text-2xl sm:text-3xl font-pixel text-gold">{attacks.length}</div>
                     <div className="text-xs text-text-secondary font-pixel-operator">Total Battles</div>
                   </div>
-                  <div className="w-px h-12 bg-gold opacity-50"></div>
+                  <div className="w-px h-8 sm:h-12 bg-gold opacity-50"></div>
                   <div className="text-center">
-                    <div className="text-3xl font-pixel text-success">
+                    <div className="text-2xl sm:text-3xl font-pixel text-success">
                       {new Set(attacks.map((a) => a.playerName)).size}
                     </div>
                     <div className="text-xs text-text-secondary font-pixel-operator">Active Members</div>
                   </div>
-                  <div className="w-px h-12 bg-gold opacity-50"></div>
+                  <div className="w-px h-8 sm:h-12 bg-gold opacity-50"></div>
                   <div className="text-center">
-                    <div className="text-3xl font-pixel text-warning">
+                    <div className="text-2xl sm:text-3xl font-pixel text-warning">
                       {attacks.reduce((sum, a) => sum + a.attacks, 0)}
                     </div>
                     <div className="text-xs text-text-secondary font-pixel-operator">Total Attacks</div>
