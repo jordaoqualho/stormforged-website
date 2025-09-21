@@ -1,8 +1,8 @@
 "use client";
 
-import { getWeekNumberForDate, getWeekRange, getCurrentWeekNumber } from "@/lib/calculations";
+import { getCurrentWeekNumber, getWeekNumberForDate, getWeekRange } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RPGWeekSelector from "./RPGWeekSelector";
 
 export default function CurrentWeekStats() {
@@ -118,8 +118,12 @@ export default function CurrentWeekStats() {
             <div>
               <h2 className="text-xl sm:text-2xl font-pixel text-gold text-glow">Command Center</h2>
               <div className="text-xs sm:text-sm text-text-muted font-pixel-operator">
-                {selectedWeek ? `Week ${selectedWeek}` : currentWeekNumber ? `Week ${currentWeekNumber}` : "Current Week"} • {formatDate(displayData.weekStart)} -{" "}
-                {formatDate(displayData.weekEnd)}
+                {selectedWeek
+                  ? `Week ${selectedWeek}`
+                  : currentWeekNumber
+                  ? `Week ${currentWeekNumber}`
+                  : "Current Week"}{" "}
+                • {formatDate(displayData.weekStart)} - {formatDate(displayData.weekEnd)}
               </div>
             </div>
           </div>

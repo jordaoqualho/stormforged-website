@@ -5,7 +5,7 @@ export default function DailyBattleLogSkeleton() {
     <div className="card-rpg bg-battlefield p-6 animate-pulse">
       <div className="flex items-center space-x-4 mb-6">
         <div className="icon-rpg pixel-glow text-xl">📅</div>
-        <h3 className="text-xl font-pixel text-gold text-glow">Daily Battle Log</h3>
+        <h3 className="text-xl font-pixel text-gold text-glow">Daily Battle</h3>
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
       <div className="grid grid-cols-7 gap-2">
