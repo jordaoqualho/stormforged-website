@@ -13,6 +13,47 @@ export default function DailyBattleLog() {
     return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
+  // Reorder days to start from Friday (war week starts on Friday)
+  const reorderDaysForWarWeek = (dailyStats: any[]) => {
+    const dayOrder = ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+    const orderedDays = [];
+    
+    // Create a map for quick lookup
+    const dayMap = new Map();
+    dailyStats.forEach(day => {
+      const dayName = new Date(day.date).toLocaleDateString("en-US", { weekday: "short" });
+      dayMap.set(dayName, day);
+    });
+    
+    // Add days in war week order (Friday to Thursday)
+    dayOrder.forEach(dayName => {
+      if (dayMap.has(dayName)) {
+        orderedDays.push(dayMap.get(dayName));
+      } else {
+        // Create empty day entry for missing days
+        const today = new Date();
+        const dayIndex = dayOrder.indexOf(dayName);
+        const friday = new Date(today);
+        friday.setDate(today.getDate() - today.getDay() + 5); // Get to Friday
+        const emptyDate = new Date(friday);
+        emptyDate.setDate(friday.getDate() + dayIndex);
+        
+        orderedDays.push({
+          date: emptyDate.toISOString().split('T')[0],
+          totalAttacks: 0,
+          totalWins: 0,
+          totalLosses: 0,
+          totalDraws: 0,
+          playerCount: 0,
+        });
+      }
+    });
+    
+    return orderedDays;
+  };
+
+  const orderedDays = reorderDaysForWarWeek(currentWeekStats.dailyStats);
+
   return (
     <div className="card-rpg bg-battlefield p-6">
       <div className="flex items-center space-x-4 mb-6">
@@ -21,7 +62,7 @@ export default function DailyBattleLog() {
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
       <div className="grid grid-cols-7 gap-2">
-        {currentWeekStats.dailyStats.map((day, index) => (
+        {orderedDays.map((day, index) => (
           <div
             key={day.date}
             className="panel-rpg p-3 text-center w-full aspect-[3/4] hover:brightness-110 transition-all duration-300 group"

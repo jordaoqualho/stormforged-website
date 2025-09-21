@@ -31,13 +31,13 @@ export default function RPGWeekSelector({
 
   // Generate week options
   const weekOptions: WeekOption[] = [
-    { value: 0, label: "Current Week", range: "Live Data" },
+    { value: 0, label: "Current Week", range: "Live Data (Fri-Thu)" },
     ...availableWeeks.map((week) => {
       const range = getWeekRange(week);
       return {
         value: week,
         label: `Week ${week}`,
-        range: `${range.start} – ${range.end}`,
+        range: `${range.start} – ${range.end} (Fri-Thu)`,
       };
     }),
   ];

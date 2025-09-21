@@ -20,7 +20,7 @@ export default function Charts() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
 
-  // Calculate available weeks from attack data
+  // Calculate available weeks from attack data (war weeks start on Friday)
   const availableWeeks = useMemo(() => {
     if (!attacks.length) return [];
 
@@ -28,24 +28,46 @@ export default function Charts() {
     attacks.forEach((attack) => {
       const date = new Date(attack.date);
       const startOfYear = new Date(date.getFullYear(), 0, 1);
-      const daysSinceStart = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-      const weekNumber = Math.ceil((daysSinceStart + startOfYear.getDay() + 1) / 7);
+      
+      // Find the first Friday of the year
+      const firstFriday = new Date(startOfYear);
+      const firstFridayDay = firstFriday.getDay();
+      const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+      firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+      
+      // Calculate days since first Friday
+      const daysSinceFirstFriday = Math.floor((date.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Calculate week number (war weeks start on Friday)
+      const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
       weeks.add(weekNumber);
     });
 
     return Array.from(weeks).sort((a, b) => b - a); // Most recent first
   }, [attacks]);
 
-  // Get week range for display
+  // Get week range for display (Friday to Thursday)
   const getWeekRange = (weekNumber: number) => {
     const year = new Date().getFullYear();
     const startOfYear = new Date(year, 0, 1);
-    const startOfWeek = new Date(startOfYear.getTime() + (weekNumber - 1) * 7 * 24 * 60 * 60 * 1000);
-    const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
+    
+    // Find the first Friday of the year
+    const firstFriday = new Date(startOfYear);
+    const firstFridayDay = firstFriday.getDay();
+    const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+    firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+    
+    // Calculate the start of the specified week (Friday)
+    const weekStart = new Date(firstFriday);
+    weekStart.setDate(firstFriday.getDate() + (weekNumber - 1) * 7);
+    
+    // Calculate the end of the week (Thursday)
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
 
     return {
-      start: startOfWeek.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      end: endOfWeek.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      start: weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      end: weekEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     };
   };
 
@@ -53,12 +75,22 @@ export default function Charts() {
   const filteredData = useMemo(() => {
     if (!selectedWeek || !attacks.length) return currentWeekStats;
 
-    // Filter attacks for selected week
+    // Filter attacks for selected week (war weeks start on Friday)
     const weekAttacks = attacks.filter((attack) => {
       const date = new Date(attack.date);
       const startOfYear = new Date(date.getFullYear(), 0, 1);
-      const daysSinceStart = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-      const weekNumber = Math.ceil((daysSinceStart + startOfYear.getDay() + 1) / 7);
+      
+      // Find the first Friday of the year
+      const firstFriday = new Date(startOfYear);
+      const firstFridayDay = firstFriday.getDay();
+      const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+      firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+      
+      // Calculate days since first Friday
+      const daysSinceFirstFriday = Math.floor((date.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Calculate week number (war weeks start on Friday)
+      const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
       return weekNumber === selectedWeek;
     });
 

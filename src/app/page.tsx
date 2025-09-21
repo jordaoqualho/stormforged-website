@@ -24,12 +24,22 @@ export default function Home() {
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
-  // Calculate current week number of the year
+  // Calculate current week number of the year (war week starts on Friday)
   const getCurrentWeekNumber = () => {
     const now = new Date();
     const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const daysSinceStart = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-    return Math.ceil((daysSinceStart + startOfYear.getDay() + 1) / 7);
+    
+    // Find the first Friday of the year
+    const firstFriday = new Date(startOfYear);
+    const firstFridayDay = firstFriday.getDay();
+    const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+    firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+    
+    // Calculate days since first Friday
+    const daysSinceFirstFriday = Math.floor((now.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Calculate week number (war weeks start on Friday)
+    return Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
   };
 
   useEffect(() => {

@@ -11,7 +11,8 @@ export function formatDate(date: Date): string {
 export function getWeekStart(date: string): string {
   const d = new Date(date);
   const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  // War week starts on Friday (day 5), so we need to find the most recent Friday
+  const diff = d.getDate() - day + (day < 5 ? day + 2 : day - 5); // Adjust for Friday start
   const weekStart = new Date(d.setDate(diff));
   return formatDate(weekStart);
 }
