@@ -2,6 +2,7 @@
 
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo, useState } from "react";
+import RPGWeekSelector from "./RPGWeekSelector";
 import {
   Bar,
   BarChart,
@@ -193,21 +194,13 @@ export default function Charts() {
               <h3 className="text-xl font-pixel text-gold text-glow">Select Week</h3>
             </div>
             <div className="flex items-center space-x-4">
-              <select
-                value={selectedWeek || ""}
-                onChange={(e) => setSelectedWeek(e.target.value ? parseInt(e.target.value) : null)}
-                className="input-rpg px-4 py-2 pr-8 bg-[#0D0D0D] border-2 border-gold text-gold font-pixel-operator hover:border-gold-light focus:border-gold-light transition-colors cursor-pointer"
-              >
-                <option value="">Current Week</option>
-                {availableWeeks.map((week) => {
-                  const range = getWeekRange(week);
-                  return (
-                    <option key={week} value={week} className="bg-[#0D0D0D] text-gold">
-                      Week {week} ({range.start} – {range.end})
-                    </option>
-                  );
-                })}
-              </select>
+              <RPGWeekSelector
+                selectedWeek={selectedWeek}
+                onWeekChange={setSelectedWeek}
+                availableWeeks={availableWeeks}
+                getWeekRange={getWeekRange}
+                className="min-w-64"
+              />
               <div className="text-sm text-text-muted font-pixel-operator">
                 {selectedWeek ? `Week ${selectedWeek}` : "Current Week"}
               </div>
