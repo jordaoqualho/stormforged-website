@@ -1,9 +1,9 @@
 "use client";
 
+import { useRPGBackgroundMusic } from "@/lib/music";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
 import { useNotifications } from "./NotificationSystem";
-import { useRPGBackgroundMusic } from "@/lib/music";
 
 interface Achievement {
   id: string;

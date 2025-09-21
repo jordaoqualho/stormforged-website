@@ -1,26 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { useRPGBackgroundMusic } from "@/lib/music";
 import { useRPGSounds } from "@/lib/sounds";
+import { useState } from "react";
 
 export default function MusicPlayer() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { 
-    isPlaying, 
-    currentTrack, 
-    volume, 
-    isEnabled, 
-    tracks, 
-    toggleMusic, 
-    changeTrack, 
-    updateVolume, 
-    toggleEnabled 
-  } = useRPGBackgroundMusic();
-  
+  const { isPlaying, currentTrack, volume, isEnabled, tracks, toggleMusic, changeTrack, updateVolume, toggleEnabled } =
+    useRPGBackgroundMusic();
+
   const { playClick } = useRPGSounds();
 
-  const currentTrackInfo = tracks.find(track => track.id === currentTrack);
+  const currentTrackInfo = tracks.find((track) => track.id === currentTrack);
 
   const handleToggle = () => {
     toggleMusic();
@@ -57,7 +48,7 @@ export default function MusicPlayer() {
         >
           🎵
         </button>
-        
+
         <button
           onClick={handleToggle}
           disabled={!isEnabled}
@@ -97,17 +88,13 @@ export default function MusicPlayer() {
                 <span className="text-gold text-lg">🎼</span>
                 <span className="font-pixel text-text-primary">{currentTrackInfo.name}</span>
               </div>
-              <p className="text-xs text-text-muted font-pixel-operator">
-                {currentTrackInfo.description}
-              </p>
+              <p className="text-xs text-text-muted font-pixel-operator">{currentTrackInfo.description}</p>
             </div>
           )}
 
           {/* Track Selection */}
           <div className="mb-4">
-            <label className="block font-pixel text-sm text-gold mb-2">
-              🎶 Select Track
-            </label>
+            <label className="block font-pixel text-sm text-gold mb-2">🎶 Select Track</label>
             <div className="grid grid-cols-1 gap-2">
               {tracks.map((track) => (
                 <button
@@ -116,16 +103,15 @@ export default function MusicPlayer() {
                   className={`
                     text-left p-2 rounded-pixel border border-mystic-blue
                     transition-all duration-200 hover:scale-105
-                    ${currentTrack === track.id 
-                      ? "bg-gold text-[#0D0D0D] border-gold" 
-                      : "bg-[#1A1A1A] text-text-secondary hover:bg-mystic-blue hover:text-text-primary"
+                    ${
+                      currentTrack === track.id
+                        ? "bg-gold text-[#0D0D0D] border-gold"
+                        : "bg-[#1A1A1A] text-text-secondary hover:bg-mystic-blue hover:text-text-primary"
                     }
                   `}
                 >
                   <div className="font-pixel text-sm">{track.name}</div>
-                  <div className="text-xs font-pixel-operator opacity-75">
-                    {track.description}
-                  </div>
+                  <div className="text-xs font-pixel-operator opacity-75">{track.description}</div>
                 </button>
               ))}
             </div>
@@ -133,9 +119,7 @@ export default function MusicPlayer() {
 
           {/* Volume Control */}
           <div className="mb-4">
-            <label className="block font-pixel text-sm text-gold mb-2">
-              🔊 Volume: {Math.round(volume * 100)}%
-            </label>
+            <label className="block font-pixel text-sm text-gold mb-2">🔊 Volume: {Math.round(volume * 100)}%</label>
             <div className="flex items-center space-x-2">
               <span className="text-text-muted">🔇</span>
               <input
@@ -147,7 +131,9 @@ export default function MusicPlayer() {
                 onChange={handleVolumeChange}
                 className="flex-1 h-2 bg-[#1A1A1A] border border-mystic-blue rounded-pixel appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #FFD700 0%, #FFD700 ${volume * 100}%, #1A1A1A ${volume * 100}%, #1A1A1A 100%)`
+                  background: `linear-gradient(to right, #FFD700 0%, #FFD700 ${volume * 100}%, #1A1A1A ${
+                    volume * 100
+                  }%, #1A1A1A 100%)`,
                 }}
               />
               <span className="text-text-muted">🔊</span>
@@ -159,9 +145,7 @@ export default function MusicPlayer() {
             <span className="font-pixel-operator">
               Status: {isEnabled ? (isPlaying ? "Playing" : "Paused") : "Disabled"}
             </span>
-            <span className="font-pixel-operator">
-              🎮 RPG Mode
-            </span>
+            <span className="font-pixel-operator">🎮 RPG Mode</span>
           </div>
         </div>
       )}

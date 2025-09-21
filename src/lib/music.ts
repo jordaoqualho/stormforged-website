@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface MusicTrack {
   id: string;
@@ -19,7 +19,7 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.3,
     loop: true,
-    description: "Cozy tavern atmosphere with crackling fire and distant chatter"
+    description: "Cozy tavern atmosphere with crackling fire and distant chatter",
   },
   {
     id: "battle_theme",
@@ -27,7 +27,7 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.4,
     loop: true,
-    description: "Epic battle music for intense guild wars"
+    description: "Epic battle music for intense guild wars",
   },
   {
     id: "victory_fanfare",
@@ -35,7 +35,7 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.5,
     loop: false,
-    description: "Triumphant fanfare for achievements and victories"
+    description: "Triumphant fanfare for achievements and victories",
   },
   {
     id: "peaceful_village",
@@ -43,8 +43,8 @@ const RPG_MUSIC_TRACKS: MusicTrack[] = [
     url: "", // Will be generated procedurally
     volume: 0.2,
     loop: true,
-    description: "Calm village music for peaceful moments"
-  }
+    description: "Calm village music for peaceful moments",
+  },
 ];
 
 export function useRPGBackgroundMusic() {
@@ -84,86 +84,86 @@ export function useRPGBackgroundMusic() {
         for (let i = 0; i < 3; i++) {
           const oscillator = audioContextRef.current.createOscillator();
           const gain = audioContextRef.current.createGain();
-          
+
           oscillator.type = "sine";
           oscillator.frequency.setValueAtTime(220 + i * 110, now); // A3, A4, A5
           oscillator.connect(gain);
           if (gainNodeRef.current) {
             gain.connect(gainNodeRef.current);
           }
-          
+
           // Gentle volume modulation for crackling fire effect
           gain.gain.setValueAtTime(0.1, now);
           gain.gain.linearRampToValueAtTime(0.05, now + 2);
           gain.gain.linearRampToValueAtTime(0.1, now + 4);
-          
+
           oscillators.push(oscillator);
         }
         break;
 
       case "battle_theme":
         // Create epic battle music
-        const battleNotes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+        const battleNotes = [261.63, 329.63, 392.0, 523.25]; // C4, E4, G4, C5
         battleNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();
           const gain = audioContextRef.current!.createGain();
-          
+
           oscillator.type = "triangle";
           oscillator.frequency.setValueAtTime(freq, now);
           oscillator.connect(gain);
           if (gainNodeRef.current) {
             gain.connect(gainNodeRef.current);
           }
-          
+
           // Battle rhythm
           gain.gain.setValueAtTime(0.15, now);
           gain.gain.linearRampToValueAtTime(0, now + 0.5);
-          
+
           oscillators.push(oscillator);
         });
         break;
 
       case "victory_fanfare":
         // Create triumphant fanfare
-        const fanfareNotes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const fanfareNotes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
         fanfareNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();
           const gain = audioContextRef.current!.createGain();
-          
+
           oscillator.type = "square";
           oscillator.frequency.setValueAtTime(freq, now);
           oscillator.connect(gain);
           if (gainNodeRef.current) {
             gain.connect(gainNodeRef.current);
           }
-          
+
           // Fanfare rhythm
           gain.gain.setValueAtTime(0.2, now + index * 0.2);
           gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.2 + 0.8);
-          
+
           oscillators.push(oscillator);
         });
         break;
 
       case "peaceful_village":
         // Create peaceful village sounds
-        const villageNotes = [196.00, 246.94, 293.66, 349.23]; // G3, B3, D4, F4
+        const villageNotes = [196.0, 246.94, 293.66, 349.23]; // G3, B3, D4, F4
         villageNotes.forEach((freq, index) => {
           const oscillator = audioContextRef.current!.createOscillator();
           const gain = audioContextRef.current!.createGain();
-          
+
           oscillator.type = "sine";
           oscillator.frequency.setValueAtTime(freq, now);
           oscillator.connect(gain);
           if (gainNodeRef.current) {
             gain.connect(gainNodeRef.current);
           }
-          
+
           // Gentle, slow rhythm
           gain.gain.setValueAtTime(0.08, now);
           gain.gain.linearRampToValueAtTime(0.04, now + 3);
           gain.gain.linearRampToValueAtTime(0.08, now + 6);
-          
+
           oscillators.push(oscillator);
         });
         break;
@@ -190,7 +190,7 @@ export function useRPGBackgroundMusic() {
       oscillator.start();
     });
 
-    const track = RPG_MUSIC_TRACKS.find(t => t.id === trackId);
+    const track = RPG_MUSIC_TRACKS.find((t) => t.id === trackId);
     if (track?.loop) {
       // Schedule restart for looping tracks
       const duration = 8; // 8 seconds loop
