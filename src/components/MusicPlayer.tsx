@@ -6,6 +6,7 @@ import { useState } from "react";
 
 export default function MusicPlayer() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { isPlaying, currentTrack, volume, isEnabled, tracks, toggleMusic, changeTrack, updateVolume, toggleEnabled } =
     useRPGBackgroundMusic();
 
@@ -14,13 +15,17 @@ export default function MusicPlayer() {
   const currentTrackInfo = tracks.find((track) => track.id === currentTrack);
 
   const handleToggle = () => {
+    setIsLoading(true);
     toggleMusic();
     playClick();
+    setTimeout(() => setIsLoading(false), 500);
   };
 
   const handleTrackChange = (trackId: string) => {
+    setIsLoading(true);
     changeTrack(trackId);
     playClick();
+    setTimeout(() => setIsLoading(false), 800);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,15 +56,15 @@ export default function MusicPlayer() {
 
         <button
           onClick={handleToggle}
-          disabled={!isEnabled}
+          disabled={!isEnabled || isLoading}
           className={`
             btn-rpg text-lg px-4 py-2 hover:scale-105 transition-transform min-h-[48px]
-            ${!isEnabled ? "opacity-50 cursor-not-allowed" : ""}
+            ${!isEnabled || isLoading ? "opacity-50 cursor-not-allowed" : ""}
             ${isPlaying ? "bg-gold text-[#0D0D0D] music-playing" : ""}
           `}
           title={isPlaying ? "Stop Music" : "Play Music"}
         >
-          {isPlaying ? "⏸️" : "▶️"}
+          {isLoading ? <div className="loading-rpg w-4 h-4" /> : isPlaying ? "⏸️" : "▶️"}
         </button>
       </div>
 
@@ -101,6 +106,7 @@ export default function MusicPlayer() {
                 <button
                   key={track.id}
                   onClick={() => handleTrackChange(track.id)}
+                  disabled={isLoading}
                   className={`
                     text-left p-3 rounded-pixel border transition-all duration-200 hover:brightness-125 min-h-[48px]
                     ${
@@ -108,6 +114,7 @@ export default function MusicPlayer() {
                         ? "bg-yellow-500 text-black border-yellow-400 shadow-[0_0_10px_rgba(255,215,0,0.6)]"
                         : "bg-[#1A1A1A] text-text-secondary border-mystic-blue hover:bg-mystic-blue hover:text-text-primary"
                     }
+                    ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                   `}
                   title={`Play ${track.name}`}
                 >
