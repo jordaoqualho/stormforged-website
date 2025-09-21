@@ -3,6 +3,7 @@
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useState } from "react";
 import RPGConfirmModal from "./RPGConfirmModal";
+import AttackManager from "./AttackManager";
 
 interface DataManagementProps {
   onSuccess?: (message: string) => void;
@@ -95,6 +96,9 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
         </div>
 
         <div className="space-y-10">
+          {/* Attack Management Section */}
+          <AttackManager />
+
           {/* Export Section */}
           <div className="panel-rpg p-6">
             <div className="flex items-center space-x-4 mb-6">
