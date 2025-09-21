@@ -105,12 +105,12 @@ export default function CurrentWeekStats() {
     <div className="card-rpg bg-battlefield">
       <div className="relative p-4 sm:p-6">
         {/* RPG Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-4">
             <div className="icon-rpg pixel-glow">🏰</div>
             <div>
-              <h2 className="text-2xl font-pixel text-gold text-glow">Command Center</h2>
-              <div className="text-sm text-text-muted font-pixel-operator">
+              <h2 className="text-xl sm:text-2xl font-pixel text-gold text-glow">Command Center</h2>
+              <div className="text-xs sm:text-sm text-text-muted font-pixel-operator">
                 {selectedWeek ? `Week ${selectedWeek}` : "Current Week"} • {formatDate(displayData.weekStart)} -{" "}
                 {formatDate(displayData.weekEnd)}
               </div>
@@ -118,15 +118,15 @@ export default function CurrentWeekStats() {
           </div>
 
           {/* Week Selector */}
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <RPGWeekSelector
               selectedWeek={selectedWeek}
               onWeekChange={setSelectedWeek}
               availableWeeks={availableWeeks}
               getWeekRange={getWeekRange}
-              className="min-w-64"
+              className="w-full sm:min-w-64"
             />
-            <div className="text-sm text-text-muted font-pixel-operator">
+            <div className="text-xs sm:text-sm text-text-muted font-pixel-operator text-center sm:text-left">
               {selectedWeek ? `Week ${selectedWeek}` : "Current Week"}
             </div>
           </div>
