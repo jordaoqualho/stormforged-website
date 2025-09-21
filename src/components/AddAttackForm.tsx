@@ -120,7 +120,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                 className="sr-only"
                 required
               />
-              
+
               {/* Interactive Sword Selection */}
               <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
                 <div className="flex space-x-3 justify-center mb-3">
@@ -139,8 +139,8 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                         flex items-center justify-center text-lg font-pixel
                         transition-all duration-300 cursor-pointer
                         ${
-                          i < wins 
-                            ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110 border-gold" 
+                          i < wins
+                            ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110 border-gold"
                             : "bg-[#1A1A1A] text-text-muted hover:bg-[#3A3A3A] hover:text-text-secondary hover:scale-105"
                         }
                       `}
@@ -150,14 +150,14 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                     </button>
                   ))}
                 </div>
-                
+
                 {/* Victory Counter and Reset */}
                 <div className="flex items-center justify-between">
                   <div className="text-center">
                     <div className="text-lg font-pixel text-gold">{wins}</div>
                     <div className="text-xs text-text-muted font-pixel-operator">Victories</div>
                   </div>
-                  
+
                   <button
                     type="button"
                     onClick={() => {
@@ -169,19 +169,24 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                   >
                     Reset
                   </button>
-                  
+
                   <div className="text-center">
                     <div className="text-lg font-pixel text-danger">{attacks - wins}</div>
                     <div className="text-xs text-text-muted font-pixel-operator">Defeats</div>
                   </div>
                 </div>
-                
+
                 {/* Win Rate Display */}
                 <div className="mt-3 text-center">
                   <div className="text-sm font-pixel-operator text-text-muted">
-                    Win Rate: <span className={`font-pixel ${
-                      winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
-                    }`}>{winRate}%</span>
+                    Win Rate:{" "}
+                    <span
+                      className={`font-pixel ${
+                        winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
+                      }`}
+                    >
+                      {winRate}%
+                    </span>
                   </div>
                 </div>
               </div>

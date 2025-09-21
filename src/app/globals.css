@@ -357,3 +357,31 @@ body {
 .calendar-enter {
   animation: calendar-slide-down 0.2s ease-out;
 }
+
+@keyframes music-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+}
+
+.music-playing {
+  animation: music-pulse 2s ease-in-out infinite;
+}
+
+@keyframes music-slide-up {
+  0% { 
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.music-controls-enter {
+  animation: music-slide-up 0.3s ease-out;
+}

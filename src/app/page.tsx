@@ -7,6 +7,7 @@ import CurrentWeekStats from "@/components/CurrentWeekStats";
 import DataManagement from "@/components/DataManagement";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
+import MusicPlayer from "@/components/MusicPlayer";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -192,6 +193,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Music Player */}
+      <MusicPlayer />
     </div>
   );
 }
