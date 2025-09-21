@@ -73,22 +73,22 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
         <h3 className="text-xl font-pixel text-gold text-glow">Daily Battle Log</h3>
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2">
         {orderedDays.map((day, index) => {
           const isSelected = selectedDate === day.date;
 
           return (
             <div
               key={day.date}
-              className={`panel-rpg p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer ${
+              className={`panel-rpg p-2 sm:p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer ${
                 isSelected ? "ring-2 ring-gold bg-gold/10 brightness-110" : "hover:brightness-110"
               }`}
               onClick={() => handleDayClick(day.date)}
             >
-              <div className="text-sm font-pixel text-gold mb-2 font-bold">
+              <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
                 {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}
               </div>
-              <div className="text-xs text-text-muted mb-3 font-pixel-operator">{formatDate(day.date)}</div>
+              <div className="text-xs text-text-muted mb-2 sm:mb-3 font-pixel-operator">{formatDate(day.date)}</div>
 
               {day.totalAttacks > 0 ? (
                 <div className="space-y-2">
