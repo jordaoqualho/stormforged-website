@@ -27,7 +27,7 @@ export default function Home() {
         <div className="text-center">
           <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
           <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-gold font-pixel-operator">Loading guild battle data...</p>
+          <p className="text-gold font-pixel-operator">Loading Stormforged battle data...</p>
           <div className="mt-4 flex justify-center space-x-1">
             <div className="w-2 h-2 bg-gold rounded-full animate-bounce"></div>
             <div className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
@@ -50,8 +50,8 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <div className="icon-rpg text-4xl pixel-glow">🏰</div>
               <div>
-                <h1 className="text-2xl font-pixel text-gold text-glow">Heroes of Horizon</h1>
-                <p className="text-sm text-text-secondary font-pixel-operator">Guild War Command Center</p>
+                <h1 className="text-2xl font-pixel text-gold text-glow">Stormforged</h1>
+                <p className="text-sm text-text-secondary font-pixel-operator">Idle Horizon Guild War Command Center</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -164,8 +164,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="icon-rpg text-3xl mb-2">🏰</div>
-              <h3 className="font-pixel text-gold mb-2">Heroes of Horizon</h3>
-              <p className="text-xs text-text-muted font-pixel-operator">Guild War Command Center</p>
+                <h3 className="font-pixel text-gold mb-2">Stormforged</h3>
+                <p className="text-xs text-text-muted font-pixel-operator">Idle Horizon Guild War Command Center</p>
             </div>
             <div className="text-center">
               <div className="icon-rpg text-3xl mb-2">⚔️</div>

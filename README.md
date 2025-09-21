@@ -1,6 +1,6 @@
-# 🏰 Heroes of Horizon - Guild War Tracker
+# ⚡ Stormforged - Idle Horizon Guild War Tracker
 
-A comprehensive web application for tracking and analyzing guild war performance in Heroes of Horizon. Built with Next.js, TypeScript, and TailwindCSS, featuring real-time statistics, interactive charts, and local data storage.
+A comprehensive web application for tracking and analyzing guild war performance for the **Stormforged** guild in Idle Horizon. Built with Next.js, TypeScript, and TailwindCSS, featuring real-time statistics, interactive charts, and local data storage.
 
 ## ✨ Features
 

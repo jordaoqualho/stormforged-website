@@ -14,9 +14,9 @@ const pixelOperator = {
 };
 
 export const metadata: Metadata = {
-  title: "Heroes of Horizon - Guild War Tracker",
+  title: "Stormforged - Idle Horizon Guild War Tracker",
   description:
-    "Track and analyze your guild's performance in Heroes of Horizon guild wars. Monitor win rates, daily stats, and weekly comparisons.",
+    "Track and analyze Stormforged guild's performance in Idle Horizon guild wars. Monitor win rates, daily stats, and weekly comparisons.",
 };
 
 export default function RootLayout({

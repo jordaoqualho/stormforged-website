@@ -24,7 +24,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `guild-war-data-${new Date().toISOString().split("T")[0]}.json`;
+      a.download = `stormforged-guild-war-data-${new Date().toISOString().split("T")[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -85,7 +85,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
         {/* RPG Header */}
         <div className="flex items-center space-x-3 mb-6">
           <div className="icon-rpg pixel-glow">📚</div>
-          <h2 className="text-xl font-pixel text-gold text-glow">Guild Archives</h2>
+          <h2 className="text-xl font-pixel text-gold text-glow">Stormforged Archives</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
 
@@ -97,7 +97,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
               <h3 className="text-lg font-pixel text-gold">Export Battle Records</h3>
             </div>
             <p className="text-sm text-text-secondary font-pixel-operator mb-4">
-              Download all your guild's battle data as a sacred scroll for backup or sharing with other guilds.
+              Download all of Stormforged's battle data as a sacred scroll for backup or sharing with other guilds.
             </p>
             <button onClick={handleExport} disabled={isLoading} className="btn-rpg">
               {isExporting ? (
@@ -127,7 +127,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
               </button>
             </div>
             <p className="text-sm text-text-secondary font-pixel-operator mb-4">
-              Import previously exported battle records. This will replace all current data in your guild's archives.
+              Import previously exported battle records. This will replace all current data in Stormforged's archives.
             </p>
 
             {showImportSection && (
@@ -179,7 +179,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
               <h3 className="text-lg font-pixel text-danger">Clear All Records</h3>
             </div>
             <p className="text-sm text-text-secondary font-pixel-operator mb-4">
-              Permanently delete all battle records from your guild's archives. This action cannot be undone and will
+              Permanently delete all battle records from Stormforged's archives. This action cannot be undone and will
               erase all history!
             </p>
 

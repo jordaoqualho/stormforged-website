@@ -1,9 +1,9 @@
 "use client";
 
-import { Combobox } from "@headlessui/react";
-import { useState, useEffect, useRef } from "react";
-import { Player, fuzzySearch, getRecentPlayers, PLAYER_ROLES, generatePlayerAvatar } from "@/lib/players";
+import { PLAYER_ROLES, Player, fuzzySearch, generatePlayerAvatar, getRecentPlayers } from "@/lib/players";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import { Combobox } from "@headlessui/react";
+import { useEffect, useRef, useState } from "react";
 
 interface PlayerAutocompleteProps {
   value: string;
@@ -12,11 +12,11 @@ interface PlayerAutocompleteProps {
   className?: string;
 }
 
-export default function PlayerAutocomplete({ 
-  value, 
-  onChange, 
+export default function PlayerAutocomplete({
+  value,
+  onChange,
   placeholder = "Enter warrior name...",
-  className = ""
+  className = "",
 }: PlayerAutocompleteProps) {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
@@ -27,22 +27,23 @@ export default function PlayerAutocomplete({
   // Generate players list from attack history
   useEffect(() => {
     const uniquePlayers = new Map<string, Player>();
-    
-    attacks.forEach(attack => {
+
+    attacks.forEach((attack) => {
       if (!uniquePlayers.has(attack.playerName)) {
         uniquePlayers.set(attack.playerName, {
-          id: attack.playerName.toLowerCase().replace(/\s+/g, '-'),
+          id: attack.playerName.toLowerCase().replace(/\s+/g, "-"),
           name: attack.playerName,
           avatar: generatePlayerAvatar(attack.playerName),
           lastUsed: new Date(attack.date),
           totalBattles: 0,
-          winRate: 0
+          winRate: 0,
         });
       }
-      
+
       const player = uniquePlayers.get(attack.playerName)!;
       player.totalBattles = (player.totalBattles || 0) + attack.attacks;
-      player.winRate = ((player.winRate || 0) * (player.totalBattles - attack.attacks) + attack.wins) / player.totalBattles;
+      player.winRate =
+        ((player.winRate || 0) * (player.totalBattles - attack.attacks) + attack.wins) / player.totalBattles;
     });
 
     const playersList = Array.from(uniquePlayers.values());
@@ -54,7 +55,7 @@ export default function PlayerAutocomplete({
   const showRecent = !query && recentPlayers.length > 0;
 
   const handleSelect = (player: Player | string) => {
-    const selectedName = typeof player === 'string' ? player : player.name;
+    const selectedName = typeof player === "string" ? player : player.name;
     onChange(selectedName);
     setQuery("");
   };
@@ -87,56 +88,55 @@ export default function PlayerAutocomplete({
             placeholder={placeholder}
             autoComplete="off"
           />
-          
+
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <div className="text-text-muted hover:text-gold transition-colors">
-              🔍
-            </div>
+            <div className="text-text-muted hover:text-gold transition-colors">🔍</div>
           </Combobox.Button>
         </div>
 
-        <Combobox.Options className={`
+        <Combobox.Options
+          className={`
           absolute z-20 mt-2 w-full
           bg-[#2A2A2A] border-2 border-mystic-blue
           rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)]
           max-h-60 overflow-auto
-          ${(filteredPlayers.length > 0 || showRecent) ? 'block' : 'hidden'}
-        `}>
+          ${filteredPlayers.length > 0 || showRecent ? "block" : "hidden"}
+        `}
+        >
           {showRecent && (
             <div className="px-3 py-2 border-b border-mystic-blue">
               <div className="text-xs font-pixel text-gold">Recent Warriors</div>
             </div>
           )}
-          
-          {showRecent && recentPlayers.map((player) => (
-            <Combobox.Option
-              key={player.id}
-              value={player}
-              className={({ active }) => `
+
+          {showRecent &&
+            recentPlayers.map((player) => (
+              <Combobox.Option
+                key={player.id}
+                value={player}
+                className={({ active }) => `
                 relative cursor-pointer select-none py-3 px-4
                 transition-all duration-150
-                ${active ? 'bg-mystic-blue text-text-primary' : 'text-text-secondary'}
+                ${active ? "bg-mystic-blue text-text-primary" : "text-text-secondary"}
                 hover:bg-mystic-blue-light
               `}
-            >
-              {({ selected }) => (
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg">{player.avatar}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className={`font-pixel text-sm ${selected ? 'text-gold' : 'text-text-primary'}`}>
-                      {player.name}
+              >
+                {({ selected }) => (
+                  <div className="flex items-center space-x-3">
+                    <span className="text-lg">{player.avatar}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-pixel text-sm ${selected ? "text-gold" : "text-text-primary"}`}>
+                        {player.name}
+                      </div>
+                      <div className="text-xs text-text-muted font-pixel-operator">
+                        {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
+                      </div>
                     </div>
-                    <div className="text-xs text-text-muted font-pixel-operator">
-                      {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
-                    </div>
+                    {selected && <span className="text-gold text-sm">✓</span>}
                   </div>
-                  {selected && (
-                    <span className="text-gold text-sm">✓</span>
-                  )}
-                </div>
-              )}
-            </Combobox.Option>
-          ))}
+                )}
+              </Combobox.Option>
+            ))}
 
           {query && filteredPlayers.length > 0 && (
             <div className="px-3 py-2 border-b border-mystic-blue">
@@ -144,35 +144,34 @@ export default function PlayerAutocomplete({
             </div>
           )}
 
-          {query && filteredPlayers.map((player) => (
-            <Combobox.Option
-              key={player.id}
-              value={player}
-              className={({ active }) => `
+          {query &&
+            filteredPlayers.map((player) => (
+              <Combobox.Option
+                key={player.id}
+                value={player}
+                className={({ active }) => `
                 relative cursor-pointer select-none py-3 px-4
                 transition-all duration-150
-                ${active ? 'bg-mystic-blue text-text-primary' : 'text-text-secondary'}
+                ${active ? "bg-mystic-blue text-text-primary" : "text-text-secondary"}
                 hover:bg-mystic-blue-light
               `}
-            >
-              {({ selected }) => (
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg">{player.avatar}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className={`font-pixel text-sm ${selected ? 'text-gold' : 'text-text-primary'}`}>
-                      {player.name}
+              >
+                {({ selected }) => (
+                  <div className="flex items-center space-x-3">
+                    <span className="text-lg">{player.avatar}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-pixel text-sm ${selected ? "text-gold" : "text-text-primary"}`}>
+                        {player.name}
+                      </div>
+                      <div className="text-xs text-text-muted font-pixel-operator">
+                        {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
+                      </div>
                     </div>
-                    <div className="text-xs text-text-muted font-pixel-operator">
-                      {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
-                    </div>
+                    {selected && <span className="text-gold text-sm">✓</span>}
                   </div>
-                  {selected && (
-                    <span className="text-gold text-sm">✓</span>
-                  )}
-                </div>
-              )}
-            </Combobox.Option>
-          ))}
+                )}
+              </Combobox.Option>
+            ))}
 
           {query && filteredPlayers.length === 0 && (
             <div className="px-4 py-3 text-text-muted font-pixel-operator text-sm">
