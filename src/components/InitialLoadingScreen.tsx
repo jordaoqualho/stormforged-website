@@ -94,8 +94,12 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
 
         {/* Loading Animation */}
         <div className="mb-8">
-          <div className={`loading-rpg w-16 h-16 mx-auto mb-4 ${isCompleting ? 'animate-pulse-glow' : ''}`}></div>
-          <p className={`font-pixel-operator text-lg ${isCompleting ? 'text-gold animate-pulse-glow' : 'text-gold animate-pulse'}`}>
+          <div className={`loading-rpg w-16 h-16 mx-auto mb-4 ${isCompleting ? "animate-pulse-glow" : ""}`}></div>
+          <p
+            className={`font-pixel-operator text-lg ${
+              isCompleting ? "text-gold animate-pulse-glow" : "text-gold animate-pulse"
+            }`}
+          >
             {loadingText}
           </p>
         </div>
@@ -104,13 +108,17 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
         <div className="max-w-md mx-auto mb-6">
           <div className="progress-rpg h-4">
             <div
-              className={`progress-rpg-fill ${isCompleting ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gradient-to-r from-gold to-yellow-400'}`}
+              className={`progress-rpg-fill ${
+                isCompleting
+                  ? "bg-gradient-to-r from-green-400 to-green-600"
+                  : "bg-gradient-to-r from-gold to-yellow-400"
+              }`}
               style={{ width: `${progress}%` }}
             ></div>
           </div>
           <div className="flex justify-between mt-2">
             <span className="text-xs text-text-muted font-pixel-operator">
-              {isCompleting ? 'Complete!' : 'Loading...'}
+              {isCompleting ? "Complete!" : "Loading..."}
             </span>
             <span className="text-xs text-gold font-pixel">{Math.round(progress)}%</span>
           </div>

@@ -32,16 +32,16 @@ export default function Home() {
       // Calculate week number on client side to prevent hydration mismatch
       const now = new Date();
       const startOfYear = new Date(now.getFullYear(), 0, 1);
-      
+
       // Find the first Friday of the year
       const firstFriday = new Date(startOfYear);
       const firstFridayDay = firstFriday.getDay(); // 0 = Sunday, 5 = Friday
       const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
       firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-      
+
       // Calculate days since first Friday
       const daysSinceFirstFriday = Math.floor((now.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
-      
+
       // Calculate week number (war weeks start on Friday)
       const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
       setCurrentWeekNumber(weekNumber);

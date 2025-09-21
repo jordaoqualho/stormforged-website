@@ -7,23 +7,34 @@ import { useState } from "react";
 export default function MusicPlayer() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { isPlaying, currentTrack, volume, isEnabled, tracks, toggleMusic, changeTrack, updateVolume, toggleEnabled } =
-    useRPGBackgroundMusic();
+  const { 
+    isPlaying, 
+    currentTrack, 
+    volume, 
+    isEnabled, 
+    audioContextResumed,
+    tracks, 
+    toggleMusic, 
+    changeTrack, 
+    updateVolume, 
+    toggleEnabled,
+    resumeAudioContext
+  } = useRPGBackgroundMusic();
 
   const { playClick } = useRPGSounds();
 
   const currentTrackInfo = tracks.find((track) => track.id === currentTrack);
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
     setIsLoading(true);
-    toggleMusic();
+    await toggleMusic();
     playClick();
     setTimeout(() => setIsLoading(false), 500);
   };
 
-  const handleTrackChange = (trackId: string) => {
+  const handleTrackChange = async (trackId: string) => {
     setIsLoading(true);
-    changeTrack(trackId);
+    await changeTrack(trackId);
     playClick();
     setTimeout(() => setIsLoading(false), 800);
   };
@@ -37,13 +48,23 @@ export default function MusicPlayer() {
     playClick();
   };
 
-  const handleExpandToggle = () => {
+  const handleExpandToggle = async () => {
+    if (!audioContextResumed) {
+      await resumeAudioContext();
+    }
     setIsExpanded(!isExpanded);
     playClick();
   };
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
+      {/* Audio Context Status Indicator */}
+      {!audioContextResumed && (
+        <div className="mb-2 p-2 bg-yellow-600/20 border border-yellow-600 rounded-md text-xs text-yellow-300 font-pixel-operator">
+          🔊 Click any music control to enable audio
+        </div>
+      )}
+      
       {/* Main Music Control Button */}
       <div className="flex items-center space-x-2">
         <button

@@ -135,6 +135,7 @@ export function useRPGBackgroundMusic() {
     }
     return true;
   });
+  const [audioContextResumed, setAudioContextResumed] = useState(false);
   const currentTrackRef = useRef<Howl | null>(null);
 
   // Initialize tracks and volume
@@ -145,12 +146,44 @@ export function useRPGBackgroundMusic() {
     });
   }, [volume]);
 
-  // Start playing if enabled and not already playing
+  // Resume audio context on first user interaction
+  const resumeAudioContext = async () => {
+    if (audioContextResumed) return true;
+    
+    try {
+      // Resume Howler's audio context
+      if (typeof window !== "undefined" && (window as any).Howl) {
+        const Howl = (window as any).Howl;
+        if (Howl.ctx && Howl.ctx.state === 'suspended') {
+          await Howl.ctx.resume();
+        }
+      }
+      
+      // Also try to resume any existing AudioContext
+      if (typeof window !== "undefined") {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContext) {
+          const audioContext = new AudioContext();
+          if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+          }
+        }
+      }
+      
+      setAudioContextResumed(true);
+      return true;
+    } catch (error) {
+      console.warn("Failed to resume audio context:", error);
+      return false;
+    }
+  };
+
+  // Start playing if enabled and not already playing (only after user interaction)
   useEffect(() => {
-    if (isEnabled && !isPlaying) {
+    if (isEnabled && !isPlaying && audioContextResumed) {
       playTrack(currentTrack);
     }
-  }, [isEnabled, isPlaying, currentTrack]);
+  }, [isEnabled, isPlaying, currentTrack, audioContextResumed]);
 
   const stopMusic = () => {
     if (currentTrackRef.current) {
@@ -160,8 +193,15 @@ export function useRPGBackgroundMusic() {
     setIsPlaying(false);
   };
 
-  const playTrack = (trackId: string) => {
+  const playTrack = async (trackId: string) => {
     if (!isEnabled) return;
+
+    // Ensure audio context is resumed before playing
+    const contextResumed = await resumeAudioContext();
+    if (!contextResumed) {
+      console.warn("Audio context could not be resumed");
+      return;
+    }
 
     // Stop current track
     stopMusic();
@@ -183,21 +223,21 @@ export function useRPGBackgroundMusic() {
     }
   };
 
-  const toggleMusic = () => {
+  const toggleMusic = async () => {
     if (isPlaying) {
       stopMusic();
     } else {
-      playTrack(currentTrack);
+      await playTrack(currentTrack);
     }
   };
 
-  const changeTrack = (trackId: string) => {
+  const changeTrack = async (trackId: string) => {
     setCurrentTrack(trackId);
     if (typeof window !== "undefined") {
       localStorage.setItem("rpg-music-track", trackId);
     }
     if (isPlaying) {
-      playTrack(trackId);
+      await playTrack(trackId);
     }
   };
 
@@ -226,8 +266,12 @@ export function useRPGBackgroundMusic() {
   };
 
   // Play victory fanfare for achievements
-  const playVictoryFanfare = () => {
+  const playVictoryFanfare = async () => {
     if (isEnabled) {
+      // Ensure audio context is resumed
+      const contextResumed = await resumeAudioContext();
+      if (!contextResumed) return;
+      
       const initializedTracks = initializeTracks();
       const victoryTrack = initializedTracks.victory_fanfare;
       if (victoryTrack) {
@@ -248,16 +292,16 @@ export function useRPGBackgroundMusic() {
   };
 
   // Play battle theme for intense moments
-  const playBattleTheme = () => {
+  const playBattleTheme = async () => {
     if (isEnabled && currentTrack !== "battle_theme") {
-      playTrack("battle_theme");
+      await playTrack("battle_theme");
     }
   };
 
   // Return to peaceful music
-  const playPeacefulMusic = () => {
+  const playPeacefulMusic = async () => {
     if (isEnabled) {
-      playTrack("peaceful_village");
+      await playTrack("peaceful_village");
     }
   };
 
@@ -266,6 +310,7 @@ export function useRPGBackgroundMusic() {
     currentTrack,
     volume,
     isEnabled,
+    audioContextResumed,
     tracks: RPG_MUSIC_TRACKS,
     playTrack,
     stopMusic,
@@ -273,6 +318,7 @@ export function useRPGBackgroundMusic() {
     changeTrack,
     updateVolume,
     toggleEnabled,
+    resumeAudioContext,
     playVictoryFanfare,
     playBattleTheme,
     playPeacefulMusic,
