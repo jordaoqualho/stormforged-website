@@ -97,7 +97,7 @@ export default function RPGWeekSelector({
   ) || weekOptions[0];
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative overflow-visible ${className}`} ref={dropdownRef}>
       {/* Trigger Button */}
       <button
         onClick={handleToggle}
@@ -128,7 +128,7 @@ export default function RPGWeekSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 animate-slide-up">
+        <div className="absolute top-full left-0 right-0 mt-2 z-[9999] animate-slide-up">
           <div className="card-rpg bg-battlefield border-2 border-gold shadow-glow-gold">
             {/* Search Input */}
             <div className="p-3 border-b border-mystic-blue">
