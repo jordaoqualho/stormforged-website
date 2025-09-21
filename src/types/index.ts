@@ -4,7 +4,9 @@ export interface AttackRecord {
   date: string; // YYYY-MM-DD format
   attacks: number; // Total attacks (max 5)
   wins: number; // Number of wins
-  losses: number; // Calculated as attacks - wins
+  losses: number; // Number of losses
+  draws: number; // Number of draws
+  points: number; // Total points earned (5*wins + 2*losses + 3*draws)
 }
 
 export interface DailyStats {
@@ -12,6 +14,8 @@ export interface DailyStats {
   totalAttacks: number;
   totalWins: number;
   totalLosses: number;
+  totalDraws: number;
+  totalPoints: number;
   winRate: number;
   playerCount: number;
 }
@@ -22,6 +26,8 @@ export interface WeeklyStats {
   totalAttacks: number;
   totalWins: number;
   totalLosses: number;
+  totalDraws: number;
+  totalPoints: number;
   winRate: number;
   dailyStats: DailyStats[];
   playerStats: PlayerWeeklyStats[];
@@ -32,6 +38,8 @@ export interface PlayerWeeklyStats {
   totalAttacks: number;
   totalWins: number;
   totalLosses: number;
+  totalDraws: number;
+  totalPoints: number;
   winRate: number;
   dailyAttacks: AttackRecord[];
 }

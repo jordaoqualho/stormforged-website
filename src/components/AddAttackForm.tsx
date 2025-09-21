@@ -1,6 +1,7 @@
 "use client";
 
 import { formatDate } from "@/lib/calculations";
+import { calculateDraws, calculatePoints, getPointBreakdown } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -16,11 +17,17 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const [playerName, setPlayerName] = useState("");
   const [date, setDate] = useState(formatDate(new Date()));
   const [wins, setWins] = useState<number>(0);
+  const [losses, setLosses] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [playerSuggestions, setPlayerSuggestions] = useState<string[]>([]);
 
   // Fixed attacks per entry (always 5)
   const attacks = 5;
+  
+  // Calculate draws and points
+  const draws = calculateDraws(attacks, wins, losses);
+  const points = calculatePoints(wins, losses, draws);
+  const pointBreakdown = getPointBreakdown(wins, losses, draws);
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
   const { playClick, playSword, playSuccess, playError } = useRPGSounds();
@@ -34,7 +41,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!playerName.trim() || wins < 0 || wins > attacks) {
+    if (!playerName.trim() || wins < 0 || losses < 0 || wins + losses > attacks) {
       playError();
       onError?.("Invalid input! Check your values, warrior!");
       return;
@@ -47,16 +54,19 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
         date,
         attacks,
         wins,
-        losses: attacks - wins,
+        losses,
+        draws,
+        points,
       });
 
       // Reset form
       setPlayerName("");
       setWins(0);
+      setLosses(0);
 
       playSuccess();
       playSword();
-      onSuccess?.(`Attack record added! ${playerName.trim()} scored ${wins}/${attacks} victories! ⚔️`);
+      onSuccess?.(`Battle record added! ${playerName.trim()} earned ${points} points! ⚔️`);
     } catch (error) {
       console.error("Error adding attack:", error);
       playError();
@@ -66,7 +76,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     }
   };
 
-  const isFormValid = playerName.trim() && wins >= 0 && wins <= attacks;
+  const isFormValid = playerName.trim() && wins >= 0 && losses >= 0 && wins + losses <= attacks;
   const isLoading = isSaving || isSubmitting;
 
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
@@ -103,90 +113,79 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             <RPGDatePicker value={date} onChange={setDate} placeholder="Select battle date..." className="w-full" />
           </div>
 
-          {/* Victories Selection with Interactive Sword Icons */}
+          {/* Battle Results Input */}
           <div className="space-y-3">
-            <label htmlFor="wins" className="block font-pixel text-lg text-gold">
-              🏆 Victories (out of 5)
+            <label className="block font-pixel text-lg text-gold">
+              ⚔️ Battle Results (out of 5)
             </label>
-            <div className="relative">
-              {/* Hidden input for form validation */}
-              <input
-                type="number"
-                id="wins"
-                min="0"
-                max={attacks}
-                value={wins}
-                onChange={() => {}} // Controlled by sword clicks
-                className="sr-only"
-                required
-              />
-
-              {/* Interactive Sword Selection */}
-              <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
-                <div className="flex space-x-3 justify-center mb-3">
-                  {Array.from({ length: attacks }, (_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => {
-                        const newWins = i + 1;
-                        setWins(newWins);
-                        playClick();
-                        if (newWins > 0) playSword();
-                      }}
-                      className={`
-                        w-12 h-12 border-2 border-mystic-blue rounded-pixel 
-                        flex items-center justify-center text-lg font-pixel
-                        transition-all duration-300 cursor-pointer
-                        ${
-                          i < wins
-                            ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110 border-gold"
-                            : "bg-[#1A1A1A] text-text-muted hover:bg-[#3A3A3A] hover:text-text-secondary hover:scale-105"
-                        }
-                      `}
-                      title={`Select ${i + 1} victories`}
-                    >
-                      ⚔️
-                    </button>
-                  ))}
-                </div>
-
-                {/* Victory Counter and Reset */}
-                <div className="flex items-center justify-between">
-                  <div className="text-center">
-                    <div className="text-lg font-pixel text-gold">{wins}</div>
-                    <div className="text-xs text-text-muted font-pixel-operator">Victories</div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setWins(0);
+            <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                {/* Wins Input */}
+                <div className="text-center">
+                  <label className="block font-pixel text-sm text-gold mb-2">🏆 Wins</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max={attacks}
+                    value={wins}
+                    onChange={(e) => {
+                      const value = Math.max(0, Math.min(attacks, parseInt(e.target.value) || 0));
+                      setWins(value);
                       playClick();
                     }}
-                    className="btn-rpg text-sm px-3 py-1 hover:scale-105"
-                    disabled={wins === 0}
-                  >
-                    Reset
-                  </button>
+                    className="input-rpg w-full text-center text-lg font-pixel"
+                    placeholder="0"
+                  />
+                </div>
 
-                  <div className="text-center">
-                    <div className="text-lg font-pixel text-danger">{attacks - wins}</div>
-                    <div className="text-xs text-text-muted font-pixel-operator">Defeats</div>
+                {/* Losses Input */}
+                <div className="text-center">
+                  <label className="block font-pixel text-sm text-danger mb-2">💀 Losses</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max={attacks}
+                    value={losses}
+                    onChange={(e) => {
+                      const value = Math.max(0, Math.min(attacks, parseInt(e.target.value) || 0));
+                      setLosses(value);
+                      playClick();
+                    }}
+                    className="input-rpg w-full text-center text-lg font-pixel"
+                    placeholder="0"
+                  />
+                </div>
+
+                {/* Draws Display */}
+                <div className="text-center">
+                  <label className="block font-pixel text-sm text-warning mb-2">🤝 Draws</label>
+                  <div className="input-rpg w-full text-center text-lg font-pixel text-warning bg-[#1A1A1A]">
+                    {draws}
+                  </div>
+                </div>
+              </div>
+
+              {/* Point Breakdown */}
+              <div className="border-t border-mystic-blue pt-3">
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <div className="text-sm font-pixel-operator text-text-muted mb-1">Total Points</div>
+                    <div className="text-2xl font-pixel text-gold">{points}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-pixel-operator text-text-muted mb-1">Win Rate</div>
+                    <div className={`text-xl font-pixel ${
+                      winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
+                    }`}>
+                      {winRate}%
+                    </div>
                   </div>
                 </div>
 
-                {/* Win Rate Display */}
+                {/* Point Breakdown Details */}
                 <div className="mt-3 text-center">
-                  <div className="text-sm font-pixel-operator text-text-muted">
-                    Win Rate:{" "}
-                    <span
-                      className={`font-pixel ${
-                        winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
-                      }`}
-                    >
-                      {winRate}%
-                    </span>
+                  <div className="text-xs font-pixel-operator text-text-muted">
+                    ({wins}×5) + ({losses}×2) + ({draws}×3) = {pointBreakdown.winPoints + pointBreakdown.lossPoints + pointBreakdown.drawPoints} points
                   </div>
                 </div>
               </div>
@@ -194,41 +193,47 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           </div>
 
           {/* Battle Summary */}
-          {wins > 0 && (
+          {(wins > 0 || losses > 0) && (
             <div className="panel-rpg">
               <h3 className="font-pixel text-sm text-gold mb-3">📊 Battle Summary</h3>
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-4 gap-3 text-center">
+                <div className="stat-rpg">
+                  <div className="text-lg font-pixel text-gold">🏆</div>
+                  <div className="text-xs text-text-muted">Wins</div>
+                  <div className="text-lg font-pixel text-gold">{wins}</div>
+                </div>
                 <div className="stat-rpg">
                   <div className="text-lg font-pixel text-danger">💀</div>
                   <div className="text-xs text-text-muted">Losses</div>
-                  <div className="text-lg font-pixel text-danger">{attacks - wins}</div>
+                  <div className="text-lg font-pixel text-danger">{losses}</div>
                 </div>
                 <div className="stat-rpg">
-                  <div className="text-lg font-pixel text-gold">⚔️</div>
-                  <div className="text-xs text-text-muted">Total</div>
-                  <div className="text-lg font-pixel text-gold">{attacks}</div>
+                  <div className="text-lg font-pixel text-warning">🤝</div>
+                  <div className="text-xs text-text-muted">Draws</div>
+                  <div className="text-lg font-pixel text-warning">{draws}</div>
                 </div>
                 <div className="stat-rpg">
-                  <div className="text-lg font-pixel text-success">🏆</div>
-                  <div className="text-xs text-text-muted">Win Rate</div>
-                  <div
-                    className={`text-lg font-pixel ${
-                      winRate >= 80 ? "text-success" : winRate >= 60 ? "text-warning" : "text-danger"
-                    }`}
-                  >
-                    {winRate}%
-                  </div>
+                  <div className="text-lg font-pixel text-success">⭐</div>
+                  <div className="text-xs text-text-muted">Points</div>
+                  <div className="text-lg font-pixel text-success">{points}</div>
                 </div>
               </div>
 
-              {/* Win Rate Progress Bar */}
-              <div className="mt-4">
-                <div className="flex justify-between text-xs text-text-muted mb-1">
-                  <span>Battle Performance</span>
-                  <span>{winRate}%</span>
-                </div>
-                <div className="progress-rpg">
-                  <div className="progress-rpg-fill" style={{ width: `${winRate}%` }} />
+              {/* Point Breakdown Details */}
+              <div className="mt-4 p-3 bg-[#1A1A1A] border border-mystic-blue rounded-pixel">
+                <div className="text-center">
+                  <div className="text-sm font-pixel text-gold mb-2">Point Breakdown</div>
+                  <div className="grid grid-cols-3 gap-4 text-xs font-pixel-operator">
+                    <div>
+                      <span className="text-gold">{wins} wins</span> × 5 = <span className="text-gold">{pointBreakdown.winPoints}</span>
+                    </div>
+                    <div>
+                      <span className="text-danger">{losses} losses</span> × 2 = <span className="text-danger">{pointBreakdown.lossPoints}</span>
+                    </div>
+                    <div>
+                      <span className="text-warning">{draws} draws</span> × 3 = <span className="text-warning">{pointBreakdown.drawPoints}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -66,7 +66,7 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
           <div className="stat-rpg border-mystic-blue">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⚔️</div>
@@ -105,7 +105,26 @@ export default function CurrentWeekStats() {
             <div className="text-xs text-text-muted font-pixel-operator">Defeats</div>
           </div>
 
+          <div className="stat-rpg border-warning">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-2xl">🤝</div>
+            </div>
+            <div className="text-2xl font-pixel text-warning">{currentWeekStats.totalDraws}</div>
+            <div className="text-xs text-text-muted font-pixel-operator">Draws</div>
+          </div>
+
           <div className="stat-rpg border-gold">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-2xl">⭐</div>
+            </div>
+            <div className="text-2xl font-pixel text-gold">{currentWeekStats.totalPoints}</div>
+            <div className="text-xs text-text-muted font-pixel-operator">Total Points</div>
+          </div>
+        </div>
+
+        {/* Win Rate Display */}
+        <div className="mb-8">
+          <div className="stat-rpg border-gold max-w-xs mx-auto">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">{getWinRateIcon(currentWeekStats.winRate)}</div>
               {comparison?.improvement.winRateChange !== undefined && comparison.improvement.winRateChange !== 0 && (

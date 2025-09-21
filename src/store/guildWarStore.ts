@@ -1,4 +1,5 @@
 import { calculateComparison, generateId, getCurrentWeekStats, getPreviousWeekStats } from "@/lib/calculations";
+import { calculateDraws, calculatePoints } from "@/lib/points";
 import { storage } from "@/lib/storage";
 import { AttackRecord, ComparisonData, GuildWarData, WeeklyStats } from "@/types";
 import { create } from "zustand";
@@ -59,10 +60,15 @@ export const useGuildWarStore = create<GuildWarState>()(
       addAttack: async (attackData) => {
         set({ isSaving: true });
         try {
+          // Calculate draws and points if not provided
+          const draws = attackData.draws ?? calculateDraws(attackData.attacks, attackData.wins, attackData.losses);
+          const points = attackData.points ?? calculatePoints(attackData.wins, attackData.losses, draws);
+          
           const newAttack: AttackRecord = {
             ...attackData,
             id: generateId(),
-            losses: attackData.attacks - attackData.wins,
+            draws,
+            points,
           };
 
           await storage.addAttack(newAttack);
@@ -84,12 +90,20 @@ export const useGuildWarStore = create<GuildWarState>()(
       updateAttack: async (id, updates) => {
         set({ isSaving: true });
         try {
+          const currentAttack = get().attacks.find(attack => attack.id === id);
+          if (!currentAttack) throw new Error("Attack not found");
+
+          // Calculate draws and points if needed
+          const attacks = updates.attacks ?? currentAttack.attacks;
+          const wins = updates.wins ?? currentAttack.wins;
+          const losses = updates.losses ?? currentAttack.losses;
+          const draws = updates.draws ?? calculateDraws(attacks, wins, losses);
+          const points = updates.points ?? calculatePoints(wins, losses, draws);
+
           const updatedAttack = {
             ...updates,
-            losses:
-              updates.attacks !== undefined && updates.wins !== undefined
-                ? updates.attacks - updates.wins
-                : updates.losses,
+            draws,
+            points,
           };
 
           await storage.updateAttack(id, updatedAttack);
@@ -100,7 +114,6 @@ export const useGuildWarStore = create<GuildWarState>()(
                 ? {
                     ...attack,
                     ...updatedAttack,
-                    losses: updatedAttack.losses ?? attack.losses,
                   }
                 : attack
             ),
