@@ -57,9 +57,13 @@ export default function PlayerAutocomplete({
   const showRecent = !query && recentPlayers.length > 0;
 
   const handleSelect = (player: Player | string) => {
-    const selectedName = typeof player === "string" ? player : player.name;
-    onChange(selectedName.toLowerCase().trim());
-    setQuery("");
+    if (!player) return; // Guard against null/undefined
+    
+    const selectedName = typeof player === "string" ? player : player?.name || "";
+    if (selectedName) {
+      onChange(selectedName.toLowerCase().trim());
+      setQuery("");
+    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

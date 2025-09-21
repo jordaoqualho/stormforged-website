@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/calculations";
 import { calculatePoints, getPointBreakdown } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import BattleResultSelector, { BattleResult } from "./BattleResultSelector";
 import PlayerAutocomplete from "./PlayerAutocomplete";
 import RPGDatePicker from "./RPGDatePicker";
@@ -20,6 +20,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const [battleResults, setBattleResults] = useState<BattleResult[]>(Array(5).fill("victory"));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [playerSuggestions, setPlayerSuggestions] = useState<string[]>([]);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
   // Fixed attacks per entry (always 5)
   const attacks = 5;
@@ -39,6 +40,18 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     const uniquePlayers = Array.from(new Set(allAttacks.map((attack) => attack.playerName)));
     setPlayerSuggestions(uniquePlayers.slice(0, 5)); // Show last 5 unique players
   }, [allAttacks]);
+
+  // Control duplicate warning display with delay to prevent flashing
+  useEffect(() => {
+    if (isDuplicateEntry) {
+      const timer = setTimeout(() => {
+        setShowDuplicateWarning(true);
+      }, 500); // 500ms delay
+      return () => clearTimeout(timer);
+    } else {
+      setShowDuplicateWarning(false);
+    }
+  }, [isDuplicateEntry]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,12 +107,15 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
 
-  // Check if current player/date combination already exists
-  const isDuplicateEntry =
-    Boolean(playerName.trim()) &&
-    allAttacks.some(
-      (attack) => attack.playerName.toLowerCase() === playerName.trim().toLowerCase() && attack.date === date
+  // Check if current player/date combination already exists (debounced to prevent flashing)
+  const isDuplicateEntry = useMemo(() => {
+    const trimmedName = playerName.trim();
+    if (!trimmedName) return false;
+    
+    return allAttacks.some(
+      (attack) => attack.playerName.toLowerCase() === trimmedName.toLowerCase() && attack.date === date
     );
+  }, [playerName, date, allAttacks]);
 
   return (
     <div className="card-rpg bg-battlefield p-4">
@@ -150,7 +166,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           </div>
 
           {/* Duplicate Entry Warning */}
-          {isDuplicateEntry && (
+          {showDuplicateWarning && (
             <div className="bg-danger/20 border-2 border-danger rounded-pixel p-3">
               <div className="flex items-center space-x-2">
                 <span className="text-danger text-lg">⚠️</span>
