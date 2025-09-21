@@ -17,7 +17,7 @@ import NotificationSystem, { useNotifications } from "@/components/NotificationS
 import SoundToggle from "@/components/SoundToggle";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Home() {
   const { loadData, isLoading } = useGuildWarStore();
@@ -31,24 +31,27 @@ export default function Home() {
   // Memoize the loading completion callback
   const handleLoadingComplete = useCallback(() => {
     // Mark that user has seen the loading screen
-    localStorage.setItem('stormforged-has-seen-loading', 'true');
+    localStorage.setItem("stormforged-has-seen-loading", "true");
     setIsInitialLoading(false);
   }, []);
 
   // Handle day click in Daily Battle Log
-  const handleDayClick = useCallback((date: string) => {
-    if (selectedDate === date) {
-      // If clicking the same day, toggle back to week view
-      setSelectedDate(null);
-    } else {
-      // Select the clicked day
-      setSelectedDate(date);
-    }
-  }, [selectedDate]);
+  const handleDayClick = useCallback(
+    (date: string) => {
+      if (selectedDate === date) {
+        // If clicking the same day, toggle back to week view
+        setSelectedDate(null);
+      } else {
+        // Select the clicked day
+        setSelectedDate(date);
+      }
+    },
+    [selectedDate]
+  );
 
   useEffect(() => {
     // Check if this is the first visit
-    const hasSeenLoading = localStorage.getItem('stormforged-has-seen-loading');
+    const hasSeenLoading = localStorage.getItem("stormforged-has-seen-loading");
     if (!hasSeenLoading) {
       setIsInitialLoading(true);
     }
@@ -72,7 +75,7 @@ export default function Home() {
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
-      
+
       // If not showing loading screen, we can proceed immediately
       if (hasSeenLoading) {
         setIsInitialLoading(false);
