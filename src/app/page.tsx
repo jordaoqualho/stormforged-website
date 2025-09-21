@@ -30,16 +30,16 @@ export default function Home() {
   const getCurrentWeekNumber = () => {
     const now = new Date();
     const startOfYear = new Date(now.getFullYear(), 0, 1);
-    
+
     // Find the first Friday of the year
     const firstFriday = new Date(startOfYear);
     const firstFridayDay = firstFriday.getDay();
     const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
     firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-    
+
     // Calculate days since first Friday
     const daysSinceFirstFriday = Math.floor((now.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     // Calculate week number (war weeks start on Friday)
     return Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
   };
@@ -52,7 +52,7 @@ export default function Home() {
         setIsInitialLoading(false);
       }, 500);
     };
-    
+
     initializeApp();
   }, [loadData]);
 
@@ -71,8 +71,14 @@ export default function Home() {
           <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged battle data...</p>
           <div className="mt-6 flex justify-center space-x-1">
             <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle"></div>
-            <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle" style={{ animationDelay: "0.1s" }}></div>
-            <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle" style={{ animationDelay: "0.2s" }}></div>
+            <div
+              className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle"
+              style={{ animationDelay: "0.1s" }}
+            ></div>
+            <div
+              className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle"
+              style={{ animationDelay: "0.2s" }}
+            ></div>
           </div>
           <div className="mt-8 max-w-md mx-auto">
             <div className="progress-rpg h-3">
@@ -139,7 +145,10 @@ export default function Home() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-gradient-to-r from-dark via-darker to-dark border-b-2 border-mystic-blue animate-slide-up" style={{ animationDelay: "0.1s" }}>
+      <nav
+        className="bg-gradient-to-r from-dark via-darker to-dark border-b-2 border-mystic-blue animate-slide-up"
+        style={{ animationDelay: "0.1s" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1">
             {[
@@ -196,7 +205,10 @@ export default function Home() {
             </div>
 
             {/* Quick Stats Banner */}
-            <div className="card-rpg bg-gradient-to-r from-mystic-blue to-mystic-blue-light animate-fade-in" style={{ animationDelay: "0.8s" }}>
+            <div
+              className="card-rpg bg-gradient-to-r from-mystic-blue to-mystic-blue-light animate-fade-in"
+              style={{ animationDelay: "0.8s" }}
+            >
               <div className="flex items-center justify-center space-x-8 py-4">
                 <div className="text-center">
                   <div className="text-3xl font-pixel text-gold">{useGuildWarStore.getState().attacks.length}</div>
@@ -235,7 +247,10 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-t-2 border-mystic-blue mt-16 animate-slide-up" style={{ animationDelay: "0.3s" }}>
+      <footer
+        className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-t-2 border-mystic-blue mt-16 animate-slide-up"
+        style={{ animationDelay: "0.3s" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">

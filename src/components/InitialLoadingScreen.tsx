@@ -65,9 +65,7 @@ export default function InitialLoadingScreen({ onComplete }: InitialLoadingScree
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl font-pixel text-gold text-glow mb-2 animate-fade-in">
-          Stormforged
-        </h1>
+        <h1 className="text-4xl font-pixel text-gold text-glow mb-2 animate-fade-in">Stormforged</h1>
         <p className="text-lg text-text-secondary font-pixel-operator mb-8 animate-fade-in">
           Idle Horizon Guild War Command Center
         </p>
@@ -75,15 +73,13 @@ export default function InitialLoadingScreen({ onComplete }: InitialLoadingScree
         {/* Loading Animation */}
         <div className="mb-8">
           <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-gold font-pixel-operator text-lg animate-pulse">
-            {loadingText}
-          </p>
+          <p className="text-gold font-pixel-operator text-lg animate-pulse">{loadingText}</p>
         </div>
 
         {/* Progress Bar */}
         <div className="max-w-md mx-auto mb-6">
           <div className="progress-rpg h-4">
-            <div 
+            <div
               className="progress-rpg-fill bg-gradient-to-r from-gold to-yellow-400"
               style={{ width: `${progress}%` }}
             ></div>
