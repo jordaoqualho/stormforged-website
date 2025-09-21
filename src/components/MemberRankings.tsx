@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import { useState } from "react";
 import RPGConfirmModal from "./RPGConfirmModal";
 
 interface MemberRankingsProps {
@@ -24,16 +24,16 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
     }
 
     // Get attacks for the selected date
-    const dayAttacks = attacks.filter(attack => attack.date === selectedDate);
-    
+    const dayAttacks = attacks.filter((attack) => attack.date === selectedDate);
+
     if (dayAttacks.length === 0) {
       return [];
     }
 
     // Calculate stats for each player for the selected date
     const playerStatsMap = new Map();
-    
-    dayAttacks.forEach(attack => {
+
+    dayAttacks.forEach((attack) => {
       const playerName = attack.playerName;
       if (!playerStatsMap.has(playerName)) {
         playerStatsMap.set(playerName, {
@@ -44,10 +44,10 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
           totalDraws: 0,
           totalPoints: 0,
           winRate: 0,
-          dailyAttacks: []
+          dailyAttacks: [],
         });
       }
-      
+
       const stats = playerStatsMap.get(playerName);
       stats.totalAttacks += attack.attacks;
       stats.totalWins += attack.wins;
@@ -58,9 +58,9 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
     });
 
     // Calculate win rates
-    const playerStats = Array.from(playerStatsMap.values()).map(stats => ({
+    const playerStats = Array.from(playerStatsMap.values()).map((stats) => ({
       ...stats,
-      winRate: stats.totalAttacks > 0 ? Math.round((stats.totalWins / stats.totalAttacks) * 100) : 0
+      winRate: stats.totalAttacks > 0 ? Math.round((stats.totalWins / stats.totalAttacks) * 100) : 0,
     }));
 
     return playerStats;
@@ -123,7 +123,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mystic-blue">
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Date</th>
+                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rank</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Member</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Attacks</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Victories</th>
@@ -134,8 +134,8 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
             </thead>
             <tbody>
               {playerStats
-                .flatMap(player => 
-                  player.dailyAttacks.map(attack => ({ ...attack, playerName: player.playerName }))
+                .flatMap((player) =>
+                  player.dailyAttacks.map((attack) => ({ ...attack, playerName: player.playerName }))
                 )
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .map((attack, index) => (
@@ -144,8 +144,24 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
                     title={`${attack.playerName} - ${new Date(attack.date).toLocaleDateString()}`}
                   >
-                    <td className="py-2 px-3 text-center text-xs text-text-muted font-pixel-operator">
-                      {new Date(attack.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    <td className="py-2 px-3 text-center">
+                      <div className="flex items-center justify-center">
+                        {index === 0 ? (
+                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-yellow-400 to-yellow-600 border-yellow-500 shadow-glow-gold">
+                            🥇
+                          </div>
+                        ) : index === 1 ? (
+                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-gray-400 to-gray-600 border-gray-500">
+                            🥈
+                          </div>
+                        ) : index === 2 ? (
+                          <div className="achievement-badge w-8 h-8 text-xs bg-gradient-to-b from-yellow-600 to-yellow-800 border-yellow-700">
+                            🥉
+                          </div>
+                        ) : (
+                          <span className="font-pixel text-text-muted text-sm">#{index + 1}</span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-2 px-3 font-pixel text-text-primary text-sm">{attack.playerName}</td>
                     <td className="py-2 px-3 text-center font-pixel text-gold text-sm">{attack.attacks}</td>
