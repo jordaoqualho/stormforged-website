@@ -1,4 +1,6 @@
 // RPG Sound Effects using Web Audio API
+import { useState } from "react";
+
 class RPGSoundManager {
   private audioContext: AudioContext | null = null;
   private sounds: Map<string, AudioBuffer> = new Map();
@@ -152,14 +154,27 @@ export const soundManager = new RPGSoundManager();
 
 // Hook for using sounds in React components
 export function useRPGSounds() {
+  const [isEnabled, setIsEnabled] = useState(soundManager.isSoundEnabled());
+
+  const toggleSound = () => {
+    const newState = soundManager.toggleSound();
+    setIsEnabled(newState);
+    return newState;
+  };
+
+  const setEnabled = (enabled: boolean) => {
+    soundManager.setEnabled(enabled);
+    setIsEnabled(enabled);
+  };
+
   return {
     playClick: () => soundManager.playClick(),
     playSuccess: () => soundManager.playSuccess(),
     playError: () => soundManager.playError(),
     playSword: () => soundManager.playSword(),
     playMagic: () => soundManager.playMagic(),
-    setEnabled: (enabled: boolean) => soundManager.setEnabled(enabled),
-    isEnabled: soundManager.isSoundEnabled(),
-    toggleSound: () => soundManager.toggleSound(),
+    setEnabled,
+    isEnabled,
+    toggleSound,
   };
 }

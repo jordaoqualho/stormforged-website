@@ -9,13 +9,11 @@ export default function MusicPlayer() {
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const {
-    isPlaying,
     currentTrack,
     volume,
     isEnabled,
     audioContextResumed,
     tracks,
-    toggleMusic,
     changeTrack,
     updateVolume,
     toggleEnabled,
@@ -28,13 +26,6 @@ export default function MusicPlayer() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const handleToggle = async () => {
-    setIsLoading(true);
-    await toggleMusic();
-    playClick();
-    setTimeout(() => setIsLoading(false), 500);
-  };
 
   const handleTrackChange = async (trackId: string) => {
     setIsLoading(true);
@@ -84,19 +75,6 @@ export default function MusicPlayer() {
           title="Music Controls"
         >
           🎵
-        </button>
-
-        <button
-          onClick={handleToggle}
-          disabled={!isEnabled || isLoading}
-          className={`
-            btn-rpg text-lg px-4 py-2 hover:scale-105 transition-transform min-h-[48px]
-            ${!isEnabled || isLoading ? "opacity-50 cursor-not-allowed" : ""}
-            ${isPlaying ? "bg-gold text-[#0D0D0D] music-playing" : ""}
-          `}
-          title={isPlaying ? "Stop Music" : "Play Music"}
-        >
-          {isLoading ? <div className="loading-rpg w-4 h-4" /> : isPlaying ? "⏸️" : "▶️"}
         </button>
       </div>
 
