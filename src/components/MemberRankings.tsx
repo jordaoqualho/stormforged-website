@@ -23,7 +23,7 @@ export default function MemberRankings() {
               <tr className="border-b border-mystic-blue">
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rank</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Member</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Strikes</th>
+                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Attacks</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Victories</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Defeats</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rate</th>

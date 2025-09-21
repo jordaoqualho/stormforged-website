@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body className={`${pressStart.variable} ${pixelOperator.variable} antialiased bg-[#0D0D0D] text-gold`}>
         {children}
       </body>

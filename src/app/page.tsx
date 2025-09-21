@@ -10,11 +10,11 @@ import DailyBattleLog from "@/components/DailyBattleLog";
 import DailyBattleLogSkeleton from "@/components/DailyBattleLogSkeleton";
 import DataManagement from "@/components/DataManagement";
 import InitialLoadingScreen from "@/components/InitialLoadingScreen";
+import MemberRankings from "@/components/MemberRankings";
+import MemberRankingsSkeleton from "@/components/MemberRankingsSkeleton";
 import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
-import MemberRankings from "@/components/MemberRankings";
-import MemberRankingsSkeleton from "@/components/MemberRankingsSkeleton";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -22,30 +22,30 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const { loadData, isLoading } = useGuildWarStore();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
+  const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(1);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
-  // Calculate current week number of the year (war week starts on Friday)
-  const getCurrentWeekNumber = () => {
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-    // Find the first Friday of the year
-    const firstFriday = new Date(startOfYear);
-    const firstFridayDay = firstFriday.getDay();
-    const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
-    firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
-
-    // Calculate days since first Friday
-    const daysSinceFirstFriday = Math.floor((now.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
-
-    // Calculate week number (war weeks start on Friday)
-    return Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
-  };
-
   useEffect(() => {
     const initializeApp = async () => {
+      // Calculate week number on client side to prevent hydration mismatch
+      const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      
+      // Find the first Friday of the year
+      const firstFriday = new Date(startOfYear);
+      const firstFridayDay = firstFriday.getDay(); // 0 = Sunday, 5 = Friday
+      const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+      firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+      
+      // Calculate days since first Friday
+      const daysSinceFirstFriday = Math.floor((now.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Calculate week number (war weeks start on Friday)
+      const weekNumber = Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
+      setCurrentWeekNumber(weekNumber);
+
       await loadData();
       // Add a small delay to ensure smooth transition
       setTimeout(() => {
@@ -118,19 +118,19 @@ export default function Home() {
                   })}
                 </div>
                 <div className="text-xs text-text-muted font-pixel-operator">
-                  {getCurrentWeekNumber() === 1
+                  {currentWeekNumber === 1
                     ? "First Week of Battle"
-                    : getCurrentWeekNumber() <= 4
-                    ? `Week ${getCurrentWeekNumber()} Campaign`
-                    : getCurrentWeekNumber() <= 12
-                    ? `Week ${getCurrentWeekNumber()} Siege`
-                    : getCurrentWeekNumber() <= 26
-                    ? `Week ${getCurrentWeekNumber()} War`
-                    : getCurrentWeekNumber() <= 39
-                    ? `Week ${getCurrentWeekNumber()} Crusade`
-                    : getCurrentWeekNumber() <= 52
-                    ? `Week ${getCurrentWeekNumber()} Legend`
-                    : `Week ${getCurrentWeekNumber()} Epic`}
+                    : currentWeekNumber <= 4
+                    ? `Week ${currentWeekNumber} Campaign`
+                    : currentWeekNumber <= 12
+                    ? `Week ${currentWeekNumber} Siege`
+                    : currentWeekNumber <= 26
+                    ? `Week ${currentWeekNumber} War`
+                    : currentWeekNumber <= 39
+                    ? `Week ${currentWeekNumber} Crusade`
+                    : currentWeekNumber <= 52
+                    ? `Week ${currentWeekNumber} Legend`
+                    : `Week ${currentWeekNumber} Epic`}
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -226,7 +226,7 @@ export default function Home() {
                   <div className="text-3xl font-pixel text-warning">
                     {useGuildWarStore.getState().attacks.reduce((sum, a) => sum + a.attacks, 0)}
                   </div>
-                  <div className="text-xs text-text-secondary font-pixel-operator">Total Strikes</div>
+                  <div className="text-xs text-text-secondary font-pixel-operator">Total Attacks</div>
                 </div>
               </div>
             </div>

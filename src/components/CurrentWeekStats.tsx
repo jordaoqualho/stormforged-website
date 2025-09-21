@@ -14,7 +14,7 @@ export default function CurrentWeekStats() {
           <p className="text-text-muted font-pixel-operator">
             No battles recorded this week yet.
             <br />
-            Ready your warriors for combat!
+            Ready your members for combat!
           </p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function CurrentWeekStats() {
                 )}
             </div>
             <div className="text-2xl font-pixel text-gold">{currentWeekStats.totalAttacks}</div>
-            <div className="text-xs text-text-muted font-pixel-operator">Total Strikes</div>
+            <div className="text-xs text-text-muted font-pixel-operator">Total Attacks</div>
           </div>
 
           <div className="stat-rpg border-success min-h-[90px] py-2 px-3">

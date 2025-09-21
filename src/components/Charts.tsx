@@ -278,7 +278,7 @@ export default function Charts() {
                 dataKey="attacks"
                 stroke="#FFD700"
                 strokeWidth={3}
-                name="⚔️ Strikes"
+                name="⚔️ Attacks"
                 dot={{ fill: "#FFD700", strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, stroke: "#FFD700", strokeWidth: 2 }}
               />
@@ -311,7 +311,7 @@ export default function Charts() {
           <div className="mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="icon-rpg pixel-glow text-xl">👑</div>
-              <h3 className="text-xl font-pixel text-gold text-glow">Top Members by Strikes</h3>
+              <h3 className="text-xl font-pixel text-gold text-glow">Top Members by Attacks</h3>
               <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
             </div>
             {selectedWeek && (
@@ -338,7 +338,7 @@ export default function Charts() {
                     color: "#FFD700",
                   }}
                 />
-                <Bar dataKey="attacks" fill="#FFD700" name="⚔️ Strikes" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="attacks" fill="#FFD700" name="⚔️ Attacks" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="wins" fill="#2ECC71" name="🏆 Victories" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -371,7 +371,7 @@ export default function Charts() {
                     color: "#FFD700",
                   }}
                 />
-                <Bar dataKey="attacks" fill="#FFD700" name="⚔️ Strikes" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="attacks" fill="#FFD700" name="⚔️ Attacks" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="wins" fill="#2ECC71" name="🏆 Victories" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="winRate" fill="#3A3A75" name="📈 Victory Rate %" radius={[2, 2, 0, 0]} />
               </BarChart>

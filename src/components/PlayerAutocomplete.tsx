@@ -179,7 +179,7 @@ export default function PlayerAutocomplete({
 
           {query && filteredPlayers.length === 0 && (
             <div className="px-4 py-3 text-text-muted font-pixel-operator text-sm">
-              No warriors found. Press Enter to add "{query}"
+              No members found. Press Enter to add "{query}"
             </div>
           )}
         </Combobox.Options>

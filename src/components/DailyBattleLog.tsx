@@ -114,7 +114,7 @@ export default function DailyBattleLog() {
                   </div>
                 </div>
 
-                <div className="text-xs text-text-muted mt-2">{day.playerCount} warriors</div>
+                <div className="text-xs text-text-muted mt-2">{day.playerCount} members</div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-text-muted">

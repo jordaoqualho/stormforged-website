@@ -46,7 +46,7 @@ const ACHIEVEMENTS: Achievement[] = [
   {
     id: "guild_master",
     title: "Guild Master",
-    description: "Have 10+ warriors in your guild",
+    description: "Have 10+ members in your guild",
     icon: "🏰",
     color: "text-mystic-blue-light",
     rarity: "epic",
@@ -127,7 +127,7 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     >
       {/* Achievement Icon */}
       <span className="text-xl mb-1">{achievement.icon}</span>
-      
+
       {/* Rarity Indicator */}
       <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-gold rounded-full flex items-center justify-center">
         <span className="text-xs">{rarityIcons[achievement.rarity]}</span>
@@ -279,18 +279,16 @@ export default function AchievementSystem() {
             0/{ACHIEVEMENTS.length}
           </div>
         </div>
-        
+
         <div className="text-center py-12">
           <div className="icon-rpg text-6xl mb-6 animate-float">🏆</div>
           <div className="bg-[#1A1A1A] border border-mystic-blue rounded-pixel p-6 max-w-md mx-auto">
             <p className="text-text-muted font-pixel-operator text-sm leading-relaxed mb-4">
               No achievements unlocked yet.
             </p>
-            <p className="text-text-secondary font-pixel-operator text-xs">
-              Keep battling to earn your first badge!
-            </p>
+            <p className="text-text-secondary font-pixel-operator text-xs">Keep battling to earn your first badge!</p>
           </div>
-          
+
           {/* Progress Bar for Empty State */}
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
@@ -340,7 +338,7 @@ export default function AchievementSystem() {
             </span>
           </div>
           <div className="progress-rpg h-3">
-            <div 
+            <div
               className="progress-rpg-fill bg-gradient-to-r from-gold to-yellow-400"
               style={{ width: `${(unlockedAchievementObjects.length / ACHIEVEMENTS.length) * 100}%` }}
             ></div>
@@ -360,9 +358,7 @@ export default function AchievementSystem() {
 
         {/* Achievement Info */}
         <div className="mt-6 text-center">
-          <p className="text-xs text-text-muted font-pixel-operator">
-            Click on achievements to view details
-          </p>
+          <p className="text-xs text-text-muted font-pixel-operator">Click on achievements to view details</p>
         </div>
       </div>
 
