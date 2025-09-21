@@ -106,7 +106,8 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-battlefield">
+    <>
+      <div className="min-h-screen bg-battlefield">
       {/* Notification System */}
       <NotificationSystem notifications={notifications} onRemove={removeNotification} />
 
@@ -296,11 +297,10 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Music Player */}
-      <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-        <MusicPlayer />
-      </div>
     </div>
+
+      {/* Music Player - Fixed to viewport */}
+      <MusicPlayer />
+    </>
   );
 }

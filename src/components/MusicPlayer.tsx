@@ -66,13 +66,14 @@ export default function MusicPlayer() {
   }
 
   return (
-    <div 
-      className="fixed bottom-4 right-4 z-40 pointer-events-none" 
-      style={{ 
+    <div
+      className="fixed bottom-4 right-4 pointer-events-none"
+      style={{
         position: "fixed",
         bottom: "1rem",
         right: "1rem",
-        zIndex: 40
+        zIndex: 9999,
+        pointerEvents: "none"
       }}
     >
       {/* Audio Context Status Indicator */}
