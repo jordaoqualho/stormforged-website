@@ -8,7 +8,6 @@ import DailyBattleLog from "@/components/DailyBattleLog";
 import DataManagement from "@/components/DataManagement";
 import InitialLoadingScreen from "@/components/InitialLoadingScreen";
 import MemberRankings from "@/components/MemberRankings";
-import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
 import { getCurrentWeekNumber } from "@/lib/calculations";
@@ -300,9 +299,6 @@ export default function Home() {
           </div>
         </footer>
       </div>
-
-      {/* Music Player - Fixed to viewport */}
-      <MusicPlayer />
     </>
   );
 }

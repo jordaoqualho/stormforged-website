@@ -1,4 +1,4 @@
-// RPG Sound Effects using Web Audio API
+// Enhanced RPG Sound Effects using Web Audio API
 
 class RPGSoundManager {
   private audioContext: AudioContext | null = null;
@@ -15,22 +15,28 @@ class RPGSoundManager {
   private generateSounds() {
     if (!this.audioContext) return;
 
-    // Generate different types of sounds using Web Audio API
+    // Generate enhanced RPG sound effects
     this.generateClickSound();
     this.generateSuccessSound();
     this.generateErrorSound();
     this.generateSwordSound();
     this.generateMagicSound();
+    this.generateHoverSound();
+    this.generateVictorySound();
+    this.generateNotificationSound();
   }
 
   private generateClickSound() {
     if (!this.audioContext) return;
 
-    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.1, this.audioContext.sampleRate);
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.08, this.audioContext.sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < buffer.length; i++) {
-      data[i] = Math.sin((2 * Math.PI * 800 * i) / this.audioContext.sampleRate) * 0.1;
+      const t = i / this.audioContext.sampleRate;
+      // Crisp, short click with slight pitch variation
+      const frequency = 1000 + Math.sin(t * 20) * 200;
+      data[i] = Math.sin(2 * Math.PI * frequency * t) * 0.15 * Math.exp(-t * 15);
     }
 
     this.sounds.set("click", buffer);
@@ -39,12 +45,17 @@ class RPGSoundManager {
   private generateSuccessSound() {
     if (!this.audioContext) return;
 
-    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.5, this.audioContext.sampleRate);
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.6, this.audioContext.sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < buffer.length; i++) {
       const t = i / this.audioContext.sampleRate;
-      data[i] = Math.sin(2 * Math.PI * (523 + t * 200) * t) * 0.3 * Math.exp(-t * 3);
+      // Ascending chord progression (C-E-G)
+      const note1 = Math.sin(2 * Math.PI * 523.25 * t) * 0.2; // C5
+      const note2 = Math.sin(2 * Math.PI * 659.25 * t) * 0.15; // E5
+      const note3 = Math.sin(2 * Math.PI * 783.99 * t) * 0.1; // G5
+      const envelope = Math.exp(-t * 2);
+      data[i] = (note1 + note2 + note3) * envelope;
     }
 
     this.sounds.set("success", buffer);
@@ -53,12 +64,16 @@ class RPGSoundManager {
   private generateErrorSound() {
     if (!this.audioContext) return;
 
-    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.3, this.audioContext.sampleRate);
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.4, this.audioContext.sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < buffer.length; i++) {
       const t = i / this.audioContext.sampleRate;
-      data[i] = Math.sin(2 * Math.PI * (200 - t * 100) * t) * 0.2 * Math.exp(-t * 4);
+      // Descending dissonant chord
+      const note1 = Math.sin(2 * Math.PI * (400 - t * 200) * t) * 0.2;
+      const note2 = Math.sin(2 * Math.PI * (350 - t * 150) * t) * 0.15;
+      const envelope = Math.exp(-t * 3);
+      data[i] = (note1 + note2) * envelope;
     }
 
     this.sounds.set("error", buffer);
@@ -67,12 +82,17 @@ class RPGSoundManager {
   private generateSwordSound() {
     if (!this.audioContext) return;
 
-    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.2, this.audioContext.sampleRate);
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.3, this.audioContext.sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < buffer.length; i++) {
       const t = i / this.audioContext.sampleRate;
-      data[i] = (Math.random() - 0.5) * 0.3 * Math.exp(-t * 8);
+      // Metallic sword clash with noise and harmonics
+      const noise = (Math.random() - 0.5) * 0.4;
+      const harmonic1 = Math.sin(2 * Math.PI * 800 * t) * 0.1;
+      const harmonic2 = Math.sin(2 * Math.PI * 1200 * t) * 0.05;
+      const envelope = Math.exp(-t * 6);
+      data[i] = (noise + harmonic1 + harmonic2) * envelope;
     }
 
     this.sounds.set("sword", buffer);
@@ -81,15 +101,74 @@ class RPGSoundManager {
   private generateMagicSound() {
     if (!this.audioContext) return;
 
-    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.8, this.audioContext.sampleRate);
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 1.0, this.audioContext.sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < buffer.length; i++) {
       const t = i / this.audioContext.sampleRate;
-      data[i] = Math.sin(2 * Math.PI * (440 + Math.sin(t * 10) * 50) * t) * 0.2 * Math.exp(-t * 2);
+      // Mystical shimmering sound with frequency modulation
+      const carrierFreq = 440 + Math.sin(t * 8) * 100;
+      const modulatorFreq = 5 + Math.sin(t * 3) * 3;
+      const modulation = Math.sin(2 * Math.PI * modulatorFreq * t) * 50;
+      const envelope = Math.exp(-t * 1.5) * (1 + Math.sin(t * 20) * 0.3);
+      data[i] = Math.sin(2 * Math.PI * (carrierFreq + modulation) * t) * 0.25 * envelope;
     }
 
     this.sounds.set("magic", buffer);
+  }
+
+  private generateHoverSound() {
+    if (!this.audioContext) return;
+
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.05, this.audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < buffer.length; i++) {
+      const t = i / this.audioContext.sampleRate;
+      // Subtle hover sound
+      const frequency = 1200 + Math.sin(t * 30) * 100;
+      data[i] = Math.sin(2 * Math.PI * frequency * t) * 0.08 * Math.exp(-t * 20);
+    }
+
+    this.sounds.set("hover", buffer);
+  }
+
+  private generateVictorySound() {
+    if (!this.audioContext) return;
+
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 1.2, this.audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < buffer.length; i++) {
+      const t = i / this.audioContext.sampleRate;
+      // Triumphant fanfare (C-E-G-C octave)
+      const note1 = Math.sin(2 * Math.PI * 523.25 * t) * 0.15; // C5
+      const note2 = Math.sin(2 * Math.PI * 659.25 * t) * 0.12; // E5
+      const note3 = Math.sin(2 * Math.PI * 783.99 * t) * 0.1; // G5
+      const note4 = Math.sin(2 * Math.PI * 1046.5 * t) * 0.08; // C6
+      const envelope = Math.exp(-t * 1.2) * (1 + Math.sin(t * 15) * 0.2);
+      data[i] = (note1 + note2 + note3 + note4) * envelope;
+    }
+
+    this.sounds.set("victory", buffer);
+  }
+
+  private generateNotificationSound() {
+    if (!this.audioContext) return;
+
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.3, this.audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < buffer.length; i++) {
+      const t = i / this.audioContext.sampleRate;
+      // Gentle notification chime
+      const note1 = Math.sin(2 * Math.PI * 880 * t) * 0.1; // A5
+      const note2 = Math.sin(2 * Math.PI * 1108.73 * t) * 0.08; // C#6
+      const envelope = Math.exp(-t * 4);
+      data[i] = (note1 + note2) * envelope;
+    }
+
+    this.sounds.set("notification", buffer);
   }
 
   private async playSound(soundName: string, volume = 0.5) {
@@ -113,25 +192,37 @@ class RPGSoundManager {
     }
   }
 
-  // Public methods
+  // Enhanced public methods with better volumes and timing
   playClick() {
-    this.playSound("click", 0.3);
+    this.playSound("click", 0.2);
   }
 
   playSuccess() {
-    this.playSound("success", 0.4);
+    this.playSound("success", 0.3);
   }
 
   playError() {
-    this.playSound("error", 0.4);
+    this.playSound("error", 0.25);
   }
 
   playSword() {
-    this.playSound("sword", 0.5);
+    this.playSound("sword", 0.3);
   }
 
   playMagic() {
-    this.playSound("magic", 0.3);
+    this.playSound("magic", 0.2);
+  }
+
+  playHover() {
+    this.playSound("hover", 0.1);
+  }
+
+  playVictory() {
+    this.playSound("victory", 0.4);
+  }
+
+  playNotification() {
+    this.playSound("notification", 0.15);
   }
 
   setEnabled(enabled: boolean) {
@@ -159,6 +250,9 @@ export function useRPGSounds() {
     playError: () => soundManager.playError(),
     playSword: () => soundManager.playSword(),
     playMagic: () => soundManager.playMagic(),
+    playHover: () => soundManager.playHover(),
+    playVictory: () => soundManager.playVictory(),
+    playNotification: () => soundManager.playNotification(),
     setEnabled: (enabled: boolean) => soundManager.setEnabled(enabled),
     isEnabled: soundManager.isSoundEnabled(),
     toggleSound: () => soundManager.toggleSound(),
