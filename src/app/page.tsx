@@ -23,13 +23,15 @@ export default function Home() {
   const { loadData, isLoading } = useGuildWarStore();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(1);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(false); // Will be set based on first visit
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
   const { playClick } = useRPGSounds();
 
   // Memoize the loading completion callback
   const handleLoadingComplete = useCallback(() => {
+    // Mark that user has seen the loading screen
+    localStorage.setItem('stormforged-has-seen-loading', 'true');
     setIsInitialLoading(false);
   }, []);
 
@@ -45,6 +47,12 @@ export default function Home() {
   }, [selectedDate]);
 
   useEffect(() => {
+    // Check if this is the first visit
+    const hasSeenLoading = localStorage.getItem('stormforged-has-seen-loading');
+    if (!hasSeenLoading) {
+      setIsInitialLoading(true);
+    }
+
     const initializeApp = async () => {
       // Calculate week number on client side to prevent hydration mismatch
       const now = new Date();
@@ -64,7 +72,12 @@ export default function Home() {
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
-      // Remove the timeout - let InitialLoadingScreen handle its own timing
+      
+      // If not showing loading screen, we can proceed immediately
+      if (hasSeenLoading) {
+        setIsInitialLoading(false);
+      }
+      // If showing loading screen, let InitialLoadingScreen handle the timing
     };
 
     initializeApp();
