@@ -75,7 +75,7 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
   }, [onComplete, minDuration]);
 
   return (
-    <div className="fixed inset-0 bg-battlefield flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-battlefield flex items-center justify-center z-[10001]">
       <div className="text-center animate-initial-load">
         {/* Main Logo */}
         <div className="relative mb-8">
