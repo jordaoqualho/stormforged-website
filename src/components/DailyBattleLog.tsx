@@ -76,13 +76,14 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2">
         {orderedDays.map((day, index) => {
           const isSelected = selectedDate === day.date;
+          const isLastCard = index === orderedDays.length - 1;
 
           return (
             <div
               key={day.date}
               className={`panel-rpg p-2 sm:p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer ${
                 isSelected ? "ring-2 ring-gold bg-gold/10 brightness-110" : "hover:brightness-110"
-              }`}
+              } ${isLastCard ? "md:col-start-4" : ""}`}
               onClick={() => handleDayClick(day.date)}
             >
               <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
@@ -134,8 +135,39 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
                   <div className="text-xs text-text-muted mt-2">{day.playerCount} members</div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-text-muted">
-                  <div className="text-xs font-pixel-operator">No data</div>
+                <div className="space-y-2">
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="text-xs font-bold text-gray-300">Points</div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">⭐</span>
+                      <span className="text-lg font-pixel text-gray-500">0</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="text-xs font-bold text-gray-300">Wins</div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">🏆</span>
+                      <span className="text-sm font-pixel text-gray-500">0</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="text-xs font-bold text-gray-300">Losses</div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">💀</span>
+                      <span className="text-sm font-pixel text-gray-500">0</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="text-xs font-bold text-gray-300">Rate</div>
+                    <div className="text-xs font-pixel px-2 py-0.5 rounded-full bg-gray-700/80 text-gray-400">
+                      No data
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-text-muted mt-2">0 members</div>
                 </div>
               )}
             </div>
