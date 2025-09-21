@@ -89,10 +89,10 @@ interface AchievementBadgeProps {
 
 function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBadgeProps) {
   const rarityColors = {
-    common: "border-gray-400 bg-gray-600",
-    rare: "border-blue-400 bg-blue-600",
-    epic: "border-purple-400 bg-purple-600",
-    legendary: "border-gold bg-gold-dark",
+    common: "border-gray-400 bg-gray-600/80",
+    rare: "border-blue-400 bg-blue-600/80",
+    epic: "border-purple-400 bg-purple-600/80",
+    legendary: "border-gold bg-gold-dark/80",
   };
 
   const rarityGlow = {
@@ -102,66 +102,44 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     legendary: "shadow-glow-gold",
   };
 
+  const rarityIcons = {
+    common: "⚪",
+    rare: "💙",
+    epic: "💜",
+    legendary: "🌟",
+  };
+
   return (
     <div
       className={`
-        relative group cursor-pointer overflow-visible
-        w-24 h-24 rounded-full border-2
+        relative group cursor-pointer
+        w-20 h-20 rounded-full border-2
         ${rarityColors[achievement.rarity]}
         ${rarityGlow[achievement.rarity]}
-        flex items-center justify-center
+        flex flex-col items-center justify-center
         transition-all duration-300
         hover:scale-110 hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]
         ${isNew ? "animate-success-pop ring-4 ring-success ring-opacity-50" : ""}
         mx-auto
       `}
       onClick={onClick}
+      title={`${achievement.title} - ${achievement.description}`}
     >
-      <span className="text-2xl">{achievement.icon}</span>
-
-      {/* Achievement Counter */}
-      <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#0D0D0D] border-2 border-gold rounded-full flex items-center justify-center">
-        <span className="text-xs text-gold font-pixel font-bold">!</span>
+      {/* Achievement Icon */}
+      <span className="text-xl mb-1">{achievement.icon}</span>
+      
+      {/* Rarity Indicator */}
+      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-gold rounded-full flex items-center justify-center">
+        <span className="text-xs">{rarityIcons[achievement.rarity]}</span>
       </div>
 
-      {/* Enhanced Tooltip - Smart positioning with overflow handling */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-[9999] max-w-64 w-max">
-        {/* Tooltip Arrow */}
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gold"></div>
-
-        <div className="bg-[#0D0D0D] border-2 border-gold rounded-pixel p-4 shadow-[8px_8px_0px_rgba(0,0,0,0.8)] relative">
-          <div className={`font-pixel text-base ${achievement.color} mb-2 truncate`} title={achievement.title}>
-            {achievement.title}
-          </div>
-          <div
-            className="text-sm text-text-secondary font-pixel-operator mb-3 leading-relaxed"
-            title={achievement.description}
-          >
-            {achievement.description}
-          </div>
-          <div className="flex items-center justify-between">
-            <div
-              className={`text-sm font-pixel-operator capitalize px-3 py-1 rounded-pixel ${
-                achievement.rarity === "legendary"
-                  ? "bg-gold text-[#0D0D0D]"
-                  : achievement.rarity === "epic"
-                  ? "bg-purple-600 text-white"
-                  : achievement.rarity === "rare"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-600 text-white"
-              }`}
-            >
-              {achievement.rarity === "legendary"
-                ? "🌟 Legendary"
-                : achievement.rarity === "epic"
-                ? "💜 Epic"
-                : achievement.rarity === "rare"
-                ? "💙 Rare"
-                : "⚪ Common"}
-            </div>
-            <div className="text-xs text-text-muted font-pixel-operator">Click to view</div>
-          </div>
+      {/* Achievement Title (visible on hover) */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+        <div className="bg-[#0D0D0D] border border-gold rounded-pixel px-2 py-1 text-xs font-pixel text-gold whitespace-nowrap">
+          {achievement.title}
         </div>
+        {/* Arrow */}
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-t-2 border-transparent border-t-gold"></div>
       </div>
     </div>
   );
@@ -292,15 +270,36 @@ export default function AchievementSystem() {
 
   if (unlockedAchievementObjects.length === 0) {
     return (
-      <div className="card-rpg bg-battlefield p-8">
-        <div className="text-center py-16">
-          <div className="icon-rpg text-6xl mb-8 animate-float">🏆</div>
-          <h3 className="font-pixel text-gold mb-6 text-2xl">Achievements</h3>
+      <div className="card-rpg bg-battlefield p-6">
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="icon-rpg pixel-glow text-2xl">🏆</div>
+          <h3 className="text-xl font-pixel text-gold text-glow">Achievements</h3>
+          <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
+          <div className="text-sm text-text-muted font-pixel-operator bg-[#1A1A1A] px-3 py-1 rounded-pixel border border-mystic-blue">
+            0/{ACHIEVEMENTS.length}
+          </div>
+        </div>
+        
+        <div className="text-center py-12">
+          <div className="icon-rpg text-6xl mb-6 animate-float">🏆</div>
           <div className="bg-[#1A1A1A] border border-mystic-blue rounded-pixel p-6 max-w-md mx-auto">
             <p className="text-text-muted font-pixel-operator text-sm leading-relaxed mb-4">
               No achievements unlocked yet.
             </p>
-            <p className="text-text-secondary font-pixel-operator text-xs">Keep battling to earn your first badge!</p>
+            <p className="text-text-secondary font-pixel-operator text-xs">
+              Keep battling to earn your first badge!
+            </p>
+          </div>
+          
+          {/* Progress Bar for Empty State */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-text-muted font-pixel-operator">Progress</span>
+              <span className="text-sm text-gold font-pixel">0%</span>
+            </div>
+            <div className="progress-rpg h-3">
+              <div className="progress-rpg-fill bg-gradient-to-r from-gold to-yellow-400" style={{ width: "0%" }}></div>
+            </div>
           </div>
         </div>
       </div>
@@ -309,8 +308,8 @@ export default function AchievementSystem() {
 
   return (
     <>
-      <div className="card-rpg bg-battlefield overflow-visible p-6">
-        <div className="flex items-center space-x-4 mb-10">
+      <div className="card-rpg bg-battlefield p-6">
+        <div className="flex items-center space-x-4 mb-8">
           <div className="icon-rpg pixel-glow text-2xl">🏆</div>
           <h3 className="text-xl font-pixel text-gold text-glow">Achievements</h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
@@ -319,9 +318,10 @@ export default function AchievementSystem() {
           </div>
         </div>
 
-        <div className="achievement-container grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8 justify-items-center py-6 overflow-visible">
+        {/* Achievement Grid */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-6 justify-items-center py-4">
           {unlockedAchievementObjects.map((achievement) => (
-            <div key={achievement.id} className="relative achievement-badge overflow-visible">
+            <div key={achievement.id} className="relative">
               <AchievementBadge
                 achievement={achievement}
                 isNew={newAchievements.includes(achievement.id)}
@@ -331,8 +331,25 @@ export default function AchievementSystem() {
           ))}
         </div>
 
+        {/* Progress Bar */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-text-muted font-pixel-operator">Progress</span>
+            <span className="text-sm text-gold font-pixel">
+              {Math.round((unlockedAchievementObjects.length / ACHIEVEMENTS.length) * 100)}%
+            </span>
+          </div>
+          <div className="progress-rpg h-3">
+            <div 
+              className="progress-rpg-fill bg-gradient-to-r from-gold to-yellow-400"
+              style={{ width: `${(unlockedAchievementObjects.length / ACHIEVEMENTS.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Multiple Achievements Notification */}
         {newAchievements.length > 1 && (
-          <div className="mt-8 text-center">
+          <div className="mt-6 text-center">
             <div className="bg-success/20 border-2 border-success rounded-pixel p-4">
               <p className="text-sm text-success font-pixel">
                 🎉 +{newAchievements.length - 1} more achievements unlocked!
@@ -340,6 +357,13 @@ export default function AchievementSystem() {
             </div>
           </div>
         )}
+
+        {/* Achievement Info */}
+        <div className="mt-6 text-center">
+          <p className="text-xs text-text-muted font-pixel-operator">
+            Click on achievements to view details
+          </p>
+        </div>
       </div>
 
       <AchievementModal
