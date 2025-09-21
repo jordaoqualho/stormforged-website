@@ -133,7 +133,7 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
           {/* Total Attacks */}
           <div
             className="stat-rpg border-mystic-blue min-h-[90px] py-2 px-3"
@@ -186,7 +186,7 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Secondary Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
           {/* Draws */}
           <div
             className="stat-rpg border-warning min-h-[90px] py-2 px-3"
