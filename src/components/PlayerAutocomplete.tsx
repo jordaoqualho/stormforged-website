@@ -58,12 +58,10 @@ export default function PlayerAutocomplete({
 
   const handleSelect = (value: string | null) => {
     if (!value) return; // Guard against null/undefined
-    
+
     // Find the player object if it's a string (from recent players)
-    const player = typeof value === "string" ? 
-      players.find(p => p.name === value) || { name: value } : 
-      value;
-    
+    const player = typeof value === "string" ? players.find((p) => p.name === value) || { name: value } : value;
+
     const selectedName = typeof player === "string" ? player : player?.name || "";
     if (selectedName) {
       onChange(selectedName.toLowerCase().trim());

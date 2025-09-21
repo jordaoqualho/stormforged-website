@@ -2,11 +2,12 @@
 
 import { useRPGBackgroundMusic } from "@/lib/music";
 import { useRPGSounds } from "@/lib/sounds";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function MusicPlayer() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const {
     isPlaying,
     currentTrack,
@@ -22,6 +23,11 @@ export default function MusicPlayer() {
   } = useRPGBackgroundMusic();
 
   const { playClick } = useRPGSounds();
+
+  // Ensure client-side rendering to prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleToggle = async () => {
     setIsLoading(true);
@@ -54,8 +60,21 @@ export default function MusicPlayer() {
     playClick();
   };
 
+  // Don't render until client-side to prevent hydration mismatch
+  if (!isClient) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-4 right-4 z-40 pointer-events-none" style={{ position: "fixed" }}>
+    <div 
+      className="fixed bottom-4 right-4 z-40 pointer-events-none" 
+      style={{ 
+        position: "fixed",
+        bottom: "1rem",
+        right: "1rem",
+        zIndex: 40
+      }}
+    >
       {/* Audio Context Status Indicator */}
       {!audioContextResumed && (
         <div className="mb-2 p-2 bg-yellow-600/20 border border-yellow-600 rounded-md text-xs text-yellow-300 font-pixel-operator pointer-events-auto">

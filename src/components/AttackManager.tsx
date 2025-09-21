@@ -260,15 +260,16 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
   });
 
   // Convert battle results to array format for BattleResultSelector
-  const battleResultsArray: BattleResult[] = Array(battleResults.wins).fill("victory")
+  const battleResultsArray: BattleResult[] = Array(battleResults.wins)
+    .fill("victory")
     .concat(Array(battleResults.draws).fill("draw"))
     .concat(Array(battleResults.losses).fill("loss"));
 
   const handleBattleResultChange = (results: BattleResult[]) => {
-    const wins = results.filter(r => r === "victory").length;
-    const draws = results.filter(r => r === "draw").length;
-    const losses = results.filter(r => r === "loss").length;
-    
+    const wins = results.filter((r) => r === "victory").length;
+    const draws = results.filter((r) => r === "draw").length;
+    const losses = results.filter((r) => r === "loss").length;
+
     const newResults = { wins, losses, draws };
     setBattleResults(newResults);
     setFormData((prev) => ({
