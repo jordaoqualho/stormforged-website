@@ -3,16 +3,16 @@
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo, useState } from "react";
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Legend,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import RPGWeekSelector from "./RPGWeekSelector";
 
@@ -216,24 +216,24 @@ export default function Charts() {
   };
 
   return (
-    <div className="space-y-6 overflow-visible">
+    <div className="space-y-4 sm:space-y-6 overflow-visible">
       {/* Week Selector */}
       {availableWeeks.length > 0 && (
-        <div className="card-rpg bg-battlefield p-6 overflow-visible">
-          <div className="flex items-center justify-between">
+        <div className="card-rpg bg-battlefield p-4 sm:p-6 overflow-visible">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
               <div className="icon-rpg pixel-glow text-xl">📅</div>
-              <h3 className="text-xl font-pixel text-gold text-glow">Select Week</h3>
+              <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Select Week</h3>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
               <RPGWeekSelector
                 selectedWeek={selectedWeek}
                 onWeekChange={setSelectedWeek}
                 availableWeeks={availableWeeks}
                 getWeekRange={getWeekRange}
-                className="min-w-64"
+                className="w-full sm:min-w-64"
               />
-              <div className="text-sm text-text-muted font-pixel-operator">
+              <div className="text-sm text-text-muted font-pixel-operator text-center sm:text-left">
                 {selectedWeek ? `Week ${selectedWeek}` : "Current Week"}
               </div>
             </div>
@@ -242,11 +242,11 @@ export default function Charts() {
       )}
 
       {/* Daily Performance Chart */}
-      <div className="card-rpg bg-battlefield p-6">
-        <div className="mb-6">
+      <div className="card-rpg bg-battlefield p-4 sm:p-6">
+        <div className="mb-4 sm:mb-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="icon-rpg pixel-glow text-xl">⚔️</div>
-            <h3 className="text-xl font-pixel text-gold text-glow">Daily Battle Performance</h3>
+            <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Daily Battle Performance</h3>
             <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
           </div>
           {selectedWeek && (
@@ -259,7 +259,7 @@ export default function Charts() {
           )}
         </div>
 
-        <div className="h-80">
+        <div className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={dailyData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#3A3A75" opacity={0.3} />
@@ -307,11 +307,11 @@ export default function Charts() {
 
       {/* Player Performance Chart */}
       {playerData.length > 0 && (
-        <div className="card-rpg bg-battlefield p-6">
-          <div className="mb-6">
+        <div className="card-rpg bg-battlefield p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="icon-rpg pixel-glow text-xl">👑</div>
-              <h3 className="text-xl font-pixel text-gold text-glow">Top Members by Attacks</h3>
+              <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Top Members by Attacks</h3>
               <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
             </div>
             {selectedWeek && (
@@ -324,7 +324,7 @@ export default function Charts() {
             )}
           </div>
 
-          <div className="h-80">
+          <div className="h-64 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={playerData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#3A3A75" opacity={0.3} />
@@ -348,16 +348,16 @@ export default function Charts() {
 
       {/* Weekly Comparison Chart */}
       {comparisonData && (
-        <div className="card-rpg bg-battlefield p-6">
-          <div className="mb-6">
+        <div className="card-rpg bg-battlefield p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="icon-rpg pixel-glow text-xl">📊</div>
-              <h3 className="text-xl font-pixel text-gold text-glow">Week-over-Week Comparison</h3>
+              <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Week-over-Week Comparison</h3>
               <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
             </div>
           </div>
 
-          <div className="h-80">
+          <div className="h-64 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#3A3A75" opacity={0.3} />
@@ -381,11 +381,11 @@ export default function Charts() {
       )}
 
       {/* Victory Rate Trend Chart */}
-      <div className="card-rpg bg-battlefield p-6">
-        <div className="mb-6">
+      <div className="card-rpg bg-battlefield p-4 sm:p-6">
+        <div className="mb-4 sm:mb-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="icon-rpg pixel-glow text-xl">📈</div>
-            <h3 className="text-xl font-pixel text-gold text-glow">Victory Rate Trend</h3>
+            <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Victory Rate Trend</h3>
             <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
           </div>
           {selectedWeek && (
@@ -398,7 +398,7 @@ export default function Charts() {
           )}
         </div>
 
-        <div className="h-80">
+        <div className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={dailyData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#3A3A75" opacity={0.3} />
