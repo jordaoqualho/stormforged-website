@@ -1,11 +1,14 @@
 "use client";
 
-import { formatDate, getCurrentWeekNumber, getWeekEnd, getWeekStart } from "@/lib/calculations";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationSystem";
+
+// Types
+type AchievementRarity = "common" | "rare" | "epic" | "legendary" | "mythic";
+type AchievementCategory = "daily" | "weekly" | "lifetime" | "special";
 
 interface Achievement {
   id: string;
@@ -13,12 +16,103 @@ interface Achievement {
   description: string;
   icon: string;
   color: string;
-  condition: (stats: any, dailyStats?: any, weeklyStats?: any) => boolean;
-  rarity: "common" | "rare" | "epic" | "legendary" | "mythic";
-  category: "daily" | "weekly" | "lifetime" | "special";
-  progress?: (stats: any, dailyStats?: any, weeklyStats?: any) => number;
+  condition: (stats: AchievementStats, dailyStats?: DailyStats, weeklyStats?: WeeklyStats) => boolean;
+  rarity: AchievementRarity;
+  category: AchievementCategory;
+  progress?: (stats: AchievementStats, dailyStats?: DailyStats, weeklyStats?: WeeklyStats) => number;
   maxProgress?: number;
 }
+
+interface AchievementStats {
+  totalAttacks: number;
+  totalWins: number;
+  winRate: number;
+  uniquePlayers: number;
+  consecutiveWins: number;
+  consecutiveDays: number;
+}
+
+interface DailyStats {
+  dailyAttacks: number;
+  dailyWins: number;
+  dailyMembers: number;
+  dailyWinRate: number;
+}
+
+interface WeeklyStats {
+  weeklyAttacks: number;
+  weeklyWins: number;
+  weeklyWinRate: number;
+  activeDays: number;
+  weekComplete: boolean;
+}
+
+interface AchievementBadgeProps {
+  achievement: Achievement;
+  isNew?: boolean;
+  onClick?: () => void;
+  progress?: number;
+  maxProgress?: number;
+}
+
+interface AchievementModalProps {
+  achievement: Achievement;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// Constants
+const ACHIEVEMENT_CONFIG = {
+  DAILY_MEMBERS_THRESHOLD: 30,
+  DAILY_ATTACKS_THRESHOLD: 50,
+  DAILY_PERFECT_ATTACKS_THRESHOLD: 20,
+  WEEKLY_ATTACKS_THRESHOLD: 200,
+  WEEKLY_PERFECT_ATTACKS_THRESHOLD: 50,
+  WEEKLY_ACTIVE_DAYS: 7,
+  LIFETIME_ATTACKS_THRESHOLDS: [1, 100, 500, 1000],
+  LIFETIME_MEMBERS_THRESHOLDS: [25, 50],
+  CONSECUTIVE_WINS_THRESHOLDS: [15, 25],
+  WIN_RATE_THRESHOLD: 85,
+  WIN_RATE_MIN_ATTACKS: 100,
+} as const;
+
+const RARITY_CONFIG = {
+  colors: {
+    common: "border-gray-400 bg-gray-600/80",
+    rare: "border-blue-400 bg-blue-600/80",
+    epic: "border-purple-400 bg-purple-600/80",
+    legendary: "border-gold bg-gold-dark/80",
+    mythic: "border-pink-400 bg-pink-600/80",
+  },
+  glow: {
+    common: "shadow-none",
+    rare: "shadow-glow-blue",
+    epic: "shadow-glow-blue",
+    legendary: "shadow-glow-gold",
+    mythic: "shadow-pink-500/50",
+  },
+  icons: {
+    common: "⚪",
+    rare: "💙",
+    epic: "💜",
+    legendary: "🌟",
+    mythic: "💎",
+  },
+  modalColors: {
+    common: "border-gray-400",
+    rare: "border-blue-400",
+    epic: "border-purple-400",
+    legendary: "border-gold",
+    mythic: "border-pink-400",
+  },
+} as const;
+
+const CATEGORY_CONFIG = {
+  daily: "bg-green-600/20 border-green-500/50",
+  weekly: "bg-blue-600/20 border-blue-500/50",
+  lifetime: "bg-purple-600/20 border-purple-500/50",
+  special: "bg-gold/20 border-gold/50",
+} as const;
 
 const ACHIEVEMENTS: Achievement[] = [
   // DAILY ACHIEVEMENTS
@@ -30,9 +124,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "epic",
     category: "daily",
-    condition: (stats, dailyStats) => dailyStats?.dailyMembers >= 30,
-    progress: (stats, dailyStats) => dailyStats?.dailyMembers || 0,
-    maxProgress: 30,
+    condition: (stats, dailyStats) => (dailyStats?.dailyMembers ?? 0) >= ACHIEVEMENT_CONFIG.DAILY_MEMBERS_THRESHOLD,
+    progress: (stats, dailyStats) => dailyStats?.dailyMembers ?? 0,
+    maxProgress: ACHIEVEMENT_CONFIG.DAILY_MEMBERS_THRESHOLD,
   },
   {
     id: "daily_perfect_day",
@@ -42,7 +136,7 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "legendary",
     category: "daily",
-    condition: (stats, dailyStats) => dailyStats?.dailyWinRate === 100 && dailyStats?.dailyAttacks >= 20,
+    condition: (stats, dailyStats) => dailyStats?.dailyWinRate === 100 && dailyStats?.dailyAttacks >= ACHIEVEMENT_CONFIG.DAILY_PERFECT_ATTACKS_THRESHOLD,
   },
   {
     id: "daily_massive_attack",
@@ -52,9 +146,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-danger",
     rarity: "epic",
     category: "daily",
-    condition: (stats, dailyStats) => dailyStats?.dailyAttacks >= 50,
-    progress: (stats, dailyStats) => dailyStats?.dailyAttacks || 0,
-    maxProgress: 50,
+    condition: (stats, dailyStats) => (dailyStats?.dailyAttacks ?? 0) >= ACHIEVEMENT_CONFIG.DAILY_ATTACKS_THRESHOLD,
+    progress: (stats, dailyStats) => dailyStats?.dailyAttacks ?? 0,
+    maxProgress: ACHIEVEMENT_CONFIG.DAILY_ATTACKS_THRESHOLD,
   },
 
   // WEEKLY ACHIEVEMENTS
@@ -76,9 +170,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-danger",
     rarity: "epic",
     category: "weekly",
-    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyAttacks >= 200,
-    progress: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyAttacks || 0,
-    maxProgress: 200,
+    condition: (stats, dailyStats, weeklyStats) => (weeklyStats?.weeklyAttacks ?? 0) >= ACHIEVEMENT_CONFIG.WEEKLY_ATTACKS_THRESHOLD,
+    progress: (stats, dailyStats, weeklyStats) => weeklyStats?.weeklyAttacks ?? 0,
+    maxProgress: ACHIEVEMENT_CONFIG.WEEKLY_ATTACKS_THRESHOLD,
   },
   {
     id: "weekly_perfect_week",
@@ -89,7 +183,7 @@ const ACHIEVEMENTS: Achievement[] = [
     rarity: "mythic",
     category: "weekly",
     condition: (stats, dailyStats, weeklyStats) =>
-      weeklyStats?.weeklyWinRate === 100 && weeklyStats?.weeklyAttacks >= 50,
+      weeklyStats?.weeklyWinRate === 100 && weeklyStats?.weeklyAttacks >= ACHIEVEMENT_CONFIG.WEEKLY_PERFECT_ATTACKS_THRESHOLD,
   },
   {
     id: "weekly_all_days",
@@ -99,7 +193,7 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-warning",
     rarity: "rare",
     category: "weekly",
-    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.activeDays === 7,
+    condition: (stats, dailyStats, weeklyStats) => weeklyStats?.activeDays === ACHIEVEMENT_CONFIG.WEEKLY_ACTIVE_DAYS,
   },
 
   // LIFETIME ACHIEVEMENTS
@@ -111,7 +205,7 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "common",
     category: "lifetime",
-    condition: (stats) => stats.totalAttacks >= 1,
+    condition: (stats) => stats.totalAttacks >= ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[0],
   },
   {
     id: "warrior_spirit",
@@ -121,9 +215,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-success",
     rarity: "rare",
     category: "lifetime",
-    condition: (stats) => stats.totalAttacks >= 100,
+    condition: (stats) => stats.totalAttacks >= ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[1],
     progress: (stats) => stats.totalAttacks,
-    maxProgress: 100,
+    maxProgress: ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[1],
   },
   {
     id: "guild_master",
@@ -133,9 +227,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-mystic-blue-light",
     rarity: "epic",
     category: "lifetime",
-    condition: (stats) => stats.uniquePlayers >= 25,
+    condition: (stats) => stats.uniquePlayers >= ACHIEVEMENT_CONFIG.LIFETIME_MEMBERS_THRESHOLDS[0],
     progress: (stats) => stats.uniquePlayers,
-    maxProgress: 25,
+    maxProgress: ACHIEVEMENT_CONFIG.LIFETIME_MEMBERS_THRESHOLDS[0],
   },
   {
     id: "consecutive_wins",
@@ -145,9 +239,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-danger",
     rarity: "epic",
     category: "lifetime",
-    condition: (stats) => stats.consecutiveWins >= 15,
+    condition: (stats) => stats.consecutiveWins >= ACHIEVEMENT_CONFIG.CONSECUTIVE_WINS_THRESHOLDS[0],
     progress: (stats) => stats.consecutiveWins,
-    maxProgress: 15,
+    maxProgress: ACHIEVEMENT_CONFIG.CONSECUTIVE_WINS_THRESHOLDS[0],
   },
   {
     id: "efficient_fighter",
@@ -157,7 +251,7 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-success",
     rarity: "rare",
     category: "lifetime",
-    condition: (stats) => stats.winRate >= 85 && stats.totalAttacks >= 100,
+    condition: (stats) => stats.winRate >= ACHIEVEMENT_CONFIG.WIN_RATE_THRESHOLD && stats.totalAttacks >= ACHIEVEMENT_CONFIG.WIN_RATE_MIN_ATTACKS,
   },
   {
     id: "battle_veteran",
@@ -167,9 +261,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "legendary",
     category: "lifetime",
-    condition: (stats) => stats.totalAttacks >= 500,
+    condition: (stats) => stats.totalAttacks >= ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[2],
     progress: (stats) => stats.totalAttacks,
-    maxProgress: 500,
+    maxProgress: ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[2],
   },
   {
     id: "war_legend",
@@ -179,9 +273,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "mythic",
     category: "lifetime",
-    condition: (stats) => stats.totalAttacks >= 1000,
+    condition: (stats) => stats.totalAttacks >= ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[3],
     progress: (stats) => stats.totalAttacks,
-    maxProgress: 1000,
+    maxProgress: ACHIEVEMENT_CONFIG.LIFETIME_ATTACKS_THRESHOLDS[3],
   },
 
   // SPECIAL ACHIEVEMENTS
@@ -193,9 +287,9 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-gold",
     rarity: "mythic",
     category: "special",
-    condition: (stats) => stats.consecutiveWins >= 25,
+    condition: (stats) => stats.consecutiveWins >= ACHIEVEMENT_CONFIG.CONSECUTIVE_WINS_THRESHOLDS[1],
     progress: (stats) => stats.consecutiveWins,
-    maxProgress: 25,
+    maxProgress: ACHIEVEMENT_CONFIG.CONSECUTIVE_WINS_THRESHOLDS[1],
   },
   {
     id: "guild_empire",
@@ -205,53 +299,28 @@ const ACHIEVEMENTS: Achievement[] = [
     color: "text-mystic-blue-light",
     rarity: "mythic",
     category: "special",
-    condition: (stats) => stats.uniquePlayers >= 50,
+    condition: (stats) => stats.uniquePlayers >= ACHIEVEMENT_CONFIG.LIFETIME_MEMBERS_THRESHOLDS[1],
     progress: (stats) => stats.uniquePlayers,
-    maxProgress: 50,
+    maxProgress: ACHIEVEMENT_CONFIG.LIFETIME_MEMBERS_THRESHOLDS[1],
   },
 ];
 
-// Helper functions for calculating stats
-function calculateConsecutiveWins(attacks: any[]): number {
-  let maxConsecutive = 0;
-  let currentConsecutive = 0;
-
-  // Sort attacks by date
-  const sortedAttacks = [...attacks].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  for (const attack of sortedAttacks) {
-    if (attack.wins === attack.attacks) {
-      // Perfect win
-      currentConsecutive += attack.attacks;
-      maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
-    } else {
-      currentConsecutive = 0;
-    }
-  }
-
-  return maxConsecutive;
-}
-
-function calculateConsecutiveDays(attacks: any[]): number {
-  const uniqueDates = [...new Set(attacks.map((attack) => attack.date))].sort();
-  let maxConsecutive = 0;
-  let currentConsecutive = 0;
-
-  for (let i = 0; i < uniqueDates.length; i++) {
-    const currentDate = new Date(uniqueDates[i]);
-    const nextDate = i < uniqueDates.length - 1 ? new Date(uniqueDates[i + 1]) : null;
-
-    currentConsecutive++;
-
-    if (nextDate && nextDate.getTime() - currentDate.getTime() > 24 * 60 * 60 * 1000) {
-      // Gap of more than 1 day
-      maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
-      currentConsecutive = 0;
-    }
-  }
-
-  return Math.max(maxConsecutive, currentConsecutive);
-}
+// Utility functions
+const calculateStats = (attacks: any[]): AchievementStats => {
+  const totalAttacks = attacks.reduce((sum, attack) => sum + attack.attacks, 0);
+  const totalWins = attacks.reduce((sum, attack) => sum + attack.wins, 0);
+  const winRate = totalAttacks > 0 ? Math.round((totalWins / totalAttacks) * 100) : 0;
+  const uniquePlayers = new Set(attacks.map((attack) => attack.playerName)).size;
+  
+  return {
+    totalAttacks,
+    totalWins,
+    winRate,
+    uniquePlayers,
+    consecutiveWins: 0, // Placeholder - would need complex calculation
+    consecutiveDays: 0, // Placeholder - would need complex calculation
+  };
+};
 
 interface AchievementBadgeProps {
   achievement: Achievement;
@@ -261,47 +330,15 @@ interface AchievementBadgeProps {
   maxProgress?: number;
 }
 
-function AchievementBadge({ achievement, isNew = false, onClick, progress, maxProgress }: AchievementBadgeProps) {
-  const rarityColors = {
-    common: "border-gray-400 bg-gray-600/80",
-    rare: "border-blue-400 bg-blue-600/80",
-    epic: "border-purple-400 bg-purple-600/80",
-    legendary: "border-gold bg-gold-dark/80",
-    mythic: "border-pink-400 bg-pink-600/80",
-  };
-
-  const rarityGlow = {
-    common: "shadow-none",
-    rare: "shadow-glow-blue",
-    epic: "shadow-glow-blue",
-    legendary: "shadow-glow-gold",
-    mythic: "shadow-pink-500/50",
-  };
-
-  const rarityIcons = {
-    common: "⚪",
-    rare: "💙",
-    epic: "💜",
-    legendary: "🌟",
-    mythic: "💎",
-  };
-
-  const categoryColors = {
-    daily: "bg-green-600/20 border-green-500/50",
-    weekly: "bg-blue-600/20 border-blue-500/50",
-    lifetime: "bg-purple-600/20 border-purple-500/50",
-    special: "bg-gold/20 border-gold/50",
-  };
-
-  const progressPercentage = progress && maxProgress ? (progress / maxProgress) * 100 : 0;
+function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBadgeProps) {
 
   return (
     <div
       className={`
         relative group cursor-pointer
         w-20 h-20 rounded-full border-2
-        ${rarityColors[achievement.rarity]}
-        ${rarityGlow[achievement.rarity]}
+        ${RARITY_CONFIG.colors[achievement.rarity]}
+        ${RARITY_CONFIG.glow[achievement.rarity]}
         flex flex-col items-center justify-center
         transition-all duration-300
         hover:scale-110 hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]
@@ -316,13 +353,13 @@ function AchievementBadge({ achievement, isNew = false, onClick, progress, maxPr
 
       {/* Rarity Indicator */}
       <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] border border-gold rounded-full flex items-center justify-center">
-        <span className="text-xs">{rarityIcons[achievement.rarity]}</span>
+        <span className="text-xs">{RARITY_CONFIG.icons[achievement.rarity]}</span>
       </div>
 
       {/* Category Indicator */}
       <div
         className={`absolute -bottom-1 -left-1 px-1 py-0.5 rounded text-xs font-pixel-operator ${
-          categoryColors[achievement.category]
+          CATEGORY_CONFIG[achievement.category]
         }`}
       >
         {achievement.category.charAt(0).toUpperCase()}
@@ -349,18 +386,11 @@ interface AchievementModalProps {
 function AchievementModal({ achievement, isOpen, onClose }: AchievementModalProps) {
   if (!isOpen) return null;
 
-  const rarityColors = {
-    common: "border-gray-400",
-    rare: "border-blue-400",
-    epic: "border-purple-400",
-    legendary: "border-gold",
-  };
-
   const modalContent = (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[99999] p-4">
       <div
         className={`card-rpg bg-battlefield max-w-md w-full border-2 ${
-          rarityColors[achievement.rarity]
+          RARITY_CONFIG.modalColors[achievement.rarity]
         } animate-success-pop`}
       >
         <div className="text-center p-6">
@@ -386,6 +416,8 @@ function AchievementModal({ achievement, isOpen, onClose }: AchievementModalProp
                 ? "bg-purple-600 text-white shadow-glow-purple"
                 : achievement.rarity === "rare"
                 ? "bg-blue-600 text-white shadow-glow-blue"
+                : achievement.rarity === "mythic"
+                ? "bg-pink-600 text-white shadow-pink-500/50"
                 : "bg-gray-600 text-white"
             }`}
           >
@@ -416,22 +448,17 @@ export default function AchievementSystem() {
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Calculate stats for achievements
-  const stats = {
-    totalAttacks: attacks.reduce((sum, attack) => sum + attack.attacks, 0),
-    totalWins: attacks.reduce((sum, attack) => sum + attack.wins, 0),
-    winRate: 0,
-    uniquePlayers: new Set(attacks.map((attack) => attack.playerName)).size,
-    consecutiveWins: 0, // This would need more complex logic
-    consecutiveDays: 0, // This would need more complex logic
-  };
+  // Memoized stats calculation
+  const stats = useMemo(() => calculateStats(attacks), [attacks]);
 
-  if (stats.totalAttacks > 0) {
-    stats.winRate = Math.round((stats.totalWins / stats.totalAttacks) * 100);
-  }
+  // Memoized unlocked achievements
+  const unlockedAchievementObjects = useMemo(
+    () => ACHIEVEMENTS.filter((a) => unlockedAchievements.includes(a.id)),
+    [unlockedAchievements]
+  );
 
-  // Check for new achievements
-  useEffect(() => {
+  // Memoized achievement check function
+  const checkForNewAchievements = useCallback(() => {
     const newUnlocked: string[] = [];
 
     ACHIEVEMENTS.forEach((achievement) => {
@@ -448,7 +475,6 @@ export default function AchievementSystem() {
       const firstNew = ACHIEVEMENTS.find((a) => a.id === newUnlocked[0]);
       if (firstNew) {
         showSuccess(`Achievement Unlocked: ${firstNew.title}! ${firstNew.icon}`);
-        // Play victory sound for new achievements
         if (soundEnabled) playVictory();
       }
 
@@ -457,14 +483,23 @@ export default function AchievementSystem() {
         setNewAchievements([]);
       }, 3000);
     }
-  }, [attacks, unlockedAchievements, showSuccess]);
+  }, [unlockedAchievements, stats, showSuccess, soundEnabled, playVictory]);
 
-  const handleAchievementClick = (achievement: Achievement) => {
+  // Check for new achievements
+  useEffect(() => {
+    checkForNewAchievements();
+  }, [checkForNewAchievements]);
+
+  // Memoized handlers
+  const handleAchievementClick = useCallback((achievement: Achievement) => {
     setSelectedAchievement(achievement);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const unlockedAchievementObjects = ACHIEVEMENTS.filter((a) => unlockedAchievements.includes(a.id));
+  const handleModalClose = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedAchievement(null);
+  }, []);
 
   if (unlockedAchievementObjects.length === 0) {
     return (
@@ -563,10 +598,7 @@ export default function AchievementSystem() {
       <AchievementModal
         achievement={selectedAchievement!}
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedAchievement(null);
-        }}
+        onClose={handleModalClose}
       />
     </>
   );
