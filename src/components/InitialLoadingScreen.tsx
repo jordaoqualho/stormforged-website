@@ -44,12 +44,15 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
 
     const updateProgress = () => {
       setProgress((prev) => {
-        const newProgress = prev + 1.2;
+        const newProgress = prev + 1.5;
         if (newProgress >= 100 && !isCompleted) {
-          // Don't complete immediately, wait for minimum duration
+          // Progress reached 100%, trigger completion
+          setTimeout(() => {
+            completeLoading();
+          }, 300); // Small delay to show 100% briefly
           return 100;
         }
-        return newProgress;
+        return Math.min(newProgress, 100); // Cap at 100
       });
     };
 
@@ -62,12 +65,14 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
     };
 
     // Start the loading process
-    progressInterval = setInterval(updateProgress, 60);
+    progressInterval = setInterval(updateProgress, 50);
     stepTimeout = setTimeout(nextStep, 200);
 
-    // Set minimum duration timer
+    // Set minimum duration timer as fallback
     minDurationTimeout = setTimeout(() => {
-      completeLoading();
+      if (!isCompleted) {
+        completeLoading();
+      }
     }, minDuration);
 
     return () => {
