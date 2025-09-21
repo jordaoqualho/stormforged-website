@@ -120,16 +120,30 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
       </div>
       <div className="panel-rpg overflow-hidden rounded-md border border-gray-700">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-mystic-blue">
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rank</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Member</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Attacks</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Victories</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Defeats</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Points</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Actions</th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
+                  Rank
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-left">
+                  Member
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center hidden sm:table-cell">
+                  Attacks
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
+                  Victories
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center hidden sm:table-cell">
+                  Defeats
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
+                  Points
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +158,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
                     title={`${attack.playerName} - ${new Date(attack.date).toLocaleDateString()}`}
                   >
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2 px-2 sm:px-3 text-center">
                       <div className="flex items-center justify-center">
                         {index === 0 ? (
                           <div className="achievement-badge bg-gradient-to-b from-yellow-400 to-yellow-600 border-yellow-500 shadow-glow-gold">
@@ -159,22 +173,32 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                             🥉
                           </div>
                         ) : (
-                          <span className="font-pixel text-text-muted text-sm">#{index + 1}</span>
+                          <span className="font-pixel text-text-muted text-xs sm:text-sm">#{index + 1}</span>
                         )}
                       </div>
                     </td>
-                    <td className="py-2 px-3 font-pixel text-text-primary text-sm">{attack.playerName}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-gold text-sm">{attack.attacks}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-success text-sm">{attack.wins}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-danger text-sm">{attack.losses}</td>
-                    <td className="py-2 px-3 text-center font-pixel text-gold text-sm">{attack.points}</td>
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2 px-2 sm:px-3 font-pixel text-text-primary text-xs sm:text-sm">
+                      {attack.playerName}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-gold text-xs sm:text-sm hidden sm:table-cell">
+                      {attack.attacks}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-success text-xs sm:text-sm">
+                      {attack.wins}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-danger text-xs sm:text-sm hidden sm:table-cell">
+                      {attack.losses}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-gold text-xs sm:text-sm">
+                      {attack.points}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center">
                       <button
                         onClick={(e) => handleDeleteClick(e, attack.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded px-2 py-1 transition-colors text-xs"
+                        className="text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded px-1 sm:px-2 py-1 transition-colors text-xs"
                         title="Delete attack record"
                       >
-                        🗑️ Delete
+                        🗑️ <span className="hidden sm:inline">Delete</span>
                       </button>
                     </td>
                   </tr>
