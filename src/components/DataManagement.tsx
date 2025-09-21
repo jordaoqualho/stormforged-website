@@ -234,7 +234,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                 <div className="text-3xl font-pixel text-mystic-blue-light mb-2">
                   {new Set(useGuildWarStore.getState().attacks.map((a) => a.playerName)).size}
                 </div>
-                <div className="text-sm text-text-muted font-pixel-operator">Unique Warriors</div>
+                <div className="text-sm text-text-muted font-pixel-operator">Unique Members</div>
               </div>
             </div>
           </div>

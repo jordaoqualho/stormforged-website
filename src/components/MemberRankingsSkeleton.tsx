@@ -1,11 +1,11 @@
 "use client";
 
-export default function WarriorRankingsSkeleton() {
+export default function MemberRankingsSkeleton() {
   return (
     <div className="card-rpg bg-battlefield p-6 animate-pulse">
       <div className="flex items-center space-x-4 mb-6">
         <div className="icon-rpg pixel-glow text-xl">👑</div>
-        <h3 className="text-xl font-pixel text-gold text-glow">Warrior Rankings</h3>
+        <h3 className="text-xl font-pixel text-gold text-glow">Member Rankings</h3>
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
       <div className="panel-rpg overflow-hidden rounded-md border border-gray-700">
@@ -14,7 +14,7 @@ export default function WarriorRankingsSkeleton() {
             <thead>
               <tr className="border-b border-mystic-blue">
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Rank</th>
-                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Warrior</th>
+                <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Member</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Strikes</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Victories</th>
                 <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Defeats</th>

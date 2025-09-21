@@ -36,7 +36,7 @@ const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: "warrior_spirit",
-    title: "Warrior Spirit",
+    title: "Member Spirit",
     description: "Complete 50 total attacks",
     icon: "🏆",
     color: "text-success",
@@ -63,7 +63,7 @@ const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: "daily_warrior",
-    title: "Daily Warrior",
+    title: "Daily Member",
     description: "Battle for 7 consecutive days",
     icon: "📅",
     color: "text-warning",

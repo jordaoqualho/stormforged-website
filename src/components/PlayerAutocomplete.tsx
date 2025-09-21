@@ -109,7 +109,7 @@ export default function PlayerAutocomplete({
         >
           {showRecent && (
             <div className="px-3 py-2 border-b border-mystic-blue">
-              <div className="text-xs font-pixel text-gold">Recent Warriors</div>
+              <div className="text-xs font-pixel text-gold">Recent Members</div>
             </div>
           )}
 
@@ -144,7 +144,7 @@ export default function PlayerAutocomplete({
 
           {query && filteredPlayers.length > 0 && (
             <div className="px-3 py-2 border-b border-mystic-blue">
-              <div className="text-xs font-pixel text-gold">Matching Warriors</div>
+              <div className="text-xs font-pixel text-gold">Matching Members</div>
             </div>
           )}
 

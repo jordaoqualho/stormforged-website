@@ -13,8 +13,8 @@ import InitialLoadingScreen from "@/components/InitialLoadingScreen";
 import MusicPlayer from "@/components/MusicPlayer";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
-import WarriorRankings from "@/components/WarriorRankings";
-import WarriorRankingsSkeleton from "@/components/WarriorRankingsSkeleton";
+import MemberRankings from "@/components/MemberRankings";
+import MemberRankingsSkeleton from "@/components/MemberRankingsSkeleton";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
@@ -194,9 +194,9 @@ export default function Home() {
               <DailyBattleLog />
             </div>
 
-            {/* Warrior Rankings - Full Width */}
+            {/* Member Rankings - Full Width */}
             <div className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
-              <WarriorRankings />
+              <MemberRankings />
             </div>
 
             {/* Achievement System */}
@@ -219,7 +219,7 @@ export default function Home() {
                   <div className="text-3xl font-pixel text-success">
                     {new Set(useGuildWarStore.getState().attacks.map((a) => a.playerName)).size}
                   </div>
-                  <div className="text-xs text-text-secondary font-pixel-operator">Active Warriors</div>
+                  <div className="text-xs text-text-secondary font-pixel-operator">Active Members</div>
                 </div>
                 <div className="w-px h-12 bg-gold opacity-50"></div>
                 <div className="text-center">

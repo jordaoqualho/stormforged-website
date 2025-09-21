@@ -311,7 +311,7 @@ export default function Charts() {
           <div className="mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="icon-rpg pixel-glow text-xl">👑</div>
-              <h3 className="text-xl font-pixel text-gold text-glow">Top Warriors by Strikes</h3>
+              <h3 className="text-xl font-pixel text-gold text-glow">Top Members by Strikes</h3>
               <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
             </div>
             {selectedWeek && (

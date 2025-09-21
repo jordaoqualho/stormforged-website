@@ -115,12 +115,12 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           {/* Player Name Input */}
           <div className="space-y-1">
             <label htmlFor="playerName" className="block font-pixel text-gold text-left mb-1">
-              🛡️ Warrior Name
+              🛡️ Member Name
             </label>
             <PlayerAutocomplete
               value={playerName}
               onChange={setPlayerName}
-              placeholder="Enter warrior name..."
+              placeholder="Enter member name..."
               className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
               disabled={isLoading}
             />

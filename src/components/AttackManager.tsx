@@ -137,7 +137,7 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-dark-gray bg-[#1A1A1A]">
-                  <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Warrior</th>
+                  <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-left">Member</th>
                   <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Date</th>
                   <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Attacks</th>
                   <th className="text-sm text-gray-300 font-pixel py-3 px-3 text-center">Wins</th>
@@ -288,7 +288,7 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Player Name */}
             <div className="space-y-1">
-              <label className="text-gold font-pixel text-sm">Warrior Name</label>
+              <label className="text-gold font-pixel text-sm">Member Name</label>
               <PlayerAutocomplete
                 value={formData.playerName}
                 onChange={(value) => setFormData((prev) => ({ ...prev, playerName: value }))}
