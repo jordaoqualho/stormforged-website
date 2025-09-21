@@ -105,30 +105,42 @@ function AchievementBadge({ achievement, isNew = false, onClick }: AchievementBa
     <div
       className={`
         relative group cursor-pointer
-        w-20 h-20 rounded-full border-2
+        w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2
         ${rarityColors[achievement.rarity]}
         ${rarityGlow[achievement.rarity]}
         flex items-center justify-center
         transition-all duration-300
-        hover:scale-110
-        ${isNew ? "animate-success-pop" : ""}
+        hover:scale-110 hover:rotate-3
+        ${isNew ? "animate-success-pop ring-4 ring-success ring-opacity-50" : ""}
       `}
       onClick={onClick}
     >
-      <span className="text-2xl">{achievement.icon}</span>
+      <span className="text-xl sm:text-2xl">{achievement.icon}</span>
 
       {isNew && (
-        <div className="absolute -top-1 -right-1 w-4 h-4 bg-success rounded-full animate-pulse">
-          <span className="text-xs text-[#0D0D0D] font-pixel">!</span>
+        <div className="absolute -top-2 -right-2 w-5 h-5 bg-success rounded-full animate-bounce flex items-center justify-center">
+          <span className="text-xs text-[#0D0D0D] font-pixel font-bold">!</span>
         </div>
       )}
 
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="bg-[#0D0D0D] border border-gold rounded-pixel p-2 shadow-[8px_8px_0px_rgba(0,0,0,0.8)] whitespace-nowrap">
-          <div className={`font-pixel text-xs ${achievement.color}`}>{achievement.title}</div>
-          <div className="text-xs text-text-secondary font-pixel-operator">{achievement.description}</div>
-          <div className="text-xs text-gold font-pixel-operator capitalize">{achievement.rarity}</div>
+      {/* Enhanced Tooltip */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-10">
+        <div className="bg-[#0D0D0D] border-2 border-gold rounded-pixel p-3 shadow-[8px_8px_0px_rgba(0,0,0,0.8)] whitespace-nowrap min-w-max">
+          <div className={`font-pixel text-sm ${achievement.color} mb-1`}>{achievement.title}</div>
+          <div className="text-xs text-text-secondary font-pixel-operator mb-1">{achievement.description}</div>
+          <div
+            className={`text-xs font-pixel-operator capitalize px-2 py-1 rounded-pixel ${
+              achievement.rarity === "legendary"
+                ? "bg-gold text-[#0D0D0D]"
+                : achievement.rarity === "epic"
+                ? "bg-purple-600 text-white"
+                : achievement.rarity === "rare"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-600 text-white"
+            }`}
+          >
+            {achievement.rarity}
+          </div>
         </div>
       </div>
     </div>
@@ -144,16 +156,52 @@ interface AchievementModalProps {
 function AchievementModal({ achievement, isOpen, onClose }: AchievementModalProps) {
   if (!isOpen) return null;
 
+  const rarityColors = {
+    common: "border-gray-400",
+    rare: "border-blue-400",
+    epic: "border-purple-400",
+    legendary: "border-gold",
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="card-rpg bg-battlefield max-w-md mx-4 animate-success-pop">
-        <div className="text-center">
-          <div className="text-6xl mb-4 animate-float">{achievement.icon}</div>
-          <h2 className="text-2xl font-pixel text-gold mb-2">Achievement Unlocked!</h2>
-          <h3 className={`text-xl font-pixel mb-4 ${achievement.color}`}>{achievement.title}</h3>
-          <p className="text-text-secondary font-pixel-operator mb-6">{achievement.description}</p>
-          <div className="flex justify-center space-x-4">
-            <button onClick={onClose} className="btn-rpg">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div
+        className={`card-rpg bg-battlefield max-w-md w-full border-2 ${
+          rarityColors[achievement.rarity]
+        } animate-success-pop`}
+      >
+        <div className="text-center p-6">
+          {/* Achievement Icon with Glow Effect */}
+          <div className="relative mb-6">
+            <div className={`text-8xl animate-float ${achievement.color} filter drop-shadow-lg`}>
+              {achievement.icon}
+            </div>
+            <div className="absolute inset-0 text-8xl animate-ping opacity-20">{achievement.icon}</div>
+          </div>
+
+          {/* Title and Description */}
+          <h2 className="text-2xl font-pixel text-gold mb-3 text-glow">Achievement Unlocked!</h2>
+          <h3 className={`text-xl font-pixel mb-4 ${achievement.color} text-glow`}>{achievement.title}</h3>
+          <p className="text-text-secondary font-pixel-operator mb-6 leading-relaxed">{achievement.description}</p>
+
+          {/* Rarity Badge */}
+          <div
+            className={`inline-block px-4 py-2 rounded-pixel font-pixel text-sm mb-6 ${
+              achievement.rarity === "legendary"
+                ? "bg-gold text-[#0D0D0D] shadow-glow-gold"
+                : achievement.rarity === "epic"
+                ? "bg-purple-600 text-white shadow-glow-purple"
+                : achievement.rarity === "rare"
+                ? "bg-blue-600 text-white shadow-glow-blue"
+                : "bg-gray-600 text-white"
+            }`}
+          >
+            {achievement.rarity.toUpperCase()}
+          </div>
+
+          {/* Action Button */}
+          <div className="flex justify-center">
+            <button onClick={onClose} className="btn-rpg text-lg px-8 py-3 hover:scale-105 transition-transform">
               🎉 Awesome!
             </button>
           </div>
@@ -247,7 +295,7 @@ export default function AchievementSystem() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4">
+        <div className="flex flex-wrap gap-3 justify-center">
           {unlockedAchievementObjects.map((achievement) => (
             <AchievementBadge
               key={achievement.id}

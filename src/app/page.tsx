@@ -164,8 +164,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="icon-rpg text-3xl mb-2">🏰</div>
-                <h3 className="font-pixel text-gold mb-2">Stormforged</h3>
-                <p className="text-xs text-text-muted font-pixel-operator">Idle Horizon Guild War Command Center</p>
+              <h3 className="font-pixel text-gold mb-2">Stormforged</h3>
+              <p className="text-xs text-text-muted font-pixel-operator">Idle Horizon Guild War Command Center</p>
             </div>
             <div className="text-center">
               <div className="icon-rpg text-3xl mb-2">⚔️</div>

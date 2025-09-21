@@ -58,7 +58,7 @@ export default function CurrentWeekStats() {
         {/* RPG Header */}
         <div className="flex items-center space-x-4 mb-8">
           <div className="icon-rpg pixel-glow">🏰</div>
-          <h2 className="text-2xl font-pixel text-gold text-glow">Stormforged Command Center</h2>
+          <h2 className="text-2xl font-pixel text-gold text-glow">Command Center</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
           <div className="text-sm text-text-muted font-pixel-operator">
             {formatDate(currentWeekStats.weekStart)} - {formatDate(currentWeekStats.weekEnd)}

@@ -342,3 +342,18 @@ body {
   z-index: -1;
   animation: glow 2s ease-in-out infinite alternate;
 }
+
+@keyframes calendar-slide-down {
+  0% { 
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.calendar-enter {
+  animation: calendar-slide-down 0.2s ease-out;
+}

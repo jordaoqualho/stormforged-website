@@ -5,6 +5,7 @@ import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
 import PlayerAutocomplete from "./PlayerAutocomplete";
+import RPGDatePicker from "./RPGDatePicker";
 
 interface AddAttackFormProps {
   onSuccess?: (message: string) => void;
@@ -14,10 +15,12 @@ interface AddAttackFormProps {
 export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps) {
   const [playerName, setPlayerName] = useState("");
   const [date, setDate] = useState(formatDate(new Date()));
-  const [attacks, setAttacks] = useState<number>(0);
   const [wins, setWins] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [playerSuggestions, setPlayerSuggestions] = useState<string[]>([]);
+
+  // Fixed attacks per entry (always 5)
+  const attacks = 5;
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
   const { playClick, playSword, playSuccess, playError } = useRPGSounds();
@@ -31,7 +34,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!playerName.trim() || attacks < 0 || wins < 0 || wins > attacks) {
+    if (!playerName.trim() || wins < 0 || wins > attacks) {
       playError();
       onError?.("Invalid input! Check your values, warrior!");
       return;
@@ -49,7 +52,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
       // Reset form
       setPlayerName("");
-      setAttacks(0);
       setWins(0);
 
       playSuccess();
@@ -64,8 +66,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     }
   };
 
-  const maxAttacks = 5;
-  const isFormValid = playerName.trim() && attacks >= 0 && wins >= 0 && wins <= attacks && attacks <= maxAttacks;
+  const isFormValid = playerName.trim() && wins >= 0 && wins <= attacks;
   const isLoading = isSaving || isSubmitting;
 
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
@@ -99,59 +100,20 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             <label htmlFor="date" className="block font-pixel text-lg text-gold">
               📅 Battle Date
             </label>
-            <input
-              type="date"
-              id="date"
+            <RPGDatePicker
               value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="input-rpg w-full px-4 py-3 text-base"
-              required
+              onChange={setDate}
+              placeholder="Select battle date..."
+              className="w-full"
             />
           </div>
 
-          {/* Attacks and Wins Grid */}
-          <div className="grid grid-cols-2 gap-6">
-            {/* Total Attacks */}
-            <div className="space-y-3">
-              <label htmlFor="attacks" className="block font-pixel text-lg text-gold">
-                ⚔️ Total Attacks (Max {maxAttacks})
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  id="attacks"
-                  min="0"
-                  max={maxAttacks}
-                  value={attacks}
-                  onChange={(e) => setAttacks(Math.max(0, Math.min(maxAttacks, parseInt(e.target.value) || 0)))}
-                  className="input-rpg w-full px-4 py-3 text-base"
-                  required
-                />
-                {/* Attack Progress Bar */}
-                {attacks > 0 && (
-                  <div className="mt-2">
-                    <div className="flex space-x-1">
-                      {Array.from({ length: maxAttacks }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`w-6 h-6 border border-mystic-blue rounded-pixel flex items-center justify-center text-xs font-pixel ${
-                            i < attacks ? "bg-gold text-[#0D0D0D] shadow-glow-gold" : "bg-[#2A2A2A] text-text-muted"
-                          }`}
-                        >
-                          {i < attacks ? "⚔️" : "⚪"}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Wins */}
-            <div className="space-y-3">
-              <label htmlFor="wins" className="block font-pixel text-lg text-gold">
-                🏆 Victories
-              </label>
+          {/* Victories Input with Visual Indicators */}
+          <div className="space-y-3">
+            <label htmlFor="wins" className="block font-pixel text-lg text-gold">
+              🏆 Victories (out of 5)
+            </label>
+            <div className="relative">
               <input
                 type="number"
                 id="wins"
@@ -162,11 +124,33 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                 className="input-rpg w-full px-4 py-3 text-base"
                 required
               />
+              {/* Victory Progress Bar */}
+              <div className="mt-3">
+                <div className="flex space-x-2 justify-center">
+                  {Array.from({ length: attacks }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`w-8 h-8 border-2 border-mystic-blue rounded-pixel flex items-center justify-center text-sm font-pixel transition-all duration-300 ${
+                        i < wins
+                          ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110"
+                          : "bg-[#2A2A2A] text-text-muted hover:bg-[#3A3A3A]"
+                      }`}
+                    >
+                      {i < wins ? "⚔️" : "⚪"}
+                    </div>
+                  ))}
+                </div>
+                <div className="text-center mt-2">
+                  <span className="text-sm text-text-muted font-pixel-operator">
+                    {wins} victories • {attacks - wins} defeats
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Battle Summary */}
-          {attacks > 0 && (
+          {wins > 0 && (
             <div className="panel-rpg">
               <h3 className="font-pixel text-sm text-gold mb-3">📊 Battle Summary</h3>
               <div className="grid grid-cols-3 gap-4 text-center">
