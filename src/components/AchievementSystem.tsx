@@ -1,10 +1,10 @@
 "use client";
 
-import { useRPGBackgroundMusic } from "@/lib/music";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationSystem";
+import { useRPGSounds } from "@/lib/sounds";
 
 interface Achievement {
   id: string;
@@ -216,7 +216,7 @@ function AchievementModal({ achievement, isOpen, onClose }: AchievementModalProp
 export default function AchievementSystem() {
   const { attacks } = useGuildWarStore();
   const { showSuccess } = useNotifications();
-  const { playVictoryFanfare } = useRPGBackgroundMusic();
+  const { playVictory, isEnabled: soundEnabled } = useRPGSounds();
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
@@ -254,8 +254,8 @@ export default function AchievementSystem() {
       const firstNew = ACHIEVEMENTS.find((a) => a.id === newUnlocked[0]);
       if (firstNew) {
         showSuccess(`Achievement Unlocked: ${firstNew.title}! ${firstNew.icon}`);
-        // Play victory fanfare for new achievements
-        playVictoryFanfare();
+        // Play victory sound for new achievements
+        if (soundEnabled) playVictory();
       }
 
       // Clear new achievements after animation
