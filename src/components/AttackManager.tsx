@@ -1,13 +1,13 @@
 "use client";
 
-import { AttackRecord } from "@/types";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import { AttackRecord } from "@/types";
 import { useState } from "react";
-import { useNotifications } from "./NotificationSystem";
-import RPGConfirmModal from "./RPGConfirmModal";
-import PlayerAutocomplete from "./PlayerAutocomplete";
-import RPGDatePicker from "./RPGDatePicker";
 import BattleResultSelector from "./BattleResultSelector";
+import { useNotifications } from "./NotificationSystem";
+import PlayerAutocomplete from "./PlayerAutocomplete";
+import RPGConfirmModal from "./RPGConfirmModal";
+import RPGDatePicker from "./RPGDatePicker";
 
 interface AttackManagerProps {
   className?: string;
@@ -46,7 +46,7 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
 
   const confirmDelete = async () => {
     if (!attackToDelete) return;
-    
+
     try {
       await deleteAttack(attackToDelete);
       showSuccess("Attack record deleted successfully!");
@@ -71,7 +71,7 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
         draws: formData.draws,
         points: formData.points,
       });
-      
+
       showSuccess("Attack record updated successfully!");
       setIsEditing(false);
       setEditingAttack(null);
@@ -107,16 +107,12 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
           <h3 className="text-xl font-pixel text-gold text-glow">Attack Records</h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
-        
+
         <div className="text-center py-12">
           <div className="icon-rpg text-6xl mb-6 animate-float">📝</div>
           <div className="bg-[#1A1A1A] border border-mystic-blue rounded-pixel p-6 max-w-md mx-auto">
-            <p className="text-text-muted font-pixel-operator text-sm leading-relaxed mb-4">
-              No attack records found.
-            </p>
-            <p className="text-text-secondary font-pixel-operator text-xs">
-              Start recording battles to see them here!
-            </p>
+            <p className="text-text-muted font-pixel-operator text-sm leading-relaxed mb-4">No attack records found.</p>
+            <p className="text-text-secondary font-pixel-operator text-xs">Start recording battles to see them here!</p>
           </div>
         </div>
       </div>
@@ -154,8 +150,8 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
               </thead>
               <tbody>
                 {sortedAttacks.map((attack) => (
-                  <tr 
-                    key={attack.id} 
+                  <tr
+                    key={attack.id}
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
                   >
                     <td className="py-3 px-3 text-sm">
@@ -169,32 +165,24 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
                     <td className="py-3 px-3 text-sm text-center text-text-secondary font-pixel-operator">
                       {formatDate(attack.date)}
                     </td>
-                    <td className="py-3 px-3 text-sm text-center font-pixel text-gold">
-                      {attack.attacks}
-                    </td>
-                    <td className="py-3 px-3 text-sm text-center font-pixel text-success">
-                      {attack.wins}
-                    </td>
-                    <td className="py-3 px-3 text-sm text-center font-pixel text-danger">
-                      {attack.losses}
-                    </td>
-                    <td className="py-3 px-3 text-sm text-center font-pixel text-warning">
-                      {attack.draws}
-                    </td>
+                    <td className="py-3 px-3 text-sm text-center font-pixel text-gold">{attack.attacks}</td>
+                    <td className="py-3 px-3 text-sm text-center font-pixel text-success">{attack.wins}</td>
+                    <td className="py-3 px-3 text-sm text-center font-pixel text-danger">{attack.losses}</td>
+                    <td className="py-3 px-3 text-sm text-center font-pixel text-warning">{attack.draws}</td>
                     <td className="py-3 px-3 text-sm text-center">
-                      <span className={`font-pixel text-sm px-2 py-1 rounded-full ${
-                        getWinRate(attack.wins, attack.attacks) >= 80
-                          ? "bg-green-700/80 text-white"
-                          : getWinRate(attack.wins, attack.attacks) >= 60
-                          ? "bg-yellow-700/80 text-white"
-                          : "bg-red-700/80 text-white"
-                      }`}>
+                      <span
+                        className={`font-pixel text-sm px-2 py-1 rounded-full ${
+                          getWinRate(attack.wins, attack.attacks) >= 80
+                            ? "bg-green-700/80 text-white"
+                            : getWinRate(attack.wins, attack.attacks) >= 60
+                            ? "bg-yellow-700/80 text-white"
+                            : "bg-red-700/80 text-white"
+                        }`}
+                      >
                         {getWinRate(attack.wins, attack.attacks)}%
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-sm text-center font-pixel text-gold">
-                      {attack.points}
-                    </td>
+                    <td className="py-3 px-3 text-sm text-center font-pixel text-gold">{attack.points}</td>
                     <td className="py-3 px-3 text-sm text-center">
                       <div className="flex items-center justify-center space-x-2">
                         <button
@@ -273,12 +261,12 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
 
   const handleBattleResultChange = (results: { wins: number; losses: number; draws: number }) => {
     setBattleResults(results);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       wins: results.wins,
       losses: results.losses,
       draws: results.draws,
-      points: (results.wins * 5) + (results.losses * 2) + (results.draws * 3),
+      points: results.wins * 5 + results.losses * 2 + results.draws * 3,
     }));
   };
 
@@ -303,7 +291,7 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
               <label className="text-gold font-pixel text-sm">Warrior Name</label>
               <PlayerAutocomplete
                 value={formData.playerName}
-                onChange={(value) => setFormData(prev => ({ ...prev, playerName: value }))}
+                onChange={(value) => setFormData((prev) => ({ ...prev, playerName: value }))}
                 placeholder="Enter warrior name"
                 className="w-full"
                 disabled={isSaving}
@@ -315,7 +303,7 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
               <label className="text-gold font-pixel text-sm">Battle Date</label>
               <RPGDatePicker
                 value={formData.date}
-                onChange={(value) => setFormData(prev => ({ ...prev, date: value }))}
+                onChange={(value) => setFormData((prev) => ({ ...prev, date: value }))}
                 className="w-full"
                 disabled={isSaving}
               />

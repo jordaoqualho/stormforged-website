@@ -14,7 +14,7 @@ export default function DailyBattleLog() {
   };
 
   // Reorder days to start from Friday (war week starts on Friday)
-  const reorderDaysForWarWeek = (dailyStats: any[]) => {
+  const reorderDaysForWarWeek = (dailyStats: any[], weekStart: string) => {
     const dayOrder = ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
     const orderedDays = [];
     
@@ -25,18 +25,17 @@ export default function DailyBattleLog() {
       dayMap.set(dayName, day);
     });
     
+    // Calculate the actual week start date
+    const weekStartDate = new Date(weekStart);
+    
     // Add days in war week order (Friday to Thursday)
-    dayOrder.forEach(dayName => {
+    dayOrder.forEach((dayName, index) => {
       if (dayMap.has(dayName)) {
         orderedDays.push(dayMap.get(dayName));
       } else {
-        // Create empty day entry for missing days
-        const today = new Date();
-        const dayIndex = dayOrder.indexOf(dayName);
-        const friday = new Date(today);
-        friday.setDate(today.getDate() - today.getDay() + 5); // Get to Friday
-        const emptyDate = new Date(friday);
-        emptyDate.setDate(friday.getDate() + dayIndex);
+        // Create empty day entry for missing days using the correct week boundaries
+        const emptyDate = new Date(weekStartDate);
+        emptyDate.setDate(weekStartDate.getDate() + index);
         
         orderedDays.push({
           date: emptyDate.toISOString().split('T')[0],
@@ -45,6 +44,7 @@ export default function DailyBattleLog() {
           totalLosses: 0,
           totalDraws: 0,
           playerCount: 0,
+          winRate: 0,
         });
       }
     });
@@ -52,7 +52,7 @@ export default function DailyBattleLog() {
     return orderedDays;
   };
 
-  const orderedDays = reorderDaysForWarWeek(currentWeekStats.dailyStats);
+  const orderedDays = reorderDaysForWarWeek(currentWeekStats.dailyStats, currentWeekStats.weekStart);
 
   return (
     <div className="card-rpg bg-battlefield p-6">

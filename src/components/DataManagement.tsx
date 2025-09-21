@@ -2,8 +2,8 @@
 
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useState } from "react";
-import RPGConfirmModal from "./RPGConfirmModal";
 import AttackManager from "./AttackManager";
+import RPGConfirmModal from "./RPGConfirmModal";
 
 interface DataManagementProps {
   onSuccess?: (message: string) => void;
@@ -15,7 +15,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   const [importData, setImportData] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [showImportSection, setShowImportSection] = useState(false);
-  
+
   // Confirmation modal states
   const [showImportConfirm, setShowImportConfirm] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
