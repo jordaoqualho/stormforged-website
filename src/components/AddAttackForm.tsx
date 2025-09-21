@@ -49,10 +49,22 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       return;
     }
 
+    // Check for duplicate player on same date
+    const trimmedPlayerName = playerName.trim();
+    const existingAttack = allAttacks.find(
+      (attack) => attack.playerName.toLowerCase() === trimmedPlayerName.toLowerCase() && attack.date === date
+    );
+
+    if (existingAttack) {
+      playError();
+      onError?.(`${trimmedPlayerName} has already recorded a battle on ${date}. One battle per day per warrior! ⚔️`);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await addAttack({
-        playerName: playerName.trim(),
+        playerName: trimmedPlayerName,
         date,
         attacks,
         wins,
@@ -67,7 +79,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
       playSuccess();
       playSword();
-      onSuccess?.(`Battle record added! ${playerName.trim()} earned ${points} points! ⚔️`);
+      onSuccess?.(`Battle record added! ${trimmedPlayerName} earned ${points} points! ⚔️`);
     } catch (error) {
       console.error("Error adding attack:", error);
       playError();
@@ -82,20 +94,27 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
 
+  // Check if current player/date combination already exists
+  const isDuplicateEntry =
+    Boolean(playerName.trim()) &&
+    allAttacks.some(
+      (attack) => attack.playerName.toLowerCase() === playerName.trim().toLowerCase() && attack.date === date
+    );
+
   return (
-    <div className="card-rpg bg-battlefield max-w-2xl mx-auto">
-      <div className="relative p-6">
+    <div className="card-rpg bg-battlefield">
+      <div className="relative p-4 sm:p-6">
         {/* RPG Header */}
-        <div className="flex items-center space-x-4 mb-8">
+        <div className="flex items-center space-x-4 mb-6">
           <div className="icon-rpg pixel-glow">⚔️</div>
           <h2 className="text-2xl font-pixel text-gold text-glow">Battle Log Entry</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Player Name Input */}
-          <div className="space-y-3">
-            <label htmlFor="playerName" className="block font-pixel text-lg text-gold">
+          <div className="space-y-2">
+            <label htmlFor="playerName" className="block font-pixel text-lg text-gold text-left mb-1">
               🛡️ Warrior Name
             </label>
             <PlayerAutocomplete
@@ -107,60 +126,27 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           </div>
 
           {/* Date Input */}
-          <div className="space-y-3">
-            <label htmlFor="date" className="block font-pixel text-lg text-gold">
+          <div className="space-y-2">
+            <label htmlFor="date" className="block font-pixel text-lg text-gold text-left mb-1">
               📅 Battle Date
             </label>
             <RPGDatePicker value={date} onChange={setDate} placeholder="Select battle date..." className="w-full" />
           </div>
 
           {/* Battle Results Selector */}
-          <BattleResultSelector onResultsChange={setBattleResults} initialResults={battleResults} />
+          <div className="space-y-2">
+            <BattleResultSelector onResultsChange={setBattleResults} initialResults={battleResults} />
+          </div>
 
-          {/* Battle Summary */}
-          {battleResults.some((r) => r !== "victory") && (
-            <div className="panel-rpg">
-              <h3 className="font-pixel text-sm text-gold mb-3">📊 Battle Summary</h3>
-              <div className="grid grid-cols-4 gap-3 text-center">
-                <div className="stat-rpg">
-                  <div className="text-lg font-pixel text-gold">🏆</div>
-                  <div className="text-xs text-text-muted">Wins</div>
-                  <div className="text-lg font-pixel text-gold">{wins}</div>
-                </div>
-                <div className="stat-rpg">
-                  <div className="text-lg font-pixel text-danger">💀</div>
-                  <div className="text-xs text-text-muted">Losses</div>
-                  <div className="text-lg font-pixel text-danger">{losses}</div>
-                </div>
-                <div className="stat-rpg">
-                  <div className="text-lg font-pixel text-warning">🤝</div>
-                  <div className="text-xs text-text-muted">Draws</div>
-                  <div className="text-lg font-pixel text-warning">{draws}</div>
-                </div>
-                <div className="stat-rpg">
-                  <div className="text-lg font-pixel text-success">⭐</div>
-                  <div className="text-xs text-text-muted">Points</div>
-                  <div className="text-lg font-pixel text-success">{points}</div>
-                </div>
-              </div>
-
-              {/* Point Breakdown Details */}
-              <div className="mt-4 p-3 bg-[#1A1A1A] border border-mystic-blue rounded-pixel">
-                <div className="text-center">
-                  <div className="text-sm font-pixel text-gold mb-2">Point Breakdown</div>
-                  <div className="grid grid-cols-3 gap-4 text-xs font-pixel-operator">
-                    <div>
-                      <span className="text-gold">{wins} wins</span> × 5 ={" "}
-                      <span className="text-gold">{pointBreakdown.winPoints}</span>
-                    </div>
-                    <div>
-                      <span className="text-danger">{losses} losses</span> × 2 ={" "}
-                      <span className="text-danger">{pointBreakdown.lossPoints}</span>
-                    </div>
-                    <div>
-                      <span className="text-warning">{draws} draws</span> × 3 ={" "}
-                      <span className="text-warning">{pointBreakdown.drawPoints}</span>
-                    </div>
+          {/* Duplicate Entry Warning */}
+          {isDuplicateEntry && (
+            <div className="bg-danger/20 border-2 border-danger rounded-pixel p-3">
+              <div className="flex items-center space-x-2">
+                <span className="text-danger text-lg">⚠️</span>
+                <div>
+                  <div className="font-pixel text-danger text-sm">Duplicate Entry Detected!</div>
+                  <div className="text-xs text-text-muted font-pixel-operator">
+                    {playerName.trim()} has already recorded a battle on {date}
                   </div>
                 </div>
               </div>
@@ -168,11 +154,23 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           )}
 
           {/* Submit Button */}
-          <button type="submit" disabled={!isFormValid || isLoading} className="btn-rpg w-full text-lg py-4 px-6">
+          <button
+            type="submit"
+            disabled={!isFormValid || isLoading || isDuplicateEntry}
+            className={`btn-rpg w-full text-lg py-4 px-6 mt-6 ${
+              isDuplicateEntry ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
                 <div className="loading-rpg w-4 h-4" />
                 <span>Recording Battle...</span>
+              </span>
+            ) : isDuplicateEntry ? (
+              <span className="flex items-center justify-center space-x-2">
+                <span>⚠️</span>
+                <span>Duplicate Entry</span>
+                <span>⚠️</span>
               </span>
             ) : (
               <span className="flex items-center justify-center space-x-2">

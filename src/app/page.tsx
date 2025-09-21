@@ -109,10 +109,10 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
         {activeTab === "overview" && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <AddAttackForm onSuccess={showSuccess} onError={showError} />
               <CurrentWeekStats />
             </div>

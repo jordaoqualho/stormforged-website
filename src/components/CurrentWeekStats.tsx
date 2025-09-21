@@ -53,10 +53,10 @@ export default function CurrentWeekStats() {
   };
 
   return (
-    <div className="card-rpg bg-battlefield max-w-2xl mx-auto">
-      <div className="relative p-6">
+    <div className="card-rpg bg-battlefield">
+      <div className="relative p-4 sm:p-6">
         {/* RPG Header */}
-        <div className="flex items-center space-x-4 mb-8">
+        <div className="flex items-center space-x-4 mb-6">
           <div className="icon-rpg pixel-glow">🏰</div>
           <h2 className="text-2xl font-pixel text-gold text-glow">Command Center</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
@@ -66,8 +66,8 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
-          <div className="stat-rpg border-mystic-blue">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+          <div className="stat-rpg border-mystic-blue min-h-[90px] py-2 px-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⚔️</div>
               {comparison?.improvement.totalAttacksChange !== undefined &&
@@ -82,7 +82,7 @@ export default function CurrentWeekStats() {
             <div className="text-xs text-text-muted font-pixel-operator">Total Strikes</div>
           </div>
 
-          <div className="stat-rpg border-success">
+          <div className="stat-rpg border-success min-h-[90px] py-2 px-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🏆</div>
               {comparison?.improvement.totalWinsChange !== undefined &&
@@ -97,15 +97,18 @@ export default function CurrentWeekStats() {
             <div className="text-xs text-text-muted font-pixel-operator">Victories</div>
           </div>
 
-          <div className="stat-rpg border-danger">
+          <div className="stat-rpg border-danger min-h-[90px] py-2 px-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">💀</div>
             </div>
             <div className="text-2xl font-pixel text-danger">{currentWeekStats.totalLosses}</div>
             <div className="text-xs text-text-muted font-pixel-operator">Defeats</div>
           </div>
+        </div>
 
-          <div className="stat-rpg border-warning">
+        {/* Secondary Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          <div className="stat-rpg border-warning min-h-[90px] py-2 px-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">🤝</div>
             </div>
@@ -113,7 +116,7 @@ export default function CurrentWeekStats() {
             <div className="text-xs text-text-muted font-pixel-operator">Draws</div>
           </div>
 
-          <div className="stat-rpg border-gold">
+          <div className="stat-rpg border-gold min-h-[90px] py-2 px-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">⭐</div>
             </div>
@@ -123,8 +126,8 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Win Rate Display */}
-        <div className="mb-8">
-          <div className="stat-rpg border-gold max-w-xs mx-auto">
+        <div className="mb-6">
+          <div className="stat-rpg border-gold max-w-xs mx-auto my-4 min-h-[90px] py-2 px-3">
             <div className="flex items-center justify-between mb-2">
               <div className="text-2xl">{getWinRateIcon(currentWeekStats.winRate)}</div>
               {comparison?.improvement.winRateChange !== undefined && comparison.improvement.winRateChange !== 0 && (
@@ -142,8 +145,8 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Weekly Progress Bar */}
-        <div className="panel-rpg mb-8">
-          <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2">
+        <div className="panel-rpg mb-6">
+          <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2 text-left">
             <span>📊</span>
             <span>Weekly Performance</span>
           </h3>
@@ -154,7 +157,7 @@ export default function CurrentWeekStats() {
                 {currentWeekStats.winRate}%
               </span>
             </div>
-            <div className="progress-rpg h-4">
+            <div className="progress-rpg h-4 w-full">
               <div className="progress-rpg-fill h-full" style={{ width: `${currentWeekStats.winRate}%` }} />
             </div>
             <div className="flex justify-between text-xs text-text-muted">
@@ -165,14 +168,14 @@ export default function CurrentWeekStats() {
         </div>
 
         {/* Daily Battle Log */}
-        <div className="mb-8">
-          <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2">
+        <div className="mb-6 mt-6 border-t pt-4">
+          <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2 text-left">
             <span>📅</span>
             <span>Daily Battle Log</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
             {currentWeekStats.dailyStats.map((day, index) => (
-              <div key={day.date} className="panel-rpg p-3 text-center">
+              <div key={day.date} className="panel-rpg p-3 text-center min-h-[48px]">
                 <div className="text-sm font-pixel text-gold mb-1">
                   {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}
                 </div>
@@ -201,7 +204,7 @@ export default function CurrentWeekStats() {
         {/* Warrior Rankings */}
         {currentWeekStats.playerStats.length > 0 && (
           <div>
-            <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2">
+            <h3 className="font-pixel text-gold mb-4 flex items-center space-x-2 text-left">
               <span>👑</span>
               <span>Warrior Rankings</span>
             </h3>
