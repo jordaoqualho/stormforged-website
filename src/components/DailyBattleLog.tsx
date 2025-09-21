@@ -74,16 +74,15 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2">
-        {orderedDays.map((day, index) => {
+        {orderedDays.map((day) => {
           const isSelected = selectedDate === day.date;
-          const isLastCard = index === orderedDays.length - 1;
 
           return (
             <div
               key={day.date}
               className={`panel-rpg p-2 sm:p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer ${
                 isSelected ? "ring-2 ring-gold bg-gold/10 brightness-110" : "hover:brightness-110"
-              } ${isLastCard ? "md:col-start-4" : ""}`}
+              }`}
               onClick={() => handleDayClick(day.date)}
             >
               <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
@@ -162,9 +161,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
 
                   <div className="flex flex-col items-center space-y-1">
                     <div className="text-xs font-bold text-gray-300">Rate</div>
-                    <div className="text-xs font-pixel px-2 py-0.5 rounded-full bg-gray-700/80 text-gray-400">
-                      0%
-                    </div>
+                    <div className="text-xs font-pixel px-2 py-0.5 rounded-full bg-gray-700/80 text-gray-400">0%</div>
                   </div>
 
                   <div className="text-xs text-text-muted mt-2 whitespace-nowrap">0 members</div>

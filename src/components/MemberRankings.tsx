@@ -11,7 +11,8 @@ interface MemberRankingsProps {
 export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
   const { currentWeekStats, attacks, deleteAttack } = useGuildWarStore();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [attackToDelete, setAttackToDelete] = useState<string | null>(null);
+  const [playerToDelete, setPlayerToDelete] = useState<string | null>(null);
+  const [playerAttacks, setPlayerAttacks] = useState<any[]>([]);
 
   if (!currentWeekStats || currentWeekStats.playerStats.length === 0) {
     return null;
@@ -69,27 +70,28 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
   const playerStats = getFilteredPlayerStats();
   const isDayView = selectedDate !== null;
 
-  const handleDeleteClick = (e: React.MouseEvent, attackId: string) => {
+  const handleDeleteClick = (e: React.MouseEvent, playerName: string, playerAttacks: any[]) => {
     e.stopPropagation(); // Prevent row click
-    setAttackToDelete(attackId);
+    setPlayerToDelete(playerName);
+    setPlayerAttacks(playerAttacks);
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = async () => {
-    if (attackToDelete) {
-      try {
-        await deleteAttack(attackToDelete);
-        setShowDeleteModal(false);
-        setAttackToDelete(null);
-      } catch (error) {
-        console.error("Error deleting attack:", error);
-      }
+  const confirmDelete = async (attackId: string) => {
+    try {
+      await deleteAttack(attackId);
+      setShowDeleteModal(false);
+      setPlayerToDelete(null);
+      setPlayerAttacks([]);
+    } catch (error) {
+      console.error("Error deleting attack:", error);
     }
   };
 
   const cancelDelete = () => {
     setShowDeleteModal(false);
-    setAttackToDelete(null);
+    setPlayerToDelete(null);
+    setPlayerAttacks([]);
   };
 
   if (isDayView && playerStats.length === 0) {
@@ -148,15 +150,17 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
             </thead>
             <tbody>
               {playerStats
-                .flatMap((player) =>
-                  player.dailyAttacks.map((attack: any) => ({ ...attack, playerName: player.playerName }))
-                )
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((attack, index) => (
+                .sort((a, b) => {
+                  // Sort by points first, then by win rate, then by total attacks
+                  if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+                  if (b.winRate !== a.winRate) return b.winRate - a.winRate;
+                  return b.totalAttacks - a.totalAttacks;
+                })
+                .map((player, index) => (
                   <tr
-                    key={attack.id}
+                    key={player.playerName}
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
-                    title={`${attack.playerName} - ${new Date(attack.date).toLocaleDateString()}`}
+                    title={`${player.playerName} - ${player.totalAttacks} total attacks`}
                   >
                     <td className="py-2 px-2 sm:px-3 text-center">
                       <div className="flex items-center justify-center">
@@ -178,27 +182,27 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                       </div>
                     </td>
                     <td className="py-2 px-2 sm:px-3 font-pixel text-text-primary text-xs sm:text-sm">
-                      {attack.playerName}
+                      {player.playerName}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-gold text-xs sm:text-sm hidden sm:table-cell">
-                      {attack.attacks}
+                      {player.totalAttacks}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-success text-xs sm:text-sm">
-                      {attack.wins}
+                      {player.totalWins}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-danger text-xs sm:text-sm hidden sm:table-cell">
-                      {attack.losses}
+                      {player.totalLosses}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-gold text-xs sm:text-sm">
-                      {attack.points}
+                      {player.totalPoints}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center">
                       <button
-                        onClick={(e) => handleDeleteClick(e, attack.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded px-1 sm:px-2 py-1 transition-colors text-xs"
-                        title="Delete attack record"
+                        onClick={(e) => handleDeleteClick(e, player.playerName, player.dailyAttacks)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded px-2 py-1 transition-colors text-xs font-pixel"
+                        title="Delete player records"
                       >
-                        🗑️ <span className="hidden sm:inline">Delete</span>
+                        🗑️ Delete
                       </button>
                     </td>
                   </tr>
@@ -209,17 +213,57 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
       </div>
 
       {/* Delete Confirmation Modal */}
-      <RPGConfirmModal
-        isOpen={showDeleteModal}
-        onClose={cancelDelete}
-        onConfirm={confirmDelete}
-        title="Delete Battle Record"
-        message="Are you sure you want to delete this battle record? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-        icon="🗑️"
-      />
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="card-rpg bg-battlefield p-6 max-w-md w-full mx-4">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="icon-rpg pixel-glow text-xl">🗑️</div>
+              <h3 className="text-xl font-pixel text-red-400 text-glow">Delete Records</h3>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-text-primary font-pixel-operator mb-4">
+                Select which record to delete for <span className="text-gold font-pixel">{playerToDelete}</span>:
+              </p>
+
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {playerAttacks.map((attack: any) => (
+                  <div
+                    key={attack.id}
+                    className="panel-rpg p-3 border border-gray-700 hover:border-red-500 transition-colors cursor-pointer group"
+                    onClick={() => confirmDelete(attack.id)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-pixel text-text-primary">
+                          {new Date(attack.date).toLocaleDateString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </div>
+                        <div className="text-xs text-text-muted font-pixel-operator">
+                          {attack.attacks} attacks • {attack.wins}W/{attack.losses}L • {attack.points} points
+                        </div>
+                      </div>
+                      <div className="text-red-400 group-hover:text-red-300 transition-colors">🗑️</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 font-pixel text-text-muted hover:text-text-primary transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
