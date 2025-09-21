@@ -44,12 +44,9 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
 
     const updateProgress = () => {
       setProgress((prev) => {
-        const newProgress = prev + 1.5;
+        const newProgress = prev + 1.3; // Adjusted to reach 100% in ~4.6 seconds
         if (newProgress >= 100 && !isCompleted) {
-          // Progress reached 100%, trigger completion
-          setTimeout(() => {
-            completeLoading();
-          }, 300); // Small delay to show 100% briefly
+          // Don't trigger completion here, let minimum duration timer handle it
           return 100;
         }
         return Math.min(newProgress, 100); // Cap at 100
@@ -65,10 +62,10 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
     };
 
     // Start the loading process
-    progressInterval = setInterval(updateProgress, 50);
+    progressInterval = setInterval(updateProgress, 60); // Balanced timing
     stepTimeout = setTimeout(nextStep, 200);
 
-    // Set minimum duration timer as fallback
+    // Set minimum duration timer as primary completion trigger
     minDurationTimeout = setTimeout(() => {
       if (!isCompleted) {
         completeLoading();
