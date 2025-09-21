@@ -33,7 +33,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const pointBreakdown = getPointBreakdown(wins, losses, draws);
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
-  const { playClick, playSword, playSuccess, playError } = useRPGSounds();
+  const { playClick, playSword, playSuccess, playError, isEnabled: soundEnabled } = useRPGSounds();
 
   // Check if current player/date combination already exists (debounced to prevent flashing)
   const isDuplicateEntry = useMemo(() => {
@@ -67,7 +67,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     e.preventDefault();
 
     if (!playerName.trim()) {
-      playError();
+      if (soundEnabled) playError();
       onError?.("Invalid input! Check your values, warrior!");
       return;
     }
@@ -79,7 +79,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     );
 
     if (existingAttack) {
-      playError();
+      if (soundEnabled) playError();
       onError?.(`${trimmedPlayerName} has already recorded a battle on ${date}. One battle per day per warrior! ⚔️`);
       return;
     }
@@ -100,12 +100,14 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       setPlayerName("");
       setBattleResults(Array(5).fill("victory"));
 
-      playSuccess();
-      playSword();
+      if (soundEnabled) {
+        playSuccess();
+        playSword();
+      }
       onSuccess?.(`Battle record added! ${trimmedPlayerName} earned ${points} points! ⚔️`);
     } catch (error) {
       console.error("Error adding attack:", error);
-      playError();
+      if (soundEnabled) playError();
       onError?.("Failed to add attack record. The battle rages on!");
     } finally {
       setIsSubmitting(false);

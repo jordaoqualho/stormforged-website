@@ -33,7 +33,7 @@ export default function BattleResultSelector({
   disabled = false,
 }: BattleResultSelectorProps) {
   const [results, setResults] = useState<BattleResult[]>(initialResults);
-  const { playClick, playSword } = useRPGSounds();
+  const { playClick, playSword, isEnabled: soundEnabled } = useRPGSounds();
 
   // Notify parent component when results change
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function BattleResultSelector({
   const cycleState = (index: number) => {
     if (disabled) return;
 
-    playClick();
+    if (soundEnabled) playClick();
 
     setResults((prev) => {
       const updated = [...prev];
@@ -64,7 +64,7 @@ export default function BattleResultSelector({
   const resetAll = () => {
     if (disabled) return;
 
-    playClick();
+    if (soundEnabled) playClick();
     setResults(Array(5).fill("victory"));
   };
 
