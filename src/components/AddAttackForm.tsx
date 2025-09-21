@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/calculations";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useState } from "react";
+import PlayerAutocomplete from "./PlayerAutocomplete";
 
 interface AddAttackFormProps {
   onSuccess?: (message: string) => void;
@@ -70,60 +71,32 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
 
   return (
-    <div className="card-rpg bg-battlefield">
-      <div className="relative">
+    <div className="card-rpg bg-battlefield max-w-2xl mx-auto">
+      <div className="relative p-6">
         {/* RPG Header */}
-        <div className="flex items-center space-x-3 mb-6">
+        <div className="flex items-center space-x-4 mb-8">
           <div className="icon-rpg pixel-glow">⚔️</div>
-          <h2 className="text-xl font-pixel text-gold text-glow">Battle Log Entry</h2>
+          <h2 className="text-2xl font-pixel text-gold text-glow">Battle Log Entry</h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Player Name Input */}
-          <div className="space-y-2">
-            <label htmlFor="playerName" className="block font-pixel text-sm text-gold">
+          <div className="space-y-3">
+            <label htmlFor="playerName" className="block font-pixel text-lg text-gold">
               🛡️ Warrior Name
             </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="playerName"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                className="input-rpg w-full"
-                placeholder="Enter your warrior's name..."
-                required
-                list="player-suggestions"
-              />
-              <datalist id="player-suggestions">
-                {playerSuggestions.map((player, index) => (
-                  <option key={index} value={player} />
-                ))}
-              </datalist>
-              {playerSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[#2A2A2A] border border-mystic-blue rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)] z-10">
-                  {playerSuggestions.map((player, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => {
-                        setPlayerName(player);
-                        playClick();
-                      }}
-                      className="w-full px-3 py-2 text-left text-text-secondary hover:text-gold hover:bg-mystic-blue transition-colors"
-                    >
-                      🏹 {player}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <PlayerAutocomplete
+              value={playerName}
+              onChange={setPlayerName}
+              placeholder="Enter warrior name..."
+              className="w-full"
+            />
           </div>
 
           {/* Date Input */}
-          <div className="space-y-2">
-            <label htmlFor="date" className="block font-pixel text-sm text-gold">
+          <div className="space-y-3">
+            <label htmlFor="date" className="block font-pixel text-lg text-gold">
               📅 Battle Date
             </label>
             <input
@@ -131,16 +104,16 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               id="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="input-rpg w-full"
+              className="input-rpg w-full px-4 py-3 text-base"
               required
             />
           </div>
 
           {/* Attacks and Wins Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             {/* Total Attacks */}
-            <div className="space-y-2">
-              <label htmlFor="attacks" className="block font-pixel text-sm text-gold">
+            <div className="space-y-3">
+              <label htmlFor="attacks" className="block font-pixel text-lg text-gold">
                 ⚔️ Total Attacks (Max {maxAttacks})
               </label>
               <div className="relative">
@@ -151,7 +124,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                   max={maxAttacks}
                   value={attacks}
                   onChange={(e) => setAttacks(Math.max(0, Math.min(maxAttacks, parseInt(e.target.value) || 0)))}
-                  className="input-rpg w-full"
+                  className="input-rpg w-full px-4 py-3 text-base"
                   required
                 />
                 {/* Attack Progress Bar */}
@@ -175,8 +148,8 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             </div>
 
             {/* Wins */}
-            <div className="space-y-2">
-              <label htmlFor="wins" className="block font-pixel text-sm text-gold">
+            <div className="space-y-3">
+              <label htmlFor="wins" className="block font-pixel text-lg text-gold">
                 🏆 Victories
               </label>
               <input
@@ -186,7 +159,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                 max={attacks}
                 value={wins}
                 onChange={(e) => setWins(Math.max(0, Math.min(attacks, parseInt(e.target.value) || 0)))}
-                className="input-rpg w-full"
+                className="input-rpg w-full px-4 py-3 text-base"
                 required
               />
             </div>
@@ -234,7 +207,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           )}
 
           {/* Submit Button */}
-          <button type="submit" disabled={!isFormValid || isLoading} className="btn-rpg w-full text-base py-3">
+          <button type="submit" disabled={!isFormValid || isLoading} className="btn-rpg w-full text-lg py-4 px-6">
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
                 <div className="loading-rpg w-4 h-4" />

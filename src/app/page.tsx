@@ -111,7 +111,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "overview" && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 max-w-7xl mx-auto">
               <AddAttackForm onSuccess={showSuccess} onError={showError} />
               <CurrentWeekStats />
             </div>

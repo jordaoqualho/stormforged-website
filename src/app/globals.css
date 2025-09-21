@@ -93,10 +93,12 @@ body {
   @apply relative;
   @apply bg-[#2A2A2A] border-2 border-mystic-blue;
   @apply text-text-primary font-pixel-operator;
-  @apply px-3 py-2;
+  @apply px-4 py-3;
   @apply shadow-inner-glow;
   @apply transition-all duration-200;
   @apply focus:border-gold focus:shadow-glow-gold;
+  @apply rounded-pixel;
+  @apply text-base;
   @apply focus:outline-none;
 }
 
