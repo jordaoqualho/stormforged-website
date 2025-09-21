@@ -98,7 +98,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
         <div className="flex items-center space-x-4 mb-6">
           <div className="icon-rpg pixel-glow text-xl">👑</div>
           <h3 className="text-xl font-pixel text-gold text-glow">
-            {isDayView ? `Member Rankings - ${new Date(selectedDate).toLocaleDateString()}` : "Member Rankings"}
+            {isDayView ? `Member Rankings - ${new Date(selectedDate!).toLocaleDateString()}` : "Member Rankings"}
           </h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
@@ -114,7 +114,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
       <div className="flex items-center space-x-4 mb-6">
         <div className="icon-rpg pixel-glow text-xl">👑</div>
         <h3 className="text-xl font-pixel text-gold text-glow">
-          {isDayView ? `Member Rankings - ${new Date(selectedDate).toLocaleDateString()}` : "Member Rankings"}
+          {isDayView ? `Member Rankings - ${new Date(selectedDate!).toLocaleDateString()}` : "Member Rankings"}
         </h3>
         <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
       </div>
@@ -135,7 +135,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
             <tbody>
               {playerStats
                 .flatMap((player) =>
-                  player.dailyAttacks.map((attack) => ({ ...attack, playerName: player.playerName }))
+                  player.dailyAttacks.map((attack: any) => ({ ...attack, playerName: player.playerName }))
                 )
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .map((attack, index) => (
@@ -193,7 +193,8 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
         message="Are you sure you want to delete this battle record? This action cannot be undone."
         confirmText="Delete"
         cancelText="Cancel"
-        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        type="danger"
+        icon="🗑️"
       />
     </div>
   );
