@@ -63,7 +63,7 @@ export const useGuildWarStore = create<GuildWarState>()(
           // Calculate draws and points if not provided
           const draws = attackData.draws ?? calculateDraws(attackData.attacks, attackData.wins, attackData.losses);
           const points = attackData.points ?? calculatePoints(attackData.wins, attackData.losses, draws);
-          
+
           const newAttack: AttackRecord = {
             ...attackData,
             id: generateId(),
@@ -90,7 +90,7 @@ export const useGuildWarStore = create<GuildWarState>()(
       updateAttack: async (id, updates) => {
         set({ isSaving: true });
         try {
-          const currentAttack = get().attacks.find(attack => attack.id === id);
+          const currentAttack = get().attacks.find((attack) => attack.id === id);
           if (!currentAttack) throw new Error("Attack not found");
 
           // Calculate draws and points if needed
@@ -176,13 +176,14 @@ export const useGuildWarStore = create<GuildWarState>()(
         set({ isSaving: true });
         try {
           await storage.importData(jsonData);
+
           const data = await storage.getData();
           if (data) {
             set({ attacks: data.attacks });
             get().updateStats();
           }
         } catch (error) {
-          console.error("Error importing data:", error);
+          console.error("❌ [STORE] Error importing data:", error);
           throw error;
         } finally {
           set({ isSaving: false });

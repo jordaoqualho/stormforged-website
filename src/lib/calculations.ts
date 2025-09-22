@@ -5,11 +5,21 @@ export function generateId(): string {
 }
 
 export function formatDate(date: Date): string {
-  return date.toISOString().split("T")[0];
+  // Format date in local timezone to avoid UTC conversion issues
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function parseDate(dateString: string): Date {
+  // Parse date string correctly to avoid UTC conversion issues
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
 export function getWeekStart(date: string): string {
-  const d = new Date(date);
+  const d = parseDate(date);
   const day = d.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
 
   // Calculate days to subtract to get to the most recent Friday
@@ -31,7 +41,7 @@ export function getWeekStart(date: string): string {
 }
 
 export function getWeekEnd(date: string): string {
-  const weekStart = new Date(getWeekStart(date));
+  const weekStart = parseDate(getWeekStart(date));
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6);
   return formatDate(weekEnd);
@@ -44,6 +54,7 @@ export function isSameWeek(date1: string, date2: string): boolean {
 export function calculateDailyStats(attacks: AttackRecord[], date: string): DailyStats {
   const dayAttacks = attacks.filter((attack) => attack.date === date);
 
+
   const totalAttacks = dayAttacks.reduce((sum, attack) => sum + attack.attacks, 0);
   const totalWins = dayAttacks.reduce((sum, attack) => sum + attack.wins, 0);
   const totalLosses = dayAttacks.reduce((sum, attack) => sum + attack.losses, 0);
@@ -52,7 +63,7 @@ export function calculateDailyStats(attacks: AttackRecord[], date: string): Dail
   const winRate = totalAttacks > 0 ? (totalWins / totalAttacks) * 100 : 0;
   const playerCount = new Set(dayAttacks.map((attack) => attack.playerName)).size;
 
-  return {
+  const result = {
     date,
     totalAttacks,
     totalWins,
@@ -62,15 +73,19 @@ export function calculateDailyStats(attacks: AttackRecord[], date: string): Dail
     winRate: Math.round(winRate * 100) / 100,
     playerCount,
   };
+
+  return result;
 }
 
 export function calculateWeeklyStats(attacks: AttackRecord[], weekStart: string): WeeklyStats {
   const weekEnd = getWeekEnd(weekStart);
   const weekAttacks = attacks.filter((attack) => attack.date >= weekStart && attack.date <= weekEnd);
 
+
   // Calculate daily stats for the week
   const dailyStats: DailyStats[] = [];
-  const startDate = new Date(weekStart);
+  const startDate = parseDate(weekStart);
+
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);

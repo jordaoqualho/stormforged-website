@@ -23,6 +23,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
 
   const { exportData, importData: importDataAction, clearAllData, isSaving } = useGuildWarStore();
 
+
   const handleExport = async () => {
     setIsExporting(true);
     try {
@@ -47,6 +48,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   };
 
   const handleImport = async () => {
+
     if (importMethod === "text" && !importData.trim()) {
       onError?.("Please paste the battle data to import!");
       return;
@@ -62,10 +64,12 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     // Validate file type
-    if (!file.name.endsWith('.json')) {
+    if (!file.name.endsWith(".json")) {
       onError?.("Please select a valid JSON file!");
       return;
     }
@@ -82,7 +86,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       setSelectedFile(file);
       setImportMethod("file");
     } catch (error) {
-      console.error("Error reading file:", error);
+      console.error("❌ [UI] Error reading file:", error);
       onError?.("Failed to read the file. Please try again.");
     }
   };
@@ -97,11 +101,13 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
     setIsImporting(true);
     try {
       await importDataAction(importData);
+
       resetImport();
       setShowImportSection(false);
       onSuccess?.("Battle records imported successfully! The archives have been restored! 🏰");
     } catch (error) {
-      console.error("Error importing data:", error);
+      console.error("❌ [UI] Error importing data:", error);
+      console.error("❌ [UI] Error details:", error);
       onError?.("Failed to import battle data. The scroll is corrupted!");
     } finally {
       setIsImporting(false);
@@ -182,8 +188,8 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                   <button
                     onClick={() => setImportMethod("text")}
                     className={`btn-rpg flex-1 py-2 px-4 ${
-                      importMethod === "text" 
-                        ? "bg-gold text-[#0D0D0D] border-gold" 
+                      importMethod === "text"
+                        ? "bg-gold text-[#0D0D0D] border-gold"
                         : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
                     }`}
                   >
@@ -192,8 +198,8 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                   <button
                     onClick={() => setImportMethod("file")}
                     className={`btn-rpg flex-1 py-2 px-4 ${
-                      importMethod === "file" 
-                        ? "bg-gold text-[#0D0D0D] border-gold" 
+                      importMethod === "file"
+                        ? "bg-gold text-[#0D0D0D] border-gold"
                         : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
                     }`}
                   >
@@ -227,13 +233,9 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <span className="text-success">✅</span>
-                            <span className="text-success font-pixel-operator">
-                              Selected: {selectedFile.name}
-                            </span>
+                            <span className="text-success font-pixel-operator">Selected: {selectedFile.name}</span>
                           </div>
-                          <div className="text-xs text-text-muted">
-                            {(selectedFile.size / 1024).toFixed(1)} KB
-                          </div>
+                          <div className="text-xs text-text-muted">{(selectedFile.size / 1024).toFixed(1)} KB</div>
                         </div>
                       </div>
                     )}
@@ -259,7 +261,9 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                   <div className="relative">
                     <textarea
                       value={importData}
-                      onChange={(e) => setImportData(e.target.value)}
+                      onChange={(e) => {
+                        setImportData(e.target.value);
+                      }}
                       placeholder="Paste your exported battle scroll here..."
                       className="input-rpg w-full h-40 resize-none p-4"
                       rows={8}
@@ -291,10 +295,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
                     )}
                   </button>
 
-                  <button
-                    onClick={resetImport}
-                    className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark"
-                  >
+                  <button onClick={resetImport} className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark">
                     Clear
                   </button>
                 </div>

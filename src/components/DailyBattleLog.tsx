@@ -1,5 +1,6 @@
 "use client";
 
+import { parseDate } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 
 interface DailyBattleLogProps {
@@ -15,50 +16,11 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return parseDate(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  // Reorder days to start from Friday (war week starts on Friday)
-  const reorderDaysForWarWeek = (dailyStats: any[], weekStart: string) => {
-    const dayOrder = ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"];
-    const orderedDays: any[] = [];
-
-    // Create a map for quick lookup
-    const dayMap = new Map();
-    dailyStats.forEach((day) => {
-      const dayName = new Date(day.date).toLocaleDateString("en-US", { weekday: "short" });
-      dayMap.set(dayName, day);
-    });
-
-    // Calculate the actual week start date
-    const weekStartDate = new Date(weekStart);
-
-    // Add days in war week order (Friday to Thursday)
-    dayOrder.forEach((dayName, index) => {
-      if (dayMap.has(dayName)) {
-        orderedDays.push(dayMap.get(dayName));
-      } else {
-        // Create empty day entry for missing days using the correct week boundaries
-        const emptyDate = new Date(weekStartDate);
-        emptyDate.setDate(weekStartDate.getDate() + index);
-
-        orderedDays.push({
-          date: emptyDate.toISOString().split("T")[0],
-          totalAttacks: 0,
-          totalWins: 0,
-          totalLosses: 0,
-          totalDraws: 0,
-          totalPoints: 0,
-          playerCount: 0,
-          winRate: 0,
-        });
-      }
-    });
-
-    return orderedDays;
-  };
-
-  const orderedDays = reorderDaysForWarWeek(currentWeekStats.dailyStats, currentWeekStats.weekStart);
+  // Daily stats are already in the correct order (Friday to Thursday) from calculateWeeklyStats
+  const orderedDays = currentWeekStats.dailyStats;
 
   const handleDayClick = (date: string) => {
     if (onDayClick) {
@@ -86,7 +48,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
               onClick={() => handleDayClick(day.date)}
             >
               <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
-                {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}
+                {parseDate(day.date).toLocaleDateString("en-US", { weekday: "short" })}
               </div>
               <div className="text-xs text-text-muted mb-2 sm:mb-3 font-pixel-operator">{formatDate(day.date)}</div>
 

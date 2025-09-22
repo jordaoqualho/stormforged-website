@@ -131,9 +131,6 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                 <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-left">
                   Member
                 </th>
-                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center hidden sm:table-cell">
-                  Attacks
-                </th>
                 <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
                   Victories
                 </th>
@@ -144,6 +141,9 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                   Points
                 </th>
                 <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
+                  Win %
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
                   Actions
                 </th>
               </tr>
@@ -151,16 +151,20 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
             <tbody>
               {playerStats
                 .sort((a, b) => {
-                  // Sort by points first, then by win rate, then by total attacks
+                  // Sort by points first, then by win rate, then by total attacks (calculated)
                   if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
                   if (b.winRate !== a.winRate) return b.winRate - a.winRate;
-                  return b.totalAttacks - a.totalAttacks;
+                  const aTotalAttacks = a.totalWins + a.totalLosses;
+                  const bTotalAttacks = b.totalWins + b.totalLosses;
+                  return bTotalAttacks - aTotalAttacks;
                 })
                 .map((player, index) => (
                   <tr
                     key={player.playerName}
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
-                    title={`${player.playerName} - ${player.totalAttacks} total attacks`}
+                    title={`${player.playerName} - ${player.totalWins + player.totalLosses} total attacks (${
+                      player.winRate
+                    }% win rate)`}
                   >
                     <td className="py-2 px-2 sm:px-3 text-center">
                       <div className="flex items-center justify-center">
@@ -184,9 +188,6 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     <td className="py-2 px-2 sm:px-3 font-pixel text-text-primary text-xs sm:text-sm">
                       {player.playerName}
                     </td>
-                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-gold text-xs sm:text-sm hidden sm:table-cell">
-                      {player.totalAttacks}
-                    </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-success text-xs sm:text-sm">
                       {player.totalWins}
                     </td>
@@ -195,6 +196,21 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-gold text-xs sm:text-sm">
                       {player.totalPoints}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-xs sm:text-sm">
+                      <div
+                        className={`px-2 py-1 rounded-full inline-block ${
+                          player.winRate >= 80
+                            ? "bg-green-700/80 text-green-100"
+                            : player.winRate >= 60
+                            ? "bg-yellow-700/80 text-yellow-100"
+                            : player.winRate >= 40
+                            ? "bg-orange-700/80 text-orange-100"
+                            : "bg-red-700/80 text-red-100"
+                        }`}
+                      >
+                        {player.winRate}%
+                      </div>
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center">
                       <button
@@ -244,7 +260,8 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                             })}
                           </div>
                           <div className="text-xs text-text-muted font-pixel-operator">
-                            {attack.attacks} attacks • {attack.wins}W/{attack.losses}L • {attack.points} points
+                            {attack.wins + attack.losses} attacks • {attack.wins}W/{attack.losses}L • {attack.points}{" "}
+                            points
                           </div>
                         </div>
                         <div className="text-red-400 group-hover:text-red-300 transition-colors">🗑️</div>

@@ -118,10 +118,8 @@ export default function RPGDatePicker({
   };
 
   const isPastDate = (date: Date): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    date.setHours(0, 0, 0, 0);
-    return date < today;
+    // Allow all dates - no restrictions on past dates
+    return false;
   };
 
   const renderCalendarDays = () => {
@@ -144,8 +142,7 @@ export default function RPGDatePicker({
       days.push(
         <button
           key={day}
-          onClick={() => !isPast && handleDateSelect(date)}
-          disabled={isPast}
+          onClick={() => handleDateSelect(date)}
           className={`
             w-8 h-8 text-xs font-pixel border border-mystic-blue rounded-pixel
             transition-all duration-200 flex items-center justify-center
@@ -154,8 +151,6 @@ export default function RPGDatePicker({
                 ? "bg-gold text-[#0D0D0D] shadow-[0_0_15px_rgba(255,215,0,0.6)] transform scale-110"
                 : isTodayDate
                 ? "bg-mystic-blue text-text-primary shadow-glow-blue"
-                : isPast
-                ? "bg-[#1A1A1A] text-text-disabled cursor-not-allowed opacity-50"
                 : "bg-[#2A2A2A] text-text-secondary hover:bg-mystic-blue hover:text-text-primary hover:scale-105"
             }
           `}

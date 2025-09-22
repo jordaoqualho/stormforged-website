@@ -324,7 +324,7 @@ body {
   @apply rounded-full;
   @apply shadow-glow-gold;
   @apply flex items-center justify-center;
-  @apply text-[#0D0D0D] font-pixel text-base ;
+  @apply text-[#0D0D0D] font-pixel text-base;
   @apply animate-float;
   @apply pr-[2px];
 }
@@ -599,6 +599,25 @@ body {
 
 .animate-bounce-gentle {
   animation: bounce-gentle 1.5s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+.animate-blink {
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Prevent animation flickering */

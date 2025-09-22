@@ -1,6 +1,6 @@
 "use client";
 
-import { getCurrentWeekNumber, getWeekNumberForDate, getWeekRange } from "@/lib/calculations";
+import { getCurrentWeekNumber, getWeekNumberForDate, getWeekRange, parseDate } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useMemo, useState } from "react";
 import RPGWeekSelector from "./RPGWeekSelector";
@@ -78,7 +78,7 @@ export default function CurrentWeekStats() {
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-US", {
+    return parseDate(dateStr).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });

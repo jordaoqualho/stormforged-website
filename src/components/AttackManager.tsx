@@ -1,5 +1,6 @@
 "use client";
 
+import { parseDate } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { AttackRecord } from "@/types";
 import { useState } from "react";
@@ -87,7 +88,7 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return parseDate(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",

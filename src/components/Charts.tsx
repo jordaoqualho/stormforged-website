@@ -1,5 +1,6 @@
 "use client";
 
+import { parseDate } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo, useState } from "react";
 import {
@@ -160,7 +161,7 @@ export default function Charts() {
 
   // Prepare daily data for charts with RPG styling
   const dailyData = statsData.dailyStats.map((day: any) => ({
-    date: new Date(day.date).toLocaleDateString("en-US", { weekday: "short" }),
+    date: parseDate(day.date).toLocaleDateString("en-US", { weekday: "short" }),
     attacks: day.totalAttacks,
     wins: day.totalWins,
     losses: day.totalLosses,

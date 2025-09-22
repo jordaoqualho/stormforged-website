@@ -75,72 +75,171 @@ export default function InitialLoadingScreen({ onComplete, minDuration = 4000 }:
   }, [onComplete, minDuration]);
 
   return (
-    <div className="fixed inset-0 bg-battlefield flex items-center justify-center z-[10001]">
-      <div className="text-center animate-initial-load">
-        {/* Main Logo */}
-        <div className="relative mb-8">
-          <div className="icon-rpg text-8xl mb-4 animate-pulse-glow">🏰</div>
-          <div className="absolute inset-0 icon-rpg text-8xl animate-ping opacity-20">🏰</div>
-        </div>
+    <div className="fixed inset-0 bg-gradient-to-br from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] flex items-center justify-center z-[10001]">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-mystic-blue/10 rounded-full animate-pulse blur-xl"></div>
+        <div
+          className="absolute top-3/4 right-1/4 w-24 h-24 bg-gold/10 rounded-full animate-pulse blur-xl"
+          style={{ animationDelay: "1s" }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 left-1/3 w-16 h-16 bg-red-500/10 rounded-full animate-pulse blur-xl"
+          style={{ animationDelay: "2s" }}
+        ></div>
+      </div>
 
-        {/* Title */}
-        <h1 className="text-4xl font-pixel text-gold text-glow mb-2 animate-fade-in">Stormforged</h1>
-        <p className="text-lg text-text-secondary font-pixel-operator mb-8 animate-fade-in">
-          Idle Horizon Guild War Command Center
-        </p>
-
-        {/* Loading Animation */}
+      <div className="text-center animate-initial-load relative z-10">
+        {/* Title with Enhanced Styling */}
         <div className="mb-8">
-          <div className={`loading-rpg w-16 h-16 mx-auto mb-4 ${isCompleting ? "animate-pulse-glow" : ""}`}></div>
-          <p
-            className={`font-pixel-operator text-lg ${
-              isCompleting ? "text-gold animate-pulse-glow" : "text-gold animate-pulse"
-            }`}
-          >
-            {loadingText}
+          <h1 className="text-5xl font-pixel text-gold text-glow mb-3 animate-fade-in bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
+            Stormforged
+          </h1>
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-4"></div>
+          <p className="text-xl text-text-secondary font-pixel-operator animate-fade-in">Guild War Command Center</p>
+          <p className="text-sm text-text-muted font-pixel-operator mt-2 animate-fade-in">
+            Idle Horizon • Battle Analytics & Strategy
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="max-w-md mx-auto mb-6">
-          <div className="progress-rpg h-4">
-            <div
-              className={`progress-rpg-fill ${
-                isCompleting
-                  ? "bg-gradient-to-r from-green-400 to-green-600"
-                  : "bg-gradient-to-r from-gold to-yellow-400"
+        {/* Enhanced Loading Animation */}
+        <div className="mb-8">
+          <div className="relative mb-6">
+            {/* Custom Loading Spinner */}
+            <div className="w-20 h-20 mx-auto relative">
+              <div
+                className={`absolute inset-0 border-4 border-gold/20 rounded-full ${
+                  isCompleting ? "animate-pulse-glow" : ""
+                }`}
+              ></div>
+              <div
+                className="absolute inset-0 border-4 border-transparent border-t-gold rounded-full animate-spin"
+                style={{ animationDuration: "1s" }}
+              ></div>
+              <div
+                className="absolute inset-2 border-2 border-transparent border-b-mystic-blue rounded-full animate-spin"
+                style={{ animationDuration: "1.5s", animationDirection: "reverse" }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Loading Text with Typewriter Effect */}
+          <div className="min-h-[2.5rem] flex items-center justify-center">
+            <p
+              className={`font-pixel-operator text-xl transition-all duration-500 ${
+                isCompleting ? "text-gold animate-pulse-glow" : "text-gold animate-pulse"
               }`}
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between mt-2">
-            <span className="text-xs text-text-muted font-pixel-operator">
-              {isCompleting ? "Complete!" : "Loading..."}
-            </span>
-            <span className="text-xs text-gold font-pixel">{Math.round(progress)}%</span>
+            >
+              {loadingText}
+              <span className="animate-blink text-gold">|</span>
+            </p>
           </div>
         </div>
 
-        {/* Animated Dots */}
-        <div className="flex justify-center space-x-2">
-          <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle"></div>
-          <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle" style={{ animationDelay: "0.1s" }}></div>
-          <div className="w-3 h-3 bg-gold rounded-full animate-bounce-gentle" style={{ animationDelay: "0.2s" }}></div>
+        {/* Enhanced Progress Bar */}
+        <div className="max-w-lg mx-auto mb-8">
+          <div className="relative">
+            {/* Progress Bar Background */}
+            <div className="progress-rpg h-6 rounded-full overflow-hidden border border-gold/20">
+              <div
+                className={`h-full transition-all duration-300 ease-out ${
+                  isCompleting
+                    ? "bg-gradient-to-r from-green-400 via-green-500 to-green-600"
+                    : "bg-gradient-to-r from-gold via-yellow-400 to-yellow-500"
+                }`}
+                style={{ width: `${progress}%` }}
+              >
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+              </div>
+            </div>
+
+            {/* Progress Text */}
+            <div className="flex justify-between mt-3">
+              <span
+                className={`text-sm font-pixel-operator transition-colors duration-300 ${
+                  isCompleting ? "text-green-400" : "text-text-muted"
+                }`}
+              >
+                {isCompleting ? "✓ Complete!" : "Loading systems..."}
+              </span>
+              <span
+                className={`text-sm font-pixel transition-colors duration-300 ${
+                  isCompleting ? "text-green-400" : "text-gold"
+                }`}
+              >
+                {Math.round(progress)}%
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Battle Stats Preview */}
-        <div className="mt-12 grid grid-cols-3 gap-4 max-w-sm mx-auto">
-          <div className="text-center animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <div className="text-2xl font-pixel text-gold">⚔️</div>
-            <div className="text-xs text-text-muted font-pixel-operator">Battle Log</div>
+        {/* Enhanced Animated Indicators */}
+        <div className="flex justify-center space-x-3 mb-12">
+          <div
+            className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              progress > 25 ? "bg-gold animate-pulse" : "bg-gold/30"
+            }`}
+          ></div>
+          <div
+            className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              progress > 50 ? "bg-mystic-blue animate-pulse" : "bg-mystic-blue/30"
+            }`}
+          ></div>
+          <div
+            className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              progress > 75 ? "bg-green-400 animate-pulse" : "bg-green-400/30"
+            }`}
+          ></div>
+        </div>
+
+        {/* Enhanced Feature Preview */}
+        <div className="mt-12 grid grid-cols-3 gap-6 max-w-lg mx-auto">
+          <div className="text-center animate-fade-in group" style={{ animationDelay: "0.3s" }}>
+            <div className="relative">
+              <div className="text-3xl font-pixel text-gold group-hover:text-yellow-300 transition-colors duration-300 mb-2">
+                ⚔️
+              </div>
+              <div className="absolute inset-0 text-3xl animate-ping opacity-20">⚔️</div>
+            </div>
+            <div className="text-xs text-text-muted font-pixel-operator group-hover:text-text-secondary transition-colors">
+              Battle Log
+            </div>
+            <div className="text-xs text-gold/60 font-pixel-operator mt-1">Track Wars</div>
           </div>
-          <div className="text-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <div className="text-2xl font-pixel text-gold">📊</div>
-            <div className="text-xs text-text-muted font-pixel-operator">Analytics</div>
+
+          <div className="text-center animate-fade-in group" style={{ animationDelay: "0.4s" }}>
+            <div className="relative">
+              <div className="text-3xl font-pixel text-mystic-blue group-hover:text-blue-300 transition-colors duration-300 mb-2">
+                📊
+              </div>
+              <div className="absolute inset-0 text-3xl animate-ping opacity-20">📊</div>
+            </div>
+            <div className="text-xs text-text-muted font-pixel-operator group-hover:text-text-secondary transition-colors">
+              Analytics
+            </div>
+            <div className="text-xs text-mystic-blue/60 font-pixel-operator mt-1">Data Insights</div>
           </div>
-          <div className="text-center animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <div className="text-2xl font-pixel text-gold">🏆</div>
-            <div className="text-xs text-text-muted font-pixel-operator">Achievements</div>
+
+          <div className="text-center animate-fade-in group" style={{ animationDelay: "0.5s" }}>
+            <div className="relative">
+              <div className="text-3xl font-pixel text-green-400 group-hover:text-green-300 transition-colors duration-300 mb-2">
+                🏆
+              </div>
+              <div className="absolute inset-0 text-3xl animate-ping opacity-20">🏆</div>
+            </div>
+            <div className="text-xs text-text-muted font-pixel-operator group-hover:text-text-secondary transition-colors">
+              Achievements
+            </div>
+            <div className="text-xs text-green-400/60 font-pixel-operator mt-1">Milestones</div>
+          </div>
+        </div>
+
+        {/* Loading Status Bar */}
+        <div className="mt-8 max-w-md mx-auto">
+          <div className="flex items-center justify-center space-x-2 text-xs text-text-muted font-pixel-operator">
+            <div className="w-2 h-2 bg-gold rounded-full animate-pulse"></div>
+            <span>Preparing your command center...</span>
           </div>
         </div>
       </div>
