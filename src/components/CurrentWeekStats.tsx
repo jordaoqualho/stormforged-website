@@ -46,6 +46,19 @@ export default function CurrentWeekStats() {
     const totalPoints = weekAttacks.reduce((sum, attack) => sum + (attack.points ?? 0), 0);
     const winRate = totalAttacks > 0 ? Math.round((totalWins / totalAttacks) * 100) : 0;
 
+    // Calculate the correct week range for the selected week
+    let weekStart = "";
+    let weekEnd = "";
+    
+    if (selectedWeek) {
+      const weekRange = getWeekRange(selectedWeek);
+      weekStart = weekRange.start;
+      weekEnd = weekRange.end;
+    } else if (currentWeekStats) {
+      weekStart = currentWeekStats.weekStart;
+      weekEnd = currentWeekStats.weekEnd;
+    }
+
     return {
       totalAttacks,
       totalWins,
@@ -53,8 +66,8 @@ export default function CurrentWeekStats() {
       totalDraws,
       totalPoints,
       winRate,
-      weekStart: weekAttacks.length > 0 ? weekAttacks[0].date : "",
-      weekEnd: weekAttacks.length > 0 ? weekAttacks[weekAttacks.length - 1].date : "",
+      weekStart,
+      weekEnd,
     };
   }, [selectedWeek, attacks, currentWeekStats]);
 
@@ -122,7 +135,7 @@ export default function CurrentWeekStats() {
                   : currentWeekNumber
                   ? `Week ${currentWeekNumber}`
                   : "Current Week"}{" "}
-                • {formatDate(displayData.weekStart)} - {formatDate(displayData.weekEnd)}
+                • {displayData.weekStart} - {displayData.weekEnd}
               </div>
             </div>
           </div>

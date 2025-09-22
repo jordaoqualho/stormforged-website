@@ -1,9 +1,9 @@
 "use client";
 
+import { calculateWeeklyStats, getWeekNumberForDate, getWeekStart, getWeekRange } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { calculateWeeklyStats, getWeekStart, getWeekNumberForDate } from "@/lib/calculations";
 
 interface MemberRankingsProps {
   selectedDate?: string | null;
@@ -33,11 +33,25 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
       return currentWeekStats;
     }
 
-    // Find the week start date for the selected week
-    const firstAttackDate = weekAttacks.reduce((earliest, attack) => 
-      attack.date < earliest ? attack.date : earliest, weekAttacks[0].date
-    );
-    const weekStart = getWeekStart(firstAttackDate);
+    // Get the correct week start date for the selected week number
+    const year = new Date().getFullYear();
+    const startOfYear = new Date(year, 0, 1);
+    
+    // Find the first Friday of the year
+    const firstFriday = new Date(startOfYear);
+    const firstFridayDay = firstFriday.getDay();
+    const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
+    firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+    
+    // Calculate the start date for the selected week
+    const weekStartDate = new Date(firstFriday);
+    weekStartDate.setDate(firstFriday.getDate() + (selectedWeek - 1) * 7);
+    
+    // Format the week start date
+    const yearStr = weekStartDate.getFullYear();
+    const monthStr = String(weekStartDate.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(weekStartDate.getDate()).padStart(2, '0');
+    const weekStart = `${yearStr}-${monthStr}-${dayStr}`;
 
     return calculateWeeklyStats(weekAttacks, weekStart);
   }, [attacks, selectedWeek, currentWeekStats]);
