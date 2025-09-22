@@ -2,7 +2,7 @@
 
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useState } from "react";
-import RPGConfirmModal from "./RPGConfirmModal";
+import { createPortal } from "react-dom";
 
 interface MemberRankingsProps {
   selectedDate?: string | null;
@@ -212,58 +212,60 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="card-rpg bg-battlefield p-6 max-w-md w-full mx-4">
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="icon-rpg pixel-glow text-xl">🗑️</div>
-              <h3 className="text-xl font-pixel text-red-400 text-glow">Delete Records</h3>
-            </div>
+      {/* Delete Modal - Rendered as Portal to avoid clipping */}
+      {showDeleteModal &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="card-rpg bg-battlefield p-6 max-w-md w-full mx-4 relative">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="icon-rpg pixel-glow text-xl">🗑️</div>
+                <h3 className="text-xl font-pixel text-red-400 text-glow">Delete Records</h3>
+              </div>
 
-            <div className="mb-4">
-              <p className="text-text-primary font-pixel-operator mb-4">
-                Select which record to delete for <span className="text-gold font-pixel">{playerToDelete}</span>:
-              </p>
+              <div className="mb-4">
+                <p className="text-text-primary font-pixel-operator mb-4">
+                  Select which record to delete for <span className="text-gold font-pixel">{playerToDelete}</span>:
+                </p>
 
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {playerAttacks.map((attack: any) => (
-                  <div
-                    key={attack.id}
-                    className="panel-rpg p-3 border border-gray-700 hover:border-red-500 transition-colors cursor-pointer group"
-                    onClick={() => confirmDelete(attack.id)}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-pixel text-text-primary">
-                          {new Date(attack.date).toLocaleDateString("en-US", {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {playerAttacks.map((attack: any) => (
+                    <div
+                      key={attack.id}
+                      className="panel-rpg p-3 border border-gray-700 hover:border-red-500 transition-colors cursor-pointer group"
+                      onClick={() => confirmDelete(attack.id)}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-pixel text-text-primary">
+                            {new Date(attack.date).toLocaleDateString("en-US", {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </div>
+                          <div className="text-xs text-text-muted font-pixel-operator">
+                            {attack.attacks} attacks • {attack.wins}W/{attack.losses}L • {attack.points} points
+                          </div>
                         </div>
-                        <div className="text-xs text-text-muted font-pixel-operator">
-                          {attack.attacks} attacks • {attack.wins}W/{attack.losses}L • {attack.points} points
-                        </div>
+                        <div className="text-red-400 group-hover:text-red-300 transition-colors">🗑️</div>
                       </div>
-                      <div className="text-red-400 group-hover:text-red-300 transition-colors">🗑️</div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 font-pixel text-text-muted hover:text-text-primary transition-colors"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={cancelDelete}
-                className="px-4 py-2 font-pixel text-text-muted hover:text-text-primary transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
