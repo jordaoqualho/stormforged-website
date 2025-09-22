@@ -6,8 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import RPGWeekSelector from "./RPGWeekSelector";
 
 export default function CurrentWeekStats() {
-  const { currentWeekStats, comparison, attacks } = useGuildWarStore();
-  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const { currentWeekStats, comparison, attacks, selectedWeek, setSelectedWeek } = useGuildWarStore();
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
 
   // Calculate current week number
@@ -134,6 +133,7 @@ export default function CurrentWeekStats() {
               selectedWeek={selectedWeek}
               onWeekChange={setSelectedWeek}
               availableWeeks={availableWeeks}
+              currentWeekNumber={currentWeekNumber}
               getWeekRange={getWeekRange}
               className="w-full sm:min-w-64"
             />

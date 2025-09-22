@@ -23,7 +23,6 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
 
   const { exportData, importData: importDataAction, clearAllData, isSaving } = useGuildWarStore();
 
-
   const handleExport = async () => {
     setIsExporting(true);
     try {
@@ -48,7 +47,6 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   };
 
   const handleImport = async () => {
-
     if (importMethod === "text" && !importData.trim()) {
       onError?.("Please paste the battle data to import!");
       return;

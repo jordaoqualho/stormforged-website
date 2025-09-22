@@ -1,7 +1,8 @@
 "use client";
 
-import { parseDate } from "@/lib/calculations";
+import { parseDate, calculateWeeklyStats, getWeekStart, getWeekEnd, getWeekNumberForDate } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import { useMemo } from "react";
 
 interface DailyBattleLogProps {
   onDayClick?: (date: string) => void;
@@ -9,9 +10,36 @@ interface DailyBattleLogProps {
 }
 
 export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattleLogProps) {
-  const { currentWeekStats } = useGuildWarStore();
+  const { currentWeekStats, attacks, selectedWeek } = useGuildWarStore();
 
-  if (!currentWeekStats) {
+  // Calculate weekly stats based on selected week
+  const weeklyStats = useMemo(() => {
+    if (!attacks.length) return currentWeekStats;
+
+    if (!selectedWeek) {
+      return currentWeekStats;
+    }
+
+    // Filter attacks for selected week
+    const weekAttacks = attacks.filter((attack) => {
+      const weekNumber = getWeekNumberForDate(attack.date);
+      return weekNumber === selectedWeek;
+    });
+
+    if (weekAttacks.length === 0) {
+      return currentWeekStats;
+    }
+
+    // Find the week start date for the selected week
+    const firstAttackDate = weekAttacks.reduce((earliest, attack) => 
+      attack.date < earliest ? attack.date : earliest, weekAttacks[0].date
+    );
+    const weekStart = getWeekStart(firstAttackDate);
+
+    return calculateWeeklyStats(weekAttacks, weekStart);
+  }, [attacks, selectedWeek, currentWeekStats]);
+
+  if (!weeklyStats) {
     return null;
   }
 
@@ -20,7 +48,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
   };
 
   // Daily stats are already in the correct order (Friday to Thursday) from calculateWeeklyStats
-  const orderedDays = currentWeekStats.dailyStats;
+  const orderedDays = weeklyStats.dailyStats;
 
   const handleDayClick = (date: string) => {
     if (onDayClick) {

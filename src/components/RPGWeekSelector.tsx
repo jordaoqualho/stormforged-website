@@ -13,6 +13,7 @@ interface RPGWeekSelectorProps {
   selectedWeek: number | null;
   onWeekChange: (week: number | null) => void;
   availableWeeks: number[];
+  currentWeekNumber: number | null;
   getWeekRange: (week: number) => { start: string; end: string };
   className?: string;
 }
@@ -21,6 +22,7 @@ export default function RPGWeekSelector({
   selectedWeek,
   onWeekChange,
   availableWeeks,
+  currentWeekNumber,
   getWeekRange,
   className = "",
 }: RPGWeekSelectorProps) {
@@ -29,17 +31,19 @@ export default function RPGWeekSelector({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { playClick } = useRPGSounds();
 
-  // Generate week options
+  // Generate week options, avoiding duplicates with current week
   const weekOptions: WeekOption[] = [
     { value: 0, label: "Current Week", range: "Live Data (Fri-Thu)" },
-    ...availableWeeks.map((week) => {
-      const range = getWeekRange(week);
-      return {
-        value: week,
-        label: `Week ${week}`,
-        range: `${range.start} – ${range.end} (Fri-Thu)`,
-      };
-    }),
+    ...availableWeeks
+      .filter((week) => week !== currentWeekNumber) // Filter out current week to avoid duplicates
+      .map((week) => {
+        const range = getWeekRange(week);
+        return {
+          value: week,
+          label: `Week ${week}`,
+          range: `${range.start} – ${range.end} (Fri-Thu)`,
+        };
+      }),
   ];
 
   // Filter options based on search

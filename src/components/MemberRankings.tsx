@@ -1,27 +1,55 @@
 "use client";
 
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { calculateWeeklyStats, getWeekStart, getWeekNumberForDate } from "@/lib/calculations";
 
 interface MemberRankingsProps {
   selectedDate?: string | null;
 }
 
 export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
-  const { currentWeekStats, attacks, deleteAttack } = useGuildWarStore();
+  const { currentWeekStats, attacks, deleteAttack, selectedWeek } = useGuildWarStore();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [playerToDelete, setPlayerToDelete] = useState<string | null>(null);
   const [playerAttacks, setPlayerAttacks] = useState<any[]>([]);
 
-  if (!currentWeekStats || currentWeekStats.playerStats.length === 0) {
+  // Calculate weekly stats based on selected week
+  const weeklyStats = useMemo(() => {
+    if (!attacks.length) return currentWeekStats;
+
+    if (!selectedWeek) {
+      return currentWeekStats;
+    }
+
+    // Filter attacks for selected week
+    const weekAttacks = attacks.filter((attack) => {
+      const weekNumber = getWeekNumberForDate(attack.date);
+      return weekNumber === selectedWeek;
+    });
+
+    if (weekAttacks.length === 0) {
+      return currentWeekStats;
+    }
+
+    // Find the week start date for the selected week
+    const firstAttackDate = weekAttacks.reduce((earliest, attack) => 
+      attack.date < earliest ? attack.date : earliest, weekAttacks[0].date
+    );
+    const weekStart = getWeekStart(firstAttackDate);
+
+    return calculateWeeklyStats(weekAttacks, weekStart);
+  }, [attacks, selectedWeek, currentWeekStats]);
+
+  if (!weeklyStats || weeklyStats.playerStats.length === 0) {
     return null;
   }
 
   // Filter player stats by selected date if provided
   const getFilteredPlayerStats = () => {
     if (!selectedDate) {
-      return currentWeekStats.playerStats;
+      return weeklyStats.playerStats;
     }
 
     // Get attacks for the selected date

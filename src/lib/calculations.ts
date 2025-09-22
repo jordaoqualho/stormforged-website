@@ -54,7 +54,6 @@ export function isSameWeek(date1: string, date2: string): boolean {
 export function calculateDailyStats(attacks: AttackRecord[], date: string): DailyStats {
   const dayAttacks = attacks.filter((attack) => attack.date === date);
 
-
   const totalAttacks = dayAttacks.reduce((sum, attack) => sum + attack.attacks, 0);
   const totalWins = dayAttacks.reduce((sum, attack) => sum + attack.wins, 0);
   const totalLosses = dayAttacks.reduce((sum, attack) => sum + attack.losses, 0);
@@ -80,7 +79,6 @@ export function calculateDailyStats(attacks: AttackRecord[], date: string): Dail
 export function calculateWeeklyStats(attacks: AttackRecord[], weekStart: string): WeeklyStats {
   const weekEnd = getWeekEnd(weekStart);
   const weekAttacks = attacks.filter((attack) => attack.date >= weekStart && attack.date <= weekEnd);
-
 
   // Calculate daily stats for the week
   const dailyStats: DailyStats[] = [];

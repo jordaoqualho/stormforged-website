@@ -12,6 +12,9 @@ interface GuildWarState {
   previousWeekStats: WeeklyStats | null;
   comparison: ComparisonData | null;
 
+  // UI State
+  selectedWeek: number | null;
+
   // Loading states
   isLoading: boolean;
   isSaving: boolean;
@@ -24,6 +27,7 @@ interface GuildWarState {
   clearAllData: () => Promise<void>;
   exportData: () => Promise<string>;
   importData: (jsonData: string) => Promise<void>;
+  setSelectedWeek: (week: number | null) => void;
 
   // Internal actions
   updateStats: () => void;
@@ -37,6 +41,7 @@ export const useGuildWarStore = create<GuildWarState>()(
       currentWeekStats: null,
       previousWeekStats: null,
       comparison: null,
+      selectedWeek: null,
       isLoading: false,
       isSaving: false,
 
@@ -188,6 +193,11 @@ export const useGuildWarStore = create<GuildWarState>()(
         } finally {
           set({ isSaving: false });
         }
+      },
+
+      // Set selected week
+      setSelectedWeek: (week: number | null) => {
+        set({ selectedWeek: week });
       },
 
       // Update statistics
