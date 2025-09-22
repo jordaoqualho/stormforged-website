@@ -30,7 +30,8 @@ export default function CurrentWeekStats() {
 
   // Filter data based on selected week
   const filteredData = useMemo(() => {
-    if (!selectedWeek || !attacks.length) return currentWeekStats;
+    // If no week is selected, return current week stats
+    if (!selectedWeek) return currentWeekStats;
 
     // Filter attacks for selected week (war weeks start on Friday)
     const weekAttacks = attacks.filter((attack) => {
@@ -38,7 +39,7 @@ export default function CurrentWeekStats() {
       return weekNumber === selectedWeek;
     });
 
-    // Calculate stats for selected week
+    // Calculate stats for selected week (will be zeros if no attacks)
     const totalAttacks = weekAttacks.reduce((sum, attack) => sum + attack.attacks, 0);
     const totalWins = weekAttacks.reduce((sum, attack) => sum + attack.wins, 0);
     const totalLosses = weekAttacks.reduce((sum, attack) => sum + attack.losses, 0);
@@ -47,17 +48,9 @@ export default function CurrentWeekStats() {
     const winRate = totalAttacks > 0 ? Math.round((totalWins / totalAttacks) * 100) : 0;
 
     // Calculate the correct week range for the selected week
-    let weekStart = "";
-    let weekEnd = "";
-    
-    if (selectedWeek) {
-      const weekRange = getWeekRange(selectedWeek);
-      weekStart = weekRange.start;
-      weekEnd = weekRange.end;
-    } else if (currentWeekStats) {
-      weekStart = currentWeekStats.weekStart;
-      weekEnd = currentWeekStats.weekEnd;
-    }
+    const weekRange = getWeekRange(selectedWeek);
+    const weekStart = weekRange.start;
+    const weekEnd = weekRange.end;
 
     return {
       totalAttacks,
