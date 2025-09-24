@@ -10,11 +10,8 @@ function SimplePush {
     if [ $? -eq 0 ]; then
         # If the build is successful
         echo "Build successful."
-        npm run release
-        echo "Pushing changes to origin..."
-        git push
-        echo "Pushing tags to GitHub..."
-        git push --follow-tags
+        echo "Creating release with semantic-release..."
+        npx semantic-release
         echo "Changes pushed successfully."
         echo "All tasks completed."
     else
@@ -89,6 +86,24 @@ function PushMajor {
     fi
 }
 
+# Function to create automatic GitHub release using semantic-release
+function AutoRelease {
+    echo "Building project..."
+    npm run --silent build
+    if [ $? -eq 0 ]; then
+        # If the build is successful
+        echo "Build successful."
+        echo "Creating automatic release with GitHub integration..."
+        npx semantic-release
+        echo "Automatic release created successfully."
+        echo "GitHub release will be created automatically."
+        echo "All tasks completed."
+    else
+        # If the build fails
+        echo "Build failed. Unable to create automatic release."
+    fi
+}
+
 # Display usage information
 echo "Stormforged Guild Tracker - Release Functions"
 echo "=============================================="
@@ -98,6 +113,7 @@ echo "  SimplePush  - Build and create release (auto-detect version bump)"
 echo "  PushPatch   - Build and create patch release (0.1.0 -> 0.1.1)"
 echo "  PushMinor   - Build and create minor release (0.1.0 -> 0.2.0)"
 echo "  PushMajor   - Build and create major release (0.1.0 -> 1.0.0)"
+echo "  AutoRelease - Build and create automatic GitHub release"
 echo ""
 echo "Usage:"
 echo "  source release.sh"

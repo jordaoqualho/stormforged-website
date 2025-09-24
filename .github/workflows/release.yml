@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: |
+            ## 🚀 Release ${{ github.ref }}
+            
+            This release includes all the latest features and improvements for the Stormforged Guild War Tracker.
+            
+            ### 📦 What's New
+            - Check the [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes
+            - All features and bug fixes from recent commits
+            
+            ### 🔗 Links
+            - **Live Demo**: https://stormforged-website.vercel.app
+            - **Repository**: https://github.com/${{ github.repository }}
+            
+            ---
+            
+            *Created by Jordones for the Stormforged Guild*
+          body_path: CHANGELOG.md
