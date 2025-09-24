@@ -33,7 +33,7 @@ export default function CurrentWeekStats() {
     // If no week is selected, return current week stats
     if (!selectedWeek) return currentWeekStats;
 
-    // Filter attacks for selected week (war weeks start on Friday)
+    // Filter attacks for selected week (war weeks start on Thursday and end on Wednesday)
     const weekAttacks = attacks.filter((attack) => {
       const weekNumber = getWeekNumberForDate(attack.date);
       return weekNumber === selectedWeek;
