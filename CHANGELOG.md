@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/jordaoqualho/stormforged-website/compare/v0.2.0...v1.0.0) (2025-09-24)
+
+
+### Features
+
+* add automatic GitHub release workflows ([9731034](https://github.com/jordaoqualho/stormforged-website/commit/9731034f9f86b36cf5399430a4fe288b617a4335))
+* enhance release system with GitHub integration ([a55f8a6](https://github.com/jordaoqualho/stormforged-website/commit/a55f8a688f921c4ec1effe20cd7820e0b6490bb1))
+
 ## 0.2.0 (2025-09-24)
 
 
