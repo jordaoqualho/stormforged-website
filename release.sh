@@ -11,6 +11,10 @@ function SimplePush {
         # If the build is successful
         echo "Build successful."
         npm run release
+        echo "Pushing changes to origin..."
+        git push
+        echo "Pushing tags to GitHub..."
+        git push --follow-tags
         echo "Changes pushed successfully."
         echo "All tasks completed."
     else
@@ -31,6 +35,8 @@ function PushPatch {
         echo "Patch release created successfully."
         echo "Pushing changes to origin..."
         git push
+        echo "Pushing tags to GitHub..."
+        git push --follow-tags
         echo "Changes pushed successfully."
         echo "All tasks completed."
     else
@@ -51,6 +57,8 @@ function PushMinor {
         echo "Minor release created successfully."
         echo "Pushing changes to origin..."
         git push
+        echo "Pushing tags to GitHub..."
+        git push --follow-tags
         echo "Changes pushed successfully."
         echo "All tasks completed."
     else
@@ -71,6 +79,8 @@ function PushMajor {
         echo "Major release created successfully."
         echo "Pushing changes to origin..."
         git push
+        echo "Pushing tags to GitHub..."
+        git push --follow-tags
         echo "Changes pushed successfully."
         echo "All tasks completed."
     else
