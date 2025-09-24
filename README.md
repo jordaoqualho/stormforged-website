@@ -162,6 +162,54 @@ src/
 - `pnpm build`: Build for production
 - `pnpm start`: Start production server
 - `pnpm lint`: Run ESLint
+- `pnpm release`: Create a new release (bumps version and generates changelog)
+
+## 🚀 Release Management
+
+This project uses `standard-version` for automated version management and changelog generation.
+
+### Release Functions
+
+Use the provided shell functions for easy releases:
+
+```bash
+# Source the release functions
+source release.sh
+
+# Available functions:
+SimplePush   # Auto-detect version bump based on commits
+PushPatch    # Create patch release (0.1.0 -> 0.1.1)
+PushMinor    # Create minor release (0.1.0 -> 0.2.0)
+PushMajor    # Create major release (0.1.0 -> 1.0.0)
+```
+
+### Commit Convention
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/) for automatic version bumping:
+
+- `feat:` - New features (minor version bump)
+- `fix:` - Bug fixes (patch version bump)
+- `BREAKING CHANGE:` - Breaking changes (major version bump)
+- `perf:` - Performance improvements
+- `refactor:` - Code refactoring
+- `docs:` - Documentation changes
+- `style:` - Code style changes
+- `test:` - Test additions/changes
+- `build:` - Build system changes
+- `ci:` - CI/CD changes
+- `chore:` - Maintenance tasks
+
+### Example Usage
+
+```bash
+# Make your changes and commit with conventional format
+git add .
+git commit -m "feat: add new battle analytics dashboard"
+
+# Create a minor release
+source release.sh
+PushMinor
+```
 
 ## 🎯 Future Enhancements
 
