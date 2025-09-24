@@ -1,3 +1,4 @@
+import ClarityAnalytics from "@/components/ClarityAnalytics";
 import type { Metadata } from "next";
 import { Press_Start_2P } from "next/font/google";
 import "./globals.css";
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body className={`${pressStart.variable} ${pixelOperator.variable} antialiased bg-[#0D0D0D] text-gold`}>
         {children}
+        <ClarityAnalytics />
       </body>
     </html>
   );
