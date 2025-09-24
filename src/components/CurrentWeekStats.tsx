@@ -15,7 +15,7 @@ export default function CurrentWeekStats() {
     setCurrentWeekNumber(weekNumber);
   }, []);
 
-  // Calculate available weeks from attack data (war weeks start on Friday)
+  // Calculate available weeks from attack data (war weeks start on Thursday and end on Wednesday)
   const availableWeeks = useMemo(() => {
     if (!attacks.length) return [];
 

@@ -20,19 +20,22 @@ export function parseDate(dateString: string): Date {
 
 export function getWeekStart(date: string): string {
   const d = parseDate(date);
-  const day = d.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+  const day = d.getDay(); // 0 = Sunday, 1 = Monday, ..., 4 = Thursday, 5 = Friday, 6 = Saturday
 
-  // Calculate days to subtract to get to the most recent Friday
+  // Calculate days to subtract to get to the most recent Thursday
   let daysToSubtract;
-  if (day === 5) {
+  if (day === 4) {
+    // Thursday
+    daysToSubtract = 0; // Already Thursday
+  } else if (day === 5) {
     // Friday
-    daysToSubtract = 0; // Already Friday
+    daysToSubtract = 1; // Go back 1 day to Thursday
   } else if (day === 6) {
     // Saturday
-    daysToSubtract = 1; // Go back 1 day to Friday
+    daysToSubtract = 2; // Go back 2 days to Thursday
   } else {
-    // Sunday (0) through Thursday (4)
-    daysToSubtract = day + 2; // Go back to previous Friday
+    // Sunday (0) through Wednesday (3)
+    daysToSubtract = day + 3; // Go back to previous Thursday
   }
 
   const weekStart = new Date(d);
@@ -181,17 +184,17 @@ export function getCurrentWeekNumber(date?: Date): number {
   const targetDate = date || new Date();
   const startOfYear = new Date(targetDate.getFullYear(), 0, 1);
 
-  // Find the first Friday of the year
-  const firstFriday = new Date(startOfYear);
-  const firstFridayDay = firstFriday.getDay(); // 0 = Sunday, 5 = Friday
-  const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
-  firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+  // Find the first Thursday of the year
+  const firstThursday = new Date(startOfYear);
+  const firstThursdayDay = firstThursday.getDay(); // 0 = Sunday, 4 = Thursday
+  const daysToFirstThursday = firstThursdayDay <= 4 ? 4 - firstThursdayDay : 11 - firstThursdayDay;
+  firstThursday.setDate(startOfYear.getDate() + daysToFirstThursday);
 
-  // Calculate days since first Friday
-  const daysSinceFirstFriday = Math.floor((targetDate.getTime() - firstFriday.getTime()) / (1000 * 60 * 60 * 24));
+  // Calculate days since first Thursday
+  const daysSinceFirstThursday = Math.floor((targetDate.getTime() - firstThursday.getTime()) / (1000 * 60 * 60 * 24));
 
-  // Calculate week number (war weeks start on Friday)
-  return Math.max(1, Math.ceil((daysSinceFirstFriday + 1) / 7));
+  // Calculate week number (war weeks start on Thursday and end on Wednesday)
+  return Math.max(1, Math.ceil((daysSinceFirstThursday + 1) / 7));
 }
 
 export function getWeekNumberForDate(date: string): number {
@@ -202,17 +205,17 @@ export function getWeekRange(weekNumber: number, year?: number): { start: string
   const targetYear = year || new Date().getFullYear();
   const startOfYear = new Date(targetYear, 0, 1);
 
-  // Find the first Friday of the year
-  const firstFriday = new Date(startOfYear);
-  const firstFridayDay = firstFriday.getDay();
-  const daysToFirstFriday = firstFridayDay <= 5 ? 5 - firstFridayDay : 12 - firstFridayDay;
-  firstFriday.setDate(startOfYear.getDate() + daysToFirstFriday);
+  // Find the first Thursday of the year
+  const firstThursday = new Date(startOfYear);
+  const firstThursdayDay = firstThursday.getDay();
+  const daysToFirstThursday = firstThursdayDay <= 4 ? 4 - firstThursdayDay : 11 - firstThursdayDay;
+  firstThursday.setDate(startOfYear.getDate() + daysToFirstThursday);
 
-  // Calculate the start date for the selected week
-  const weekStart = new Date(firstFriday);
-  weekStart.setDate(firstFriday.getDate() + (weekNumber - 1) * 7);
+  // Calculate the start date for the selected week (Thursday)
+  const weekStart = new Date(firstThursday);
+  weekStart.setDate(firstThursday.getDate() + (weekNumber - 1) * 7);
 
-  // Calculate the end date (Thursday)
+  // Calculate the end date (Wednesday)
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6);
 
