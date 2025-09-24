@@ -567,13 +567,7 @@ body {
   }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.6s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slide-up 0.8s ease-out forwards;
-}
+/* Animation classes moved to prevent flickering section */
 
 .animate-progress-load {
   animation: progress-load 2s ease-out forwards;
@@ -585,9 +579,7 @@ body {
   animation: shimmer 1.5s infinite;
 }
 
-.animate-initial-load {
-  animation: initial-load 1.2s ease-out forwards;
-}
+/* Initial load animation moved to prevent flickering section */
 
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
@@ -627,6 +619,28 @@ body {
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
+  animation-fill-mode: forwards;
+}
+
+/* Animation completion states */
+.animate-fade-in.animation-complete,
+.animate-slide-up.animation-complete,
+.animate-initial-load.animation-complete {
+  animation-play-state: paused;
+  animation-fill-mode: forwards;
+}
+
+/* Prevent animations from restarting on re-render */
+.animate-fade-in:not(.animation-complete) {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-slide-up:not(.animation-complete) {
+  animation: slide-up 0.8s ease-out forwards;
+}
+
+.animate-initial-load:not(.animation-complete) {
+  animation: initial-load 1.2s ease-out forwards;
 }
 
 /* Achievement container fixes */
