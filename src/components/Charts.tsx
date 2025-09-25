@@ -2,7 +2,7 @@
 
 import { getCurrentWeekNumber, getWeekNumberForDate, getWeekRange, parseDate } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -20,6 +20,13 @@ import RPGWeekSelector from "./RPGWeekSelector";
 export default function Charts() {
   const { currentWeekStats, comparison, attacks } = useGuildWarStore();
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
+
+  // Get current week number
+  useEffect(() => {
+    const weekNumber = getCurrentWeekNumber();
+    setCurrentWeekNumber(weekNumber);
+  }, []);
 
   // Calculate available weeks from attack data (war weeks start on Thursday and end on Wednesday)
   const availableWeeks = useMemo(() => {
@@ -33,7 +40,7 @@ export default function Charts() {
 
     // Get current week number to avoid duplication
     const currentWeek = getCurrentWeekNumber();
-    
+
     // Add current week if it's not already in the set
     if (!weeks.has(currentWeek)) {
       weeks.add(currentWeek);
@@ -190,6 +197,7 @@ export default function Charts() {
                 selectedWeek={selectedWeek}
                 onWeekChange={setSelectedWeek}
                 availableWeeks={availableWeeks}
+                currentWeekNumber={currentWeekNumber}
                 getWeekRange={getWeekRange}
                 className="w-full sm:min-w-64"
               />

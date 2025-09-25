@@ -33,7 +33,11 @@ export default function RPGWeekSelector({
 
   // Generate week options, avoiding duplicates with current week
   const weekOptions: WeekOption[] = [
-    { value: 0, label: "Current Week", range: "Live Data (Fri-Thu)" },
+    ...(currentWeekNumber ? [{
+      value: currentWeekNumber,
+      label: `Week ${currentWeekNumber}`,
+      range: `${getWeekRange(currentWeekNumber).start} – ${getWeekRange(currentWeekNumber).end} (Thu-Wed)`,
+    }] : []),
     ...availableWeeks
       .filter((week) => week !== currentWeekNumber) // Filter out current week to avoid duplicates
       .map((week) => {
@@ -41,7 +45,7 @@ export default function RPGWeekSelector({
         return {
           value: week,
           label: `Week ${week}`,
-          range: `${range.start} – ${range.end} (Fri-Thu)`,
+          range: `${range.start} – ${range.end} (Thu-Wed)`,
         };
       }),
   ];
@@ -98,7 +102,8 @@ export default function RPGWeekSelector({
   };
 
   const selectedOption =
-    weekOptions.find((option) => option.value === selectedWeek || (selectedWeek === null && option.value === 0)) ||
+    weekOptions.find((option) => option.value === selectedWeek) ||
+    weekOptions.find((option) => option.value === currentWeekNumber) ||
     weekOptions[0];
 
   return (
@@ -153,14 +158,14 @@ export default function RPGWeekSelector({
                 filteredOptions.map((option) => (
                   <button
                     key={option.value}
-                    onClick={() => handleSelect(option.value === 0 ? null : option.value)}
+                    onClick={() => handleSelect(option.value)}
                     className={`
                       w-full px-4 py-3 text-left
                       transition-all duration-200
                       hover:bg-mystic-blue hover:bg-opacity-20
                       border-b border-dark-gray last:border-b-0
                       ${
-                        selectedWeek === option.value || (selectedWeek === null && option.value === 0)
+                        selectedWeek === option.value || (selectedWeek === null && option.value === currentWeekNumber)
                           ? "bg-gold bg-opacity-20 text-gold"
                           : "text-text-primary"
                       }
@@ -171,7 +176,7 @@ export default function RPGWeekSelector({
                         <div className="font-pixel text-sm">{option.label}</div>
                         <div className="text-xs text-text-muted">{option.range}</div>
                       </div>
-                      {(selectedWeek === option.value || (selectedWeek === null && option.value === 0)) && (
+                      {(selectedWeek === option.value || (selectedWeek === null && option.value === currentWeekNumber)) && (
                         <span className="text-gold">✓</span>
                       )}
                     </div>
