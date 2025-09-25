@@ -93,13 +93,13 @@ export default function Charts() {
     // Group by player
     const playerStats = weekAttacks.reduce((acc, attack) => {
       if (!acc[attack.playerName]) {
-        acc[attack.playerName] = { 
-          playerName: attack.playerName, 
-          totalAttacks: 0, 
-          totalWins: 0, 
-          totalLosses: 0, 
+        acc[attack.playerName] = {
+          playerName: attack.playerName,
+          totalAttacks: 0,
+          totalWins: 0,
+          totalLosses: 0,
           totalDraws: 0,
-          totalPoints: 0 
+          totalPoints: 0,
         };
       }
       acc[attack.playerName].totalAttacks += attack.attacks;
@@ -178,11 +178,11 @@ export default function Charts() {
       // Calculate success rate (victories / total battles)
       const totalBattles = player.totalWins + player.totalLosses + player.totalDraws;
       const successRate = totalBattles > 0 ? Math.round((player.totalWins / totalBattles) * 100) : 0;
-      
+
       return {
         ...player,
         successRate,
-        totalBattles
+        totalBattles,
       };
     })
     .sort((a: any, b: any) => b.totalPoints - a.totalPoints) // Sort by points

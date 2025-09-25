@@ -76,7 +76,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       if (soundEnabled) playError();
       setShowNameRequiredWarning(true);
       onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
-      
+
       return;
     }
 

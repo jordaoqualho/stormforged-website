@@ -89,7 +89,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
     const playerStats = Array.from(playerStatsMap.values()).map((stats) => ({
       ...stats,
       winRate: (() => {
-        const actualPoints = (stats.totalWins * 5) + (stats.totalDraws * 3) + (stats.totalLosses * 2);
+        const actualPoints = stats.totalWins * 5 + stats.totalDraws * 3 + stats.totalLosses * 2;
         const maxPossiblePoints = (stats.totalWins + stats.totalDraws + stats.totalLosses) * 5;
         return maxPossiblePoints > 0 ? Math.round((actualPoints / maxPossiblePoints) * 100) : 0;
       })(),

@@ -15,7 +15,10 @@ interface PlayerAutocompleteProps {
 }
 
 const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>(
-  ({ value, onChange, placeholder = "Enter warrior name...", className = "", disabled = false, error = false }, ref) => {
+  (
+    { value, onChange, placeholder = "Enter warrior name...", className = "", disabled = false, error = false },
+    ref
+  ) => {
     const [query, setQuery] = useState("");
     const [players, setPlayers] = useState<Player[]>([]);
     const [recentPlayers, setRecentPlayers] = useState<Player[]>([]);
