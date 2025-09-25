@@ -46,6 +46,17 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
     return parseDate(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
+  // Check if a date is today
+  const isToday = (dateString: string) => {
+    const today = new Date();
+    const date = parseDate(dateString);
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
   // Daily stats are already in the correct order (Thursday to Wednesday) from calculateWeeklyStats
   const orderedDays = weeklyStats.dailyStats;
 
@@ -65,17 +76,24 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2">
         {orderedDays.map((day) => {
           const isSelected = selectedDate === day.date;
+          const isCurrentDay = isToday(day.date);
 
           return (
             <div
               key={day.date}
-              className={`panel-rpg p-2 sm:p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer ${
+              className={`panel-rpg p-2 sm:p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer relative ${
                 isSelected ? "ring-2 ring-gold bg-gold/10 brightness-110" : "hover:brightness-110"
-              }`}
+              } ${isCurrentDay ? "ring-1 ring-blue-400 bg-blue-500/5" : ""}`}
               onClick={() => handleDayClick(day.date)}
             >
+              {/* Current Day Indicator */}
+              {isCurrentDay && (
+                <div className="absolute top-1 right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              )}
+              
               <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
                 {parseDate(day.date).toLocaleDateString("en-US", { weekday: "short" })}
+                {isCurrentDay && <span className="text-blue-400 ml-1">●</span>}
               </div>
               <div className="text-xs text-text-muted mb-2 sm:mb-3 font-pixel-operator">{formatDate(day.date)}</div>
 
