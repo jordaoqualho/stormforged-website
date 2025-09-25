@@ -3,7 +3,7 @@
 import { Player, fuzzySearch, generatePlayerAvatar, getRecentPlayers } from "@/lib/players";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { Combobox } from "@headlessui/react";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 interface PlayerAutocompleteProps {
   value: string;
@@ -13,18 +13,17 @@ interface PlayerAutocompleteProps {
   disabled?: boolean;
 }
 
-export default function PlayerAutocomplete({
+const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>(({
   value,
   onChange,
   placeholder = "Enter warrior name...",
   className = "",
   disabled = false,
-}: PlayerAutocompleteProps) {
+}, ref) => {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
   const [recentPlayers, setRecentPlayers] = useState<Player[]>([]);
   const { attacks } = useGuildWarStore();
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Generate players list from attack history
   useEffect(() => {
@@ -80,7 +79,7 @@ export default function PlayerAutocomplete({
       <Combobox value={value} onChange={handleSelect}>
         <div className="relative">
           <Combobox.Input
-            ref={inputRef}
+            ref={ref}
             disabled={disabled}
             className={`
               w-full px-4 py-3
@@ -193,4 +192,8 @@ export default function PlayerAutocomplete({
       </Combobox>
     </div>
   );
-}
+});
+
+PlayerAutocomplete.displayName = "PlayerAutocomplete";
+
+export default PlayerAutocomplete;

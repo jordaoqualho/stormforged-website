@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/calculations";
 import { calculatePoints } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import BattleResultSelector, { BattleResult } from "./BattleResultSelector";
 import PlayerAutocomplete from "./PlayerAutocomplete";
 import RPGDatePicker from "./RPGDatePicker";
@@ -20,6 +20,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const [battleResults, setBattleResults] = useState<BattleResult[]>(Array(5).fill("victory"));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const playerInputRef = useRef<HTMLInputElement>(null);
 
   // Fixed attacks per entry (always 5)
   const attacks = 5;
@@ -58,6 +59,11 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Prevent double submissions
+    if (isSubmitting || isLoading) {
+      return;
+    }
+
     if (!playerName.trim()) {
       if (soundEnabled) playError();
       onError?.("Invalid input! Check your values, warrior!");
@@ -88,9 +94,15 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
         points,
       });
 
-      // Reset form but keep battle results for sequential entries
+      // Clear only the player name and refocus for sequential entries
       setPlayerName("");
-      // Keep battleResults unchanged to maintain the same configuration
+      
+      // Refocus the input after a short delay to allow the form to update
+      setTimeout(() => {
+        if (playerInputRef.current) {
+          playerInputRef.current.focus();
+        }
+      }, 100);
 
       if (soundEnabled) {
         playSuccess();
@@ -126,6 +138,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               🛡️ Member Name
             </label>
             <PlayerAutocomplete
+              ref={playerInputRef}
               value={playerName}
               onChange={setPlayerName}
               placeholder="Enter member name..."
