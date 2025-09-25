@@ -77,10 +77,10 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       setShowNameRequiredWarning(true);
       onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
 
-      // Clear the warning after 3 seconds
+      // Clear the warning after 4 seconds
       setTimeout(() => {
         setShowNameRequiredWarning(false);
-      }, 3000);
+      }, 4000);
 
       return;
     }
@@ -142,11 +142,11 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       if (soundEnabled) playError();
       setShowNameRequiredWarning(true);
       onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
-      
-      // Clear the warning after 3 seconds
+
+      // Clear the warning after 4 seconds
       setTimeout(() => {
         setShowNameRequiredWarning(false);
-      }, 3000);
+      }, 4000);
     } else if (isDuplicateEntry) {
       if (soundEnabled) playError();
       onError?.(`${playerName.trim()} has already recorded a battle on ${date}. One battle per day per warrior! ⚔️`);
@@ -179,18 +179,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               }`}
               disabled={isLoading}
             />
-
-            {/* Name Required Warning */}
-            {showNameRequiredWarning && (
-              <div className="bg-danger/20 border-2 border-danger rounded-pixel p-2 mt-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-danger text-sm">⚠️</span>
-                  <div className="text-xs text-danger font-pixel-operator">
-                    Member name is required to record a battle
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Date Input */}
@@ -216,15 +204,20 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             />
           </div>
 
-          {/* Duplicate Entry Warning */}
-          {showDuplicateWarning && (
+          {/* Error Warning Box */}
+          {(showDuplicateWarning || showNameRequiredWarning) && (
             <div className="bg-danger/20 border-2 border-danger rounded-pixel p-3">
               <div className="flex items-center space-x-2">
                 <span className="text-danger text-lg">⚠️</span>
                 <div>
-                  <div className="font-pixel text-danger text-sm">Duplicate Entry Detected!</div>
+                  <div className="font-pixel text-danger text-sm">
+                    {showDuplicateWarning ? "Duplicate Entry Detected!" : "Member Name Required!"}
+                  </div>
                   <div className="text-xs text-text-muted font-pixel-operator">
-                    {playerName.trim()} has already recorded a battle on {date}
+                    {showDuplicateWarning 
+                      ? `${playerName.trim()} has already recorded a battle on ${date}`
+                      : "Enter a warrior's name to record the battle"
+                    }
                   </div>
                 </div>
               </div>
@@ -247,9 +240,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             }}
             className={`btn-rpg w-full text-lg py-3 px-6 mt-4 ${
               isDuplicateEntry ? "opacity-50 cursor-not-allowed" : ""
-            } ${!isFormValid ? "opacity-75" : ""} ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            } ${!isFormValid ? "opacity-75" : ""} ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
