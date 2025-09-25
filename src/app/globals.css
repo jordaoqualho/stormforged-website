@@ -244,11 +244,11 @@ body {
     @apply px-0.5 py-1;
     @apply text-xs;
   }
-  
+
   .tab-rpg .flex-col {
     @apply space-y-0;
   }
-  
+
   .tab-rpg span {
     @apply text-[10px];
     @apply leading-tight;

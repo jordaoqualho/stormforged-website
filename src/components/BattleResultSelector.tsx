@@ -98,7 +98,7 @@ export default function BattleResultSelector({
         </div>
 
         {/* Icon Grid */}
-        <div className="grid grid-cols-5 gap-2 mb-4">
+        <div className="grid grid-cols-5 gap-2 mb-4 justify-items-center">
           {results.map((result, index) => (
             <button
               key={index}
