@@ -76,12 +76,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       if (soundEnabled) playError();
       setShowNameRequiredWarning(true);
       onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
-
-      // Clear the warning after 4 seconds
-      setTimeout(() => {
-        setShowNameRequiredWarning(false);
-      }, 4000);
-
+      
       return;
     }
 
@@ -142,11 +137,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       if (soundEnabled) playError();
       setShowNameRequiredWarning(true);
       onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
-
-      // Clear the warning after 4 seconds
-      setTimeout(() => {
-        setShowNameRequiredWarning(false);
-      }, 4000);
     } else if (isDuplicateEntry) {
       if (soundEnabled) playError();
       onError?.(`${playerName.trim()} has already recorded a battle on ${date}. One battle per day per warrior! ⚔️`);
@@ -174,10 +164,9 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               value={playerName}
               onChange={setPlayerName}
               placeholder="Enter member name..."
-              className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""} ${
-                showNameRequiredWarning ? "ring-2 ring-danger" : ""
-              }`}
+              className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
               disabled={isLoading}
+              error={showNameRequiredWarning}
             />
           </div>
 
@@ -214,10 +203,9 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                     {showDuplicateWarning ? "Duplicate Entry Detected!" : "Member Name Required!"}
                   </div>
                   <div className="text-xs text-text-muted font-pixel-operator">
-                    {showDuplicateWarning 
+                    {showDuplicateWarning
                       ? `${playerName.trim()} has already recorded a battle on ${date}`
-                      : "Enter a warrior's name to record the battle"
-                    }
+                      : "Enter a warrior's name to record the battle"}
                   </div>
                 </div>
               </div>

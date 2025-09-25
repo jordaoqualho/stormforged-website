@@ -11,10 +11,11 @@ interface PlayerAutocompleteProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  error?: boolean;
 }
 
 const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>(
-  ({ value, onChange, placeholder = "Enter warrior name...", className = "", disabled = false }, ref) => {
+  ({ value, onChange, placeholder = "Enter warrior name...", className = "", disabled = false, error = false }, ref) => {
     const [query, setQuery] = useState("");
     const [players, setPlayers] = useState<Player[]>([]);
     const [recentPlayers, setRecentPlayers] = useState<Player[]>([]);
@@ -79,10 +80,10 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
         // Find the form and trigger submission
-        const form = event.currentTarget.closest('form');
+        const form = event.currentTarget.closest("form");
         if (form) {
           // Trigger form submission
-          const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+          const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
           form.dispatchEvent(submitEvent);
         }
       }
@@ -97,14 +98,14 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
               disabled={disabled}
               className={`
               w-full px-4 py-3
-              bg-[#2A2A2A] border-2 border-mystic-blue
+              bg-[#2A2A2A] border-2 ${error ? "border-danger" : "border-mystic-blue"}
               text-text-primary font-pixel-operator text-base
               rounded-pixel
               shadow-inner-glow
               transition-all duration-200
               focus:border-gold focus:shadow-glow-gold focus:outline-none
               placeholder:text-text-muted
-              hover:border-mystic-blue-light
+              hover:${error ? "border-danger-light" : "border-mystic-blue-light"}
               ${disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
               displayValue={() => value}
