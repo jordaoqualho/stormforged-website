@@ -28,7 +28,9 @@ export default function RPGDatePicker({
   // Initialize selected date from value
   useEffect(() => {
     if (value) {
-      const date = new Date(value);
+      // Parse date string correctly to avoid UTC conversion issues
+      const [year, month, day] = value.split("-").map(Number);
+      const date = new Date(year, month - 1, day);
       if (!isNaN(date.getTime())) {
         setSelectedDate(date);
         setDisplayValue(formatDisplayDate(date));
@@ -61,7 +63,11 @@ export default function RPGDatePicker({
   };
 
   const formatValueDate = (date: Date): string => {
-    return date.toISOString().split("T")[0];
+    // Format date in local timezone to avoid UTC conversion issues
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const handleDateSelect = (date: Date) => {
