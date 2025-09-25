@@ -83,12 +83,12 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
               key={day.date}
               className={`panel-rpg p-2 sm:p-3 text-center w-full aspect-[3/4] transition-all duration-300 group cursor-pointer relative ${
                 isSelected ? "ring-2 ring-gold bg-gold/10 brightness-110" : "hover:brightness-110"
-              } ${isCurrentDay ? "ring-1 ring-blue-400 bg-blue-500/5" : ""}`}
+              } ${isCurrentDay ? "bg-yellow-500/5" : ""}`}
               onClick={() => handleDayClick(day.date)}
             >
               {/* Current Day Indicator */}
               {isCurrentDay && (
-                <div className="absolute top-1 right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <div className="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
               )}
 
               <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
