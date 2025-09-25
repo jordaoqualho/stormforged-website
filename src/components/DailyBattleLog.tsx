@@ -90,10 +90,9 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
               {isCurrentDay && (
                 <div className="absolute top-1 right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
               )}
-              
+
               <div className="text-xs sm:text-sm font-pixel text-gold mb-1 sm:mb-2 font-bold">
                 {parseDate(day.date).toLocaleDateString("en-US", { weekday: "short" })}
-                {isCurrentDay && <span className="text-blue-400 ml-1">●</span>}
               </div>
               <div className="text-xs text-text-muted mb-2 sm:mb-3 font-pixel-operator">{formatDate(day.date)}</div>
 
