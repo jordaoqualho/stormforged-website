@@ -192,9 +192,9 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                   <tr
                     key={player.playerName}
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
-                    title={`${player.playerName} - ${player.totalWins + player.totalLosses + (player.totalDraws || 0)} total attacks (${
-                      player.winRate
-                    }% win rate)`}
+                    title={`${player.playerName} - ${
+                      player.totalWins + player.totalLosses + (player.totalDraws || 0)
+                    } total attacks (${player.winRate}% win rate)`}
                   >
                     <td className="py-2 px-2 sm:px-3 text-center">
                       <div className="flex items-center justify-center">
@@ -221,7 +221,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-success text-xs sm:text-sm">
                       {player.totalWins}
                     </td>
-                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-mystic-blue text-xs sm:text-sm hidden sm:table-cell">
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-orange-400 text-xs sm:text-sm hidden sm:table-cell">
                       {player.totalDraws || 0}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-danger text-xs sm:text-sm hidden sm:table-cell">
@@ -293,8 +293,8 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                             })}
                           </div>
                           <div className="text-xs text-text-muted font-pixel-operator">
-                            {attack.wins + attack.losses + attack.draws} attacks • {attack.wins}W/{attack.draws || 0}D/{attack.losses}L • {attack.points}{" "}
-                            points
+                            {attack.wins + attack.losses + attack.draws} attacks • {attack.wins}W/{attack.draws || 0}D/
+                            {attack.losses}L • {attack.points} points
                           </div>
                         </div>
                         <div className="text-red-400 group-hover:text-red-300 transition-colors">🗑️</div>

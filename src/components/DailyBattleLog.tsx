@@ -118,7 +118,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
                     <div className="text-xs font-bold text-gray-300">Draws</div>
                     <div className="flex items-center space-x-1">
                       <span className="text-sm">🤝</span>
-                      <span className="text-sm font-pixel text-mystic-blue">{day.totalDraws || 0}</span>
+                      <span className="text-sm font-pixel text-orange-400">{day.totalDraws || 0}</span>
                     </div>
                   </div>
 
