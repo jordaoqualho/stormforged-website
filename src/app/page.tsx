@@ -44,9 +44,9 @@ export default function Home() {
 
   const tabConfig = useMemo(
     () => [
-      { id: "overview", label: "Battle Command", icon: "⚔️", desc: "Record & Monitor" },
-      { id: "charts", label: "War Analytics", icon: "📈", desc: "Visual Reports" },
-      { id: "data", label: "Guild Archives", icon: "📚", desc: "Data Management" },
+      { id: "overview", label: "Battle Command", mobileLabel: "Battle", icon: "⚔️", desc: "Record & Monitor" },
+      { id: "charts", label: "War Analytics", mobileLabel: "Analytics", icon: "📈", desc: "Visual Reports" },
+      { id: "data", label: "Guild Archives", mobileLabel: "Archives", icon: "📚", desc: "Data Management" },
     ],
     []
   );
@@ -202,10 +202,15 @@ export default function Home() {
                     }}
                     className={`tab-rpg flex-1 min-w-0 ${activeTab === tab.id ? "active" : ""}`}
                   >
-                    <div className="flex flex-col items-center space-y-1 px-1">
-                      <span className="text-lg sm:text-xl md:text-2xl">{tab.icon}</span>
-                      <span className="font-pixel text-xs sm:text-sm truncate">{tab.label}</span>
-                      <span className="font-pixel-operator text-xs opacity-75 hidden sm:block truncate">{tab.desc}</span>
+                    <div className="flex flex-col items-center space-y-0.5 px-0.5">
+                      <span className="text-sm sm:text-xl md:text-2xl">{tab.icon}</span>
+                      <span className="font-pixel text-[10px] sm:text-sm leading-tight text-center">
+                        <span className="sm:hidden">{tab.mobileLabel}</span>
+                        <span className="hidden sm:inline">{tab.label}</span>
+                      </span>
+                      <span className="font-pixel-operator text-[8px] opacity-75 hidden sm:block leading-tight text-center">
+                        {tab.desc}
+                      </span>
                     </div>
                   </button>
                 ))}
@@ -316,8 +321,7 @@ export default function Home() {
                 <div className="text-center">
                   <p className="text-xs text-text-muted font-pixel-operator">
                     Created by <span className="text-gold font-pixel">Jordones</span> for the Stormforged Guild •
-                     Version{" "}
-                    <span className="text-gold font-pixel">{packageJson.version}</span>
+                    Version <span className="text-gold font-pixel">{packageJson.version}</span>
                   </p>
                 </div>
               </div>

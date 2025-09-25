@@ -241,7 +241,7 @@ body {
 /* Mobile Navigation Responsive Styles */
 @media (max-width: 640px) {
   .tab-rpg {
-    @apply px-1 py-1;
+    @apply px-0.5 py-1;
     @apply text-xs;
   }
   
@@ -250,7 +250,8 @@ body {
   }
   
   .tab-rpg span {
-    @apply text-xs;
+    @apply text-[10px];
+    @apply leading-tight;
   }
 }
 
