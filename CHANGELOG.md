@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.0.0...v1.1.0) (2025-09-25)
+
+
+### Features
+
+* add current day indicator to Daily Battle Log ([23771cd](https://github.com/jordaoqualho/stormforged-website/commit/23771cdef99e0226c83c0faa7d357f02f8a8cfb8))
+* add draw count display to Daily Battle Log and Member Rankings ([7b0b7fd](https://github.com/jordaoqualho/stormforged-website/commit/7b0b7fda26da8fa74b9d51aa411676b3a4eaa28b))
+* add draws to Daily Battle Performance chart ([d2859b8](https://github.com/jordaoqualho/stormforged-website/commit/d2859b8e57f7d40aee7d7bf7245cf29808dc8c0b)), closes [#FF8C00](https://github.com/jordaoqualho/stormforged-website/issues/FF8C00)
+* add manual release creation script and fix GitHub Action ([beb5969](https://github.com/jordaoqualho/stormforged-website/commit/beb59693fb416e894f97c28a49750a336305695b))
+* add toast notifications for disabled button clicks ([1838aa8](https://github.com/jordaoqualho/stormforged-website/commit/1838aa8f23af511bf15fd54ade8545eaf870d874))
+* implement points-based success rate including draws ([ab7cae3](https://github.com/jordaoqualho/stormforged-website/commit/ab7cae3033d5aba79c1fd1707d989b8262d5b4f1))
+* improve analytics charts - remove attacks, focus on points ([aafd1b6](https://github.com/jordaoqualho/stormforged-website/commit/aafd1b647d716b4e0f1bbc73e21d1c54f3e8a110))
+* improve battle entry UX with single-click submission and auto-focus ([a36d401](https://github.com/jordaoqualho/stormforged-website/commit/a36d401b0a6ce4d66f0faf3ef70c82e647e1b4dc))
+* improve UX for empty name validation with clear feedback ([346fdc3](https://github.com/jordaoqualho/stormforged-website/commit/346fdc3e5c757492a2b78aeebc32bfdb11d8c8e5))
+
+
+### Bug Fixes
+
+* change draw count text color to orange for better readability ([2ca4131](https://github.com/jordaoqualho/stormforged-website/commit/2ca41318f200ff19b66a82726fd6f47a641ebc13))
+* clean up whitespace and improve code readability ([6a571c6](https://github.com/jordaoqualho/stormforged-website/commit/6a571c69ea2ed839b0942a892eb7bff546d312e1))
+* clear member name input field after successful submission ([ff5c601](https://github.com/jordaoqualho/stormforged-website/commit/ff5c601f9c70f8fa8b813453786f8fc4a22c47db))
+* correct win rate calculation to exclude draws ([2bf94f8](https://github.com/jordaoqualho/stormforged-website/commit/2bf94f8a1d5eb9eb012d36d7a7ed44540884be77))
+* improve mobile navigation text display ([fbdf68b](https://github.com/jordaoqualho/stormforged-website/commit/fbdf68b00d34f61027cfeda9148cc83cab37a7a3))
+* improve name required validation with proper border styling ([805588d](https://github.com/jordaoqualho/stormforged-website/commit/805588d25f6c89261bed8e56246561a2e56551ea))
+* preserve battle results for sequential entries ([339831e](https://github.com/jordaoqualho/stormforged-website/commit/339831e9f29f5ff3c30759df9bd07b3fded74061))
+* prevent navigation tabs from overflowing on mobile ([24e48e1](https://github.com/jordaoqualho/stormforged-website/commit/24e48e15f2e4cdea29d245316483fe9154c548eb))
+* remove all unused variables and imports ([0e0563b](https://github.com/jordaoqualho/stormforged-website/commit/0e0563b714fa58f8f10e7842cea8ca0f811ecbf8))
+* remove blue dot from weekday title in Daily Battle Log ([09735a2](https://github.com/jordaoqualho/stormforged-website/commit/09735a2b0b865097d4af3a4b3aa9df13ae05478b))
+* resolve Enter key submission issues in PlayerAutocomplete ([bd8dc0e](https://github.com/jordaoqualho/stormforged-website/commit/bd8dc0ee5640658952a26fcd690a36bf511105e9))
+* resolve timezone issues in RPGDatePicker ([087cf7a](https://github.com/jordaoqualho/stormforged-website/commit/087cf7ab4c9d66c2ba43e36c2271176ff5b84a36))
+* update all components to use Thursday-Wednesday week cycle ([786eb73](https://github.com/jordaoqualho/stormforged-website/commit/786eb731ece9f1ffc13a6ed79e736395918b8f30))
+* update Charts component week calculation to Thursday-Wednesday cycle ([861cad4](https://github.com/jordaoqualho/stormforged-website/commit/861cad4b12bb489e2a58d6dce190d43fcb6d4893))
+* update GitHub Actions to use pnpm instead of npm ([addfa88](https://github.com/jordaoqualho/stormforged-website/commit/addfa8848dbfeffeda56b204a2a41dc3bc97bb51))
+* update week selector to show actual current week number and correct cycle ([e2a3133](https://github.com/jordaoqualho/stormforged-website/commit/e2a3133bbdf2ed30389a35d1426ab26db9e18da1))
+
 ## [1.0.0](https://github.com/jordaoqualho/stormforged-website/compare/v0.2.0...v1.0.0) (2025-09-24)
 
 
