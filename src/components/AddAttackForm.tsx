@@ -20,6 +20,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const [battleResults, setBattleResults] = useState<BattleResult[]>(Array(5).fill("victory"));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [showNameRequiredWarning, setShowNameRequiredWarning] = useState(false);
   const playerInputRef = useRef<HTMLInputElement>(null);
 
   // Fixed attacks per entry (always 5)
@@ -56,6 +57,13 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     }
   }, [isDuplicateEntry]);
 
+  // Clear name required warning when user starts typing
+  useEffect(() => {
+    if (playerName.trim() && showNameRequiredWarning) {
+      setShowNameRequiredWarning(false);
+    }
+  }, [playerName, showNameRequiredWarning]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -66,7 +74,14 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
     if (!playerName.trim()) {
       if (soundEnabled) playError();
-      onError?.("Invalid input! Check your values, warrior!");
+      setShowNameRequiredWarning(true);
+      onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
+      
+      // Clear the warning after 3 seconds
+      setTimeout(() => {
+        setShowNameRequiredWarning(false);
+      }, 3000);
+      
       return;
     }
 
@@ -96,7 +111,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
       // Clear only the player name and refocus for sequential entries
       setPlayerName("");
-      
+
       // Refocus the input after a short delay to allow the form to update
       setTimeout(() => {
         if (playerInputRef.current) {
@@ -142,9 +157,23 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               value={playerName}
               onChange={setPlayerName}
               placeholder="Enter member name..."
-              className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
+              className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""} ${
+                showNameRequiredWarning ? "ring-2 ring-danger" : ""
+              }`}
               disabled={isLoading}
             />
+            
+            {/* Name Required Warning */}
+            {showNameRequiredWarning && (
+              <div className="bg-danger/20 border-2 border-danger rounded-pixel p-2 mt-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-danger text-sm">⚠️</span>
+                  <div className="text-xs text-danger font-pixel-operator">
+                    Member name is required to record a battle
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Date Input */}
@@ -191,7 +220,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
             disabled={!isFormValid || isLoading || isDuplicateEntry}
             className={`btn-rpg w-full text-lg py-3 px-6 mt-4 ${
               isDuplicateEntry ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            } ${!isFormValid ? "opacity-75" : ""}`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
@@ -203,6 +232,12 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
                 <span>⚠️</span>
                 <span>Duplicate Entry</span>
                 <span>⚠️</span>
+              </span>
+            ) : !isFormValid ? (
+              <span className="flex items-center justify-center space-x-2">
+                <span>📝</span>
+                <span>Enter Member Name</span>
+                <span>📝</span>
               </span>
             ) : (
               <span className="flex items-center justify-center space-x-2">
