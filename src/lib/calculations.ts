@@ -62,7 +62,7 @@ export function calculateDailyStats(attacks: AttackRecord[], date: string): Dail
   const totalLosses = dayAttacks.reduce((sum, attack) => sum + attack.losses, 0);
   const totalDraws = dayAttacks.reduce((sum, attack) => sum + (attack.draws ?? 0), 0);
   const totalPoints = dayAttacks.reduce((sum, attack) => sum + (attack.points ?? 0), 0);
-  const winRate = totalAttacks > 0 ? (totalWins / totalAttacks) * 100 : 0;
+  const winRate = (totalWins + totalLosses) > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
   const playerCount = new Set(dayAttacks.map((attack) => attack.playerName)).size;
 
   const result = {
@@ -122,7 +122,7 @@ export function calculateWeeklyStats(attacks: AttackRecord[], weekStart: string)
 
   // Calculate win rates for each player
   playerMap.forEach((player) => {
-    player.winRate = player.totalAttacks > 0 ? Math.round((player.totalWins / player.totalAttacks) * 10000) / 100 : 0;
+    player.winRate = (player.totalWins + player.totalLosses) > 0 ? Math.round((player.totalWins / (player.totalWins + player.totalLosses)) * 10000) / 100 : 0;
   });
 
   const totalAttacks = weekAttacks.reduce((sum, attack) => sum + attack.attacks, 0);
@@ -130,7 +130,7 @@ export function calculateWeeklyStats(attacks: AttackRecord[], weekStart: string)
   const totalLosses = weekAttacks.reduce((sum, attack) => sum + attack.losses, 0);
   const totalDraws = weekAttacks.reduce((sum, attack) => sum + (attack.draws ?? 0), 0);
   const totalPoints = weekAttacks.reduce((sum, attack) => sum + (attack.points ?? 0), 0);
-  const winRate = totalAttacks > 0 ? Math.round((totalWins / totalAttacks) * 10000) / 100 : 0;
+  const winRate = (totalWins + totalLosses) > 0 ? Math.round((totalWins / (totalWins + totalLosses)) * 10000) / 100 : 0;
 
   return {
     weekStart,

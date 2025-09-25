@@ -88,7 +88,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
     // Calculate win rates
     const playerStats = Array.from(playerStatsMap.values()).map((stats) => ({
       ...stats,
-      winRate: stats.totalAttacks > 0 ? Math.round((stats.totalWins / stats.totalAttacks) * 100) : 0,
+      winRate: (stats.totalWins + stats.totalLosses) > 0 ? Math.round((stats.totalWins / (stats.totalWins + stats.totalLosses)) * 100) : 0,
     }));
 
     return playerStats;
