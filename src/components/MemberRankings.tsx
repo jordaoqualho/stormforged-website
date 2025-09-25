@@ -85,10 +85,14 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
       stats.dailyAttacks.push(attack);
     });
 
-    // Calculate win rates
+    // Calculate points-based success rates
     const playerStats = Array.from(playerStatsMap.values()).map((stats) => ({
       ...stats,
-      winRate: (stats.totalWins + stats.totalLosses) > 0 ? Math.round((stats.totalWins / (stats.totalWins + stats.totalLosses)) * 100) : 0,
+      winRate: (() => {
+        const actualPoints = (stats.totalWins * 5) + (stats.totalDraws * 3) + (stats.totalLosses * 2);
+        const maxPossiblePoints = (stats.totalWins + stats.totalDraws + stats.totalLosses) * 5;
+        return maxPossiblePoints > 0 ? Math.round((actualPoints / maxPossiblePoints) * 100) : 0;
+      })(),
     }));
 
     return playerStats;

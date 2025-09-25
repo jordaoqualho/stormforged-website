@@ -62,7 +62,10 @@ export function calculateDailyStats(attacks: AttackRecord[], date: string): Dail
   const totalLosses = dayAttacks.reduce((sum, attack) => sum + attack.losses, 0);
   const totalDraws = dayAttacks.reduce((sum, attack) => sum + (attack.draws ?? 0), 0);
   const totalPoints = dayAttacks.reduce((sum, attack) => sum + (attack.points ?? 0), 0);
-  const winRate = (totalWins + totalLosses) > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
+  // Calculate points-based success rate using actual point values
+  const actualPoints = (totalWins * 5) + (totalDraws * 3) + (totalLosses * 2);
+  const maxPossiblePoints = (totalWins + totalDraws + totalLosses) * 5;
+  const winRate = maxPossiblePoints > 0 ? (actualPoints / maxPossiblePoints) * 100 : 0;
   const playerCount = new Set(dayAttacks.map((attack) => attack.playerName)).size;
 
   const result = {
@@ -120,9 +123,11 @@ export function calculateWeeklyStats(attacks: AttackRecord[], weekStart: string)
     }
   });
 
-  // Calculate win rates for each player
+  // Calculate points-based success rates for each player
   playerMap.forEach((player) => {
-    player.winRate = (player.totalWins + player.totalLosses) > 0 ? Math.round((player.totalWins / (player.totalWins + player.totalLosses)) * 10000) / 100 : 0;
+    const actualPoints = (player.totalWins * 5) + (player.totalDraws * 3) + (player.totalLosses * 2);
+    const maxPossiblePoints = (player.totalWins + player.totalDraws + player.totalLosses) * 5;
+    player.winRate = maxPossiblePoints > 0 ? Math.round((actualPoints / maxPossiblePoints) * 10000) / 100 : 0;
   });
 
   const totalAttacks = weekAttacks.reduce((sum, attack) => sum + attack.attacks, 0);
@@ -130,7 +135,10 @@ export function calculateWeeklyStats(attacks: AttackRecord[], weekStart: string)
   const totalLosses = weekAttacks.reduce((sum, attack) => sum + attack.losses, 0);
   const totalDraws = weekAttacks.reduce((sum, attack) => sum + (attack.draws ?? 0), 0);
   const totalPoints = weekAttacks.reduce((sum, attack) => sum + (attack.points ?? 0), 0);
-  const winRate = (totalWins + totalLosses) > 0 ? Math.round((totalWins / (totalWins + totalLosses)) * 10000) / 100 : 0;
+  // Calculate points-based success rate for overall weekly stats
+  const actualPoints = (totalWins * 5) + (totalDraws * 3) + (totalLosses * 2);
+  const maxPossiblePoints = (totalWins + totalDraws + totalLosses) * 5;
+  const winRate = maxPossiblePoints > 0 ? Math.round((actualPoints / maxPossiblePoints) * 10000) / 100 : 0;
 
   return {
     weekStart,
