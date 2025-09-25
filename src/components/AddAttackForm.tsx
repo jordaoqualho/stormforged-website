@@ -76,12 +76,12 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
       if (soundEnabled) playError();
       setShowNameRequiredWarning(true);
       onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
-      
+
       // Clear the warning after 3 seconds
       setTimeout(() => {
         setShowNameRequiredWarning(false);
       }, 3000);
-      
+
       return;
     }
 
@@ -136,6 +136,23 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const isFormValid = playerName.trim();
   const isLoading = isSaving || isSubmitting;
 
+  // Handle clicks on disabled button states
+  const handleDisabledButtonClick = () => {
+    if (!isFormValid) {
+      if (soundEnabled) playError();
+      setShowNameRequiredWarning(true);
+      onError?.("Member name is required! Enter a warrior's name to record the battle. ⚔️");
+      
+      // Clear the warning after 3 seconds
+      setTimeout(() => {
+        setShowNameRequiredWarning(false);
+      }, 3000);
+    } else if (isDuplicateEntry) {
+      if (soundEnabled) playError();
+      onError?.(`${playerName.trim()} has already recorded a battle on ${date}. One battle per day per warrior! ⚔️`);
+    }
+  };
+
   return (
     <div className="card-rpg bg-battlefield p-4">
       <div className="relative">
@@ -162,7 +179,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               }`}
               disabled={isLoading}
             />
-            
+
             {/* Name Required Warning */}
             {showNameRequiredWarning && (
               <div className="bg-danger/20 border-2 border-danger rounded-pixel p-2 mt-2">
@@ -217,10 +234,22 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={!isFormValid || isLoading || isDuplicateEntry}
+            onClick={(e) => {
+              if (isLoading) {
+                e.preventDefault();
+                return;
+              }
+              if (!isFormValid || isDuplicateEntry) {
+                e.preventDefault();
+                handleDisabledButtonClick();
+                return;
+              }
+            }}
             className={`btn-rpg w-full text-lg py-3 px-6 mt-4 ${
               isDuplicateEntry ? "opacity-50 cursor-not-allowed" : ""
-            } ${!isFormValid ? "opacity-75" : ""}`}
+            } ${!isFormValid ? "opacity-75" : ""} ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
