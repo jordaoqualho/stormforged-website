@@ -115,6 +115,14 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
                   </div>
 
                   <div className="flex flex-col items-center space-y-1">
+                    <div className="text-xs font-bold text-gray-300">Draws</div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">🤝</span>
+                      <span className="text-sm font-pixel text-mystic-blue">{day.totalDraws || 0}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center space-y-1">
                     <div className="text-xs font-bold text-gray-300">Losses</div>
                     <div className="flex items-center space-x-1">
                       <span className="text-sm">💀</span>
@@ -153,6 +161,14 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
                     <div className="text-xs font-bold text-gray-300">Wins</div>
                     <div className="flex items-center space-x-1">
                       <span className="text-sm">🏆</span>
+                      <span className="text-sm font-pixel text-gray-500">0</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="text-xs font-bold text-gray-300">Draws</div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">🤝</span>
                       <span className="text-sm font-pixel text-gray-500">0</span>
                     </div>
                   </div>

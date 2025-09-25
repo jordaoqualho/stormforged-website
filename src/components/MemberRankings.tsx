@@ -162,6 +162,9 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                   Victories
                 </th>
                 <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center hidden sm:table-cell">
+                  Draws
+                </th>
+                <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center hidden sm:table-cell">
                   Defeats
                 </th>
                 <th className="text-xs sm:text-sm text-gray-300 font-pixel py-2 sm:py-3 px-2 sm:px-3 text-center">
@@ -181,15 +184,15 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                   // Sort by points first, then by win rate, then by total attacks (calculated)
                   if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
                   if (b.winRate !== a.winRate) return b.winRate - a.winRate;
-                  const aTotalAttacks = a.totalWins + a.totalLosses;
-                  const bTotalAttacks = b.totalWins + b.totalLosses;
+                  const aTotalAttacks = a.totalWins + a.totalLosses + (a.totalDraws || 0);
+                  const bTotalAttacks = b.totalWins + b.totalLosses + (b.totalDraws || 0);
                   return bTotalAttacks - aTotalAttacks;
                 })
                 .map((player, index) => (
                   <tr
                     key={player.playerName}
                     className="border-b border-dark-gray hover:bg-mystic-blue hover:bg-opacity-20 transition-colors group"
-                    title={`${player.playerName} - ${player.totalWins + player.totalLosses} total attacks (${
+                    title={`${player.playerName} - ${player.totalWins + player.totalLosses + (player.totalDraws || 0)} total attacks (${
                       player.winRate
                     }% win rate)`}
                   >
@@ -217,6 +220,9 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-success text-xs sm:text-sm">
                       {player.totalWins}
+                    </td>
+                    <td className="py-2 px-2 sm:px-3 text-center font-pixel text-mystic-blue text-xs sm:text-sm hidden sm:table-cell">
+                      {player.totalDraws || 0}
                     </td>
                     <td className="py-2 px-2 sm:px-3 text-center font-pixel text-danger text-xs sm:text-sm hidden sm:table-cell">
                       {player.totalLosses}
@@ -262,7 +268,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
             <div className="card-rpg bg-battlefield p-6 max-w-md w-full mx-4 relative">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="icon-rpg pixel-glow text-xl">🗑️</div>
-                <h3 className="text-xl font-pixel text-red-400 text-glow">Delete Records</h3>
+                <h3 className="text-xl font-pixel text-red-400">Delete Records</h3>
               </div>
 
               <div className="mb-4">
@@ -287,7 +293,7 @@ export default function MemberRankings({ selectedDate }: MemberRankingsProps) {
                             })}
                           </div>
                           <div className="text-xs text-text-muted font-pixel-operator">
-                            {attack.wins + attack.losses} attacks • {attack.wins}W/{attack.losses}L • {attack.points}{" "}
+                            {attack.wins + attack.losses + attack.draws} attacks • {attack.wins}W/{attack.draws || 0}D/{attack.losses}L • {attack.points}{" "}
                             points
                           </div>
                         </div>
