@@ -71,11 +71,12 @@ export default function Charts() {
     const dailyStats = weekAttacks.reduce((acc, attack) => {
       const date = attack.date;
       if (!acc[date]) {
-        acc[date] = { date, totalAttacks: 0, totalWins: 0, totalLosses: 0, playerCount: 0, players: new Set() };
+        acc[date] = { date, totalAttacks: 0, totalWins: 0, totalLosses: 0, totalDraws: 0, playerCount: 0, players: new Set() };
       }
       acc[date].totalAttacks += attack.attacks;
       acc[date].totalWins += attack.wins;
       acc[date].totalLosses += attack.losses;
+      acc[date].totalDraws += attack.draws || 0;
       acc[date].players.add(attack.playerName);
       acc[date].playerCount = acc[date].players.size;
       return acc;
@@ -131,6 +132,7 @@ export default function Charts() {
     attacks: day.totalAttacks,
     wins: day.totalWins,
     losses: day.totalLosses,
+    draws: day.totalDraws || 0,
     winRate: day.winRate,
     players: day.playerCount,
   }));
@@ -258,6 +260,15 @@ export default function Charts() {
                 name="🏆 Victories"
                 dot={{ fill: "#2ECC71", strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, stroke: "#2ECC71", strokeWidth: 2 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="draws"
+                stroke="#FF8C00"
+                strokeWidth={3}
+                name="🤝 Draws"
+                dot={{ fill: "#FF8C00", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: "#FF8C00", strokeWidth: 2 }}
               />
               <Line
                 type="monotone"
