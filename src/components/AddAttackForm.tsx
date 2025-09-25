@@ -88,9 +88,9 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
         points,
       });
 
-      // Reset form
+      // Reset form but keep battle results for sequential entries
       setPlayerName("");
-      setBattleResults(Array(5).fill("victory"));
+      // Keep battleResults unchanged to maintain the same configuration
 
       if (soundEnabled) {
         playSuccess();
