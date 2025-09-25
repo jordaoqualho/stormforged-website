@@ -167,9 +167,6 @@ export default function Home() {
                   </div>
                   <div className="flex items-center space-x-2 sm:space-x-3">
                     <SoundToggle />
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-b from-[#FFD700] to-[#B8860B] border-2 border-[#B8860B] rounded-full flex items-center justify-center shadow-glow-gold">
-                      <span className="text-sm sm:text-xl">⚔️</span>
-                    </div>
                   </div>
                 </div>
               </div>
