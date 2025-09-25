@@ -1,6 +1,6 @@
 "use client";
 
-import { PLAYER_ROLES, Player, fuzzySearch, generatePlayerAvatar, getRecentPlayers } from "@/lib/players";
+import { Player, fuzzySearch, generatePlayerAvatar, getRecentPlayers } from "@/lib/players";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { Combobox } from "@headlessui/react";
 import { useEffect, useRef, useState } from "react";

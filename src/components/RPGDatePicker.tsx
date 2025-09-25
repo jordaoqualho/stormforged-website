@@ -117,10 +117,6 @@ export default function RPGDatePicker({
     );
   };
 
-  const isPastDate = (date: Date): boolean => {
-    // Allow all dates - no restrictions on past dates
-    return false;
-  };
 
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentMonth);
@@ -135,7 +131,6 @@ export default function RPGDatePicker({
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-      const isPast = isPastDate(date);
       const isTodayDate = isToday(date);
       const isSelectedDate = isSelected(date);
 

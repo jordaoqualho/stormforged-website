@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -41,19 +41,19 @@ jobs:
           prerelease: false
           body: |
             ## 🚀 Release ${{ github.ref_name }}
-            
+
             **Stormforged Guild War Tracker - Production Release**
-            
+
             This release includes all the latest features and improvements for the Stormforged Guild War Tracker.
-            
+
             ### 📦 What's New
             - Check the [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes
             - All features and bug fixes from recent commits
-            
+
             ### 🔗 Links
             - **Live Demo**: https://stormforged-website.vercel.app
             - **Repository**: https://github.com/${{ github.repository }}
-            
+
             ---
-            
+
             *Created by Jordones for the Stormforged Guild*

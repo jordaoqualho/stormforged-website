@@ -33,11 +33,15 @@ export default function RPGWeekSelector({
 
   // Generate week options, avoiding duplicates with current week
   const weekOptions: WeekOption[] = [
-    ...(currentWeekNumber ? [{
-      value: currentWeekNumber,
-      label: `Week ${currentWeekNumber}`,
-      range: `${getWeekRange(currentWeekNumber).start} – ${getWeekRange(currentWeekNumber).end} (Thu-Wed)`,
-    }] : []),
+    ...(currentWeekNumber
+      ? [
+          {
+            value: currentWeekNumber,
+            label: `Week ${currentWeekNumber}`,
+            range: `${getWeekRange(currentWeekNumber).start} – ${getWeekRange(currentWeekNumber).end} (Thu-Wed)`,
+          },
+        ]
+      : []),
     ...availableWeeks
       .filter((week) => week !== currentWeekNumber) // Filter out current week to avoid duplicates
       .map((week) => {
@@ -176,7 +180,8 @@ export default function RPGWeekSelector({
                         <div className="font-pixel text-sm">{option.label}</div>
                         <div className="text-xs text-text-muted">{option.range}</div>
                       </div>
-                      {(selectedWeek === option.value || (selectedWeek === null && option.value === currentWeekNumber)) && (
+                      {(selectedWeek === option.value ||
+                        (selectedWeek === null && option.value === currentWeekNumber)) && (
                         <span className="text-gold">✓</span>
                       )}
                     </div>

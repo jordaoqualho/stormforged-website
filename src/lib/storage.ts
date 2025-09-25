@@ -1,5 +1,5 @@
 import { AttackRecord, GuildWarData } from "@/types";
-import { del, get, keys, set } from "idb-keyval";
+import { del, get, set } from "idb-keyval";
 
 const STORAGE_KEY = "guild-war-data";
 

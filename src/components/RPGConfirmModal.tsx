@@ -26,7 +26,7 @@ export default function RPGConfirmModal({
   type = "warning",
   icon = "⚠️",
 }: RPGConfirmModalProps) {
-  const { playClick, playError } = useRPGSounds();
+  const { playClick } = useRPGSounds();
 
   // Handle escape key
   useEffect(() => {

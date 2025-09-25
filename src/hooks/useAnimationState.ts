@@ -11,7 +11,7 @@ export function useAnimationState(options: UseAnimationStateOptions = {}) {
   const { delay = 0, duration = 800 } = options;
   const [isAnimating, setIsAnimating] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

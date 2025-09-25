@@ -316,7 +316,7 @@ export default function Home() {
                 <div className="text-center">
                   <p className="text-xs text-text-muted font-pixel-operator">
                     Created by <span className="text-gold font-pixel">Jordones</span> for the Stormforged Guild •
-                    Powered by Next.js & TailwindCSS • Version{" "}
+                     Version{" "}
                     <span className="text-gold font-pixel">{packageJson.version}</span>
                   </p>
                 </div>

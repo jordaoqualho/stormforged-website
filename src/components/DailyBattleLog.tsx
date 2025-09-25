@@ -1,6 +1,11 @@
 "use client";
 
-import { calculateWeeklyStats, getWeekEnd, getWeekNumberForDate, getWeekStart, parseDate, getWeekRange } from "@/lib/calculations";
+import {
+  calculateWeeklyStats,
+  getWeekNumberForDate,
+  getWeekStart,
+  parseDate,
+} from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useMemo } from "react";
 
@@ -32,7 +37,7 @@ export default function DailyBattleLog({ onDayClick, selectedDate }: DailyBattle
 
     // Get the correct week start date for the selected week number using centralized function
     // We need to find a date that falls within the selected week to get the week start
-    const sampleDate = weekAttacks[0]?.date || new Date().toISOString().split('T')[0];
+    const sampleDate = weekAttacks[0]?.date || new Date().toISOString().split("T")[0];
     const weekStart = getWeekStart(sampleDate);
 
     return calculateWeeklyStats(weekAttacks, weekStart);

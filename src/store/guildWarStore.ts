@@ -1,7 +1,7 @@
 import { calculateComparison, generateId, getCurrentWeekStats, getPreviousWeekStats } from "@/lib/calculations";
 import { calculateDraws, calculatePoints } from "@/lib/points";
 import { storage } from "@/lib/storage";
-import { AttackRecord, ComparisonData, GuildWarData, WeeklyStats } from "@/types";
+import { AttackRecord, ComparisonData, WeeklyStats } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDate } from "@/lib/calculations";
-import { calculatePoints, getPointBreakdown } from "@/lib/points";
+import { calculatePoints } from "@/lib/points";
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useEffect, useMemo, useState } from "react";
@@ -19,7 +19,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const [date, setDate] = useState(formatDate(new Date()));
   const [battleResults, setBattleResults] = useState<BattleResult[]>(Array(5).fill("victory"));
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [playerSuggestions, setPlayerSuggestions] = useState<string[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
   // Fixed attacks per entry (always 5)
@@ -30,10 +29,9 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const draws = battleResults.filter((r) => r === "draw").length;
   const losses = battleResults.filter((r) => r === "loss").length;
   const points = calculatePoints(wins, losses, draws);
-  const pointBreakdown = getPointBreakdown(wins, losses, draws);
 
   const { addAttack, isSaving, attacks: allAttacks } = useGuildWarStore();
-  const { playClick, playSword, playSuccess, playError, isEnabled: soundEnabled } = useRPGSounds();
+  const { playSword, playSuccess, playError, isEnabled: soundEnabled } = useRPGSounds();
 
   // Check if current player/date combination already exists (debounced to prevent flashing)
   const isDuplicateEntry = useMemo(() => {
@@ -45,11 +43,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     );
   }, [playerName, date, allAttacks]);
 
-  // Auto-complete player names
-  useEffect(() => {
-    const uniquePlayers = Array.from(new Set(allAttacks.map((attack) => attack.playerName)));
-    setPlayerSuggestions(uniquePlayers.slice(0, 5)); // Show last 5 unique players
-  }, [allAttacks]);
 
   // Control duplicate warning display with delay to prevent flashing
   useEffect(() => {
@@ -117,7 +110,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   const isFormValid = playerName.trim();
   const isLoading = isSaving || isSubmitting;
 
-  const winRate = attacks > 0 ? Math.round((wins / attacks) * 100) : 0;
 
   return (
     <div className="card-rpg bg-battlefield p-4">
