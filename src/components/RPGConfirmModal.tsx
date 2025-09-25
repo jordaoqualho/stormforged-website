@@ -91,54 +91,39 @@ export default function RPGConfirmModal({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black bg-opacity-75 animate-fade-in"
-        onClick={handleCancel}
-      />
-      
+      <div className="absolute inset-0 bg-black bg-opacity-75 animate-fade-in" onClick={handleCancel} />
+
       {/* Modal */}
       <div className={`card-rpg bg-battlefield p-6 max-w-md w-full relative animate-slide-up ${styles.glow}`}>
         {/* Header */}
         <div className="flex items-center space-x-4 mb-6">
-          <div className={`icon-rpg pixel-glow text-2xl ${styles.iconColor}`}>
-            {icon}
-          </div>
+          <div className={`icon-rpg pixel-glow text-2xl ${styles.iconColor}`}>{icon}</div>
           <h3 className="text-xl font-pixel text-gold text-glow">{title}</h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
         </div>
 
         {/* Message */}
         <div className="mb-8">
-          <p className="text-text-primary font-pixel-operator leading-relaxed">
-            {message}
-          </p>
+          <p className="text-text-primary font-pixel-operator leading-relaxed">{message}</p>
         </div>
 
         {/* Warning Box for dangerous actions */}
         {type === "danger" && (
           <div className="bg-danger bg-opacity-20 border border-danger rounded-pixel p-4 mb-6">
-            <p className="text-sm font-pixel text-danger">
-              ⚠️ This action cannot be undone!
-            </p>
+            <p className="text-sm font-pixel text-danger">⚠️ This action cannot be undone!</p>
           </div>
         )}
 
         {/* Action Buttons */}
         <div className="flex space-x-4">
-          <button
-            onClick={handleCancel}
-            className="btn-rpg flex-1 py-3 px-6 text-center"
-          >
+          <button onClick={handleCancel} className="btn-rpg flex-1 py-3 px-6 text-center">
             <span className="flex items-center justify-center space-x-2">
               <span>❌</span>
               <span>{cancelText}</span>
             </span>
           </button>
-          
-          <button
-            onClick={handleConfirm}
-            className={`btn-rpg flex-1 py-3 px-6 text-center ${styles.confirmBg}`}
-          >
+
+          <button onClick={handleConfirm} className={`btn-rpg flex-1 py-3 px-6 text-center ${styles.confirmBg}`}>
             <span className="flex items-center justify-center space-x-2">
               <span>{type === "danger" ? "💀" : type === "info" ? "✅" : "⚔️"}</span>
               <span>{confirmText}</span>

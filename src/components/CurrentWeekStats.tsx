@@ -82,7 +82,6 @@ export default function CurrentWeekStats() {
     );
   }
 
-
   const getImprovementColor = (value: number) => {
     if (value > 0) return "text-success";
     if (value < 0) return "text-danger";

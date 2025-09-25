@@ -117,7 +117,6 @@ export default function RPGDatePicker({
     );
   };
 
-
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentMonth);
     const firstDay = getFirstDayOfMonth(currentMonth);

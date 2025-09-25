@@ -209,9 +209,11 @@ body {
   @apply bg-gradient-to-b from-dark to-darker;
   @apply border-2 border-mystic-blue border-t-0;
   @apply text-text-secondary font-pixel text-sm;
-  @apply px-4 py-2;
+  @apply px-2 py-2;
   @apply transition-all duration-200;
   @apply hover:text-gold hover:border-gold;
+  @apply min-w-0;
+  @apply flex-shrink;
 }
 
 .tab-rpg.active {
@@ -234,6 +236,22 @@ body {
 
 .tab-rpg.active::before {
   opacity: 1;
+}
+
+/* Mobile Navigation Responsive Styles */
+@media (max-width: 640px) {
+  .tab-rpg {
+    @apply px-1 py-1;
+    @apply text-xs;
+  }
+  
+  .tab-rpg .flex-col {
+    @apply space-y-0;
+  }
+  
+  .tab-rpg span {
+    @apply text-xs;
+  }
 }
 
 /* RPG Icon Styles */

@@ -43,7 +43,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     );
   }, [playerName, date, allAttacks]);
 
-
   // Control duplicate warning display with delay to prevent flashing
   useEffect(() => {
     if (isDuplicateEntry) {
@@ -109,7 +108,6 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
 
   const isFormValid = playerName.trim();
   const isLoading = isSaving || isSubmitting;
-
 
   return (
     <div className="card-rpg bg-battlefield p-4">

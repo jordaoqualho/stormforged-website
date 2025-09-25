@@ -190,9 +190,9 @@ export default function Home() {
 
         {/* Navigation Tabs */}
         <AnimatedContainer animationType="slide-up" delay={100}>
-          <nav>
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-              <div className="flex space-x-1">
+          <nav className="w-full overflow-hidden">
+            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+              <div className="flex w-full space-x-1">
                 {tabConfig.map((tab) => (
                   <button
                     key={tab.id}
@@ -200,12 +200,12 @@ export default function Home() {
                       setActiveTab(tab.id as "overview" | "charts" | "data");
                       playClick();
                     }}
-                    className={`tab-rpg flex-1 ${activeTab === tab.id ? "active" : ""}`}
+                    className={`tab-rpg flex-1 min-w-0 ${activeTab === tab.id ? "active" : ""}`}
                   >
-                    <div className="flex flex-col items-center space-y-1">
-                      <span className="text-xl sm:text-2xl">{tab.icon}</span>
-                      <span className="font-pixel text-xs sm:text-sm">{tab.label}</span>
-                      <span className="font-pixel-operator text-xs opacity-75 hidden sm:block">{tab.desc}</span>
+                    <div className="flex flex-col items-center space-y-1 px-1">
+                      <span className="text-lg sm:text-xl md:text-2xl">{tab.icon}</span>
+                      <span className="font-pixel text-xs sm:text-sm truncate">{tab.label}</span>
+                      <span className="font-pixel-operator text-xs opacity-75 hidden sm:block truncate">{tab.desc}</span>
                     </div>
                   </button>
                 ))}
