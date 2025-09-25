@@ -71,7 +71,15 @@ export default function Charts() {
     const dailyStats = weekAttacks.reduce((acc, attack) => {
       const date = attack.date;
       if (!acc[date]) {
-        acc[date] = { date, totalAttacks: 0, totalWins: 0, totalLosses: 0, totalDraws: 0, playerCount: 0, players: new Set() };
+        acc[date] = {
+          date,
+          totalAttacks: 0,
+          totalWins: 0,
+          totalLosses: 0,
+          totalDraws: 0,
+          playerCount: 0,
+          players: new Set(),
+        };
       }
       acc[date].totalAttacks += attack.attacks;
       acc[date].totalWins += attack.wins;
@@ -85,11 +93,20 @@ export default function Charts() {
     // Group by player
     const playerStats = weekAttacks.reduce((acc, attack) => {
       if (!acc[attack.playerName]) {
-        acc[attack.playerName] = { playerName: attack.playerName, totalAttacks: 0, totalWins: 0, totalLosses: 0 };
+        acc[attack.playerName] = { 
+          playerName: attack.playerName, 
+          totalAttacks: 0, 
+          totalWins: 0, 
+          totalLosses: 0, 
+          totalDraws: 0,
+          totalPoints: 0 
+        };
       }
       acc[attack.playerName].totalAttacks += attack.attacks;
       acc[attack.playerName].totalWins += attack.wins;
       acc[attack.playerName].totalLosses += attack.losses;
+      acc[attack.playerName].totalDraws += attack.draws || 0;
+      acc[attack.playerName].totalPoints += attack.points || 0;
       return acc;
     }, {} as any);
 
@@ -155,15 +172,26 @@ export default function Charts() {
       ]
     : null;
 
-  // Prepare player data for bar chart
+  // Prepare player data for bar chart - sorted by points
   const playerData = statsData.playerStats
-    .sort((a: any, b: any) => b.totalAttacks - a.totalAttacks)
-    .slice(0, 10) // Top 10 by attacks
+    .map((player: any) => {
+      // Calculate success rate (victories / total battles)
+      const totalBattles = player.totalWins + player.totalLosses + player.totalDraws;
+      const successRate = totalBattles > 0 ? Math.round((player.totalWins / totalBattles) * 100) : 0;
+      
+      return {
+        ...player,
+        successRate,
+        totalBattles
+      };
+    })
+    .sort((a: any, b: any) => b.totalPoints - a.totalPoints) // Sort by points
+    .slice(0, 10) // Top 10 by points
     .map((player: any) => ({
       name: player.playerName.length > 8 ? player.playerName.substring(0, 8) + "..." : player.playerName,
-      attacks: player.totalAttacks,
-      wins: player.totalWins,
-      winRate: player.winRate,
+      points: player.totalPoints,
+      victories: player.totalWins,
+      successRate: player.successRate,
     }));
 
   // Custom tooltip component with RPG styling
@@ -175,7 +203,7 @@ export default function Charts() {
           {payload.map((entry: any, index: number) => (
             <p key={index} className="font-pixel-operator text-text-primary text-xs">
               <span style={{ color: entry.color }}>●</span> {entry.name}: {entry.value}
-              {entry.dataKey === "winRate" ? "%" : ""}
+              {entry.dataKey === "winRate" || entry.dataKey === "successRate" ? "%" : ""}
             </p>
           ))}
         </div>
@@ -245,15 +273,6 @@ export default function Charts() {
               />
               <Line
                 type="monotone"
-                dataKey="attacks"
-                stroke="#FFD700"
-                strokeWidth={3}
-                name="⚔️ Attacks"
-                dot={{ fill: "#FFD700", strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: "#FFD700", strokeWidth: 2 }}
-              />
-              <Line
-                type="monotone"
                 dataKey="wins"
                 stroke="#2ECC71"
                 strokeWidth={3}
@@ -290,7 +309,7 @@ export default function Charts() {
           <div className="mb-4 sm:mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="icon-rpg pixel-glow text-xl">👑</div>
-              <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Top Members by Attacks</h3>
+              <h3 className="text-lg sm:text-xl font-pixel text-gold text-glow">Top Members by Points</h3>
               <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
             </div>
             {selectedWeek && (
@@ -317,8 +336,8 @@ export default function Charts() {
                     color: "#FFD700",
                   }}
                 />
-                <Bar dataKey="attacks" fill="#FFD700" name="⚔️ Attacks" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="wins" fill="#2ECC71" name="🏆 Victories" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="points" fill="#FFD700" name="⭐ Points" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="victories" fill="#2ECC71" name="🏆 Victories" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
