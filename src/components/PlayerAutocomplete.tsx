@@ -47,15 +47,15 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
       setRecentPlayers(getRecentPlayers(playersList));
     }, [attacks]);
 
-     const filteredPlayers = fuzzySearch(players, query);
-     const showRecent = !query && recentPlayers.length > 0;
+    const filteredPlayers = fuzzySearch(players, query);
+    const showRecent = !query && recentPlayers.length > 0;
 
-     // Sync query state with value prop (for when parent clears the value)
-     useEffect(() => {
-       if (!value) {
-         setQuery("");
-       }
-     }, [value]);
+    // Sync query state with value prop (for when parent clears the value)
+    useEffect(() => {
+      if (!value) {
+        setQuery("");
+      }
+    }, [value]);
 
     const handleSelect = (value: string | null) => {
       if (!value) return; // Guard against null/undefined
@@ -74,6 +74,18 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
       const newValue = event.target.value;
       setQuery(newValue);
       onChange(newValue.toLowerCase().trim());
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        // Find the form and trigger submission
+        const form = event.currentTarget.closest('form');
+        if (form) {
+          // Trigger form submission
+          const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+          form.dispatchEvent(submitEvent);
+        }
+      }
     };
 
     return (
@@ -97,6 +109,7 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
             `}
               displayValue={() => value}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               placeholder={placeholder}
               autoComplete="off"
             />
