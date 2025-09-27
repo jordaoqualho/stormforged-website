@@ -86,12 +86,12 @@ export const storage = {
     try {
       const data = JSON.parse(jsonData) as GuildWarData;
 
-      // Normalize all player names to lowercase to prevent duplicates
+      // Normalize data while preserving original case for player names
       const normalizedData: GuildWarData = {
         ...data,
         attacks: data.attacks.map((attack) => ({
           ...attack,
-          playerName: attack.playerName.toLowerCase().trim(),
+          playerName: attack.playerName.trim(),
         })),
         lastUpdated: new Date().toISOString(),
       };

@@ -4,12 +4,62 @@ class RPGSoundManager {
   private audioContext: AudioContext | null = null;
   private sounds: Map<string, AudioBuffer> = new Map();
   private isEnabled = true;
+  private isInitialized = false;
+  private initializationPromise: Promise<void> | null = null;
 
   constructor() {
-    if (typeof window !== "undefined") {
-      this.audioContext = new AudioContext();
-      this.generateSounds();
+    // Don't initialize AudioContext immediately to avoid autoplay policy warnings
+    this.setupUserGestureListener();
+  }
+
+  private setupUserGestureListener() {
+    if (typeof window === "undefined") return;
+
+    // Listen for any user interaction to initialize AudioContext
+    const initOnUserGesture = () => {
+      if (!this.isInitialized) {
+        this.initializeAudioContext();
+      }
+      // Remove listeners after first initialization
+      document.removeEventListener("click", initOnUserGesture);
+      document.removeEventListener("keydown", initOnUserGesture);
+      document.removeEventListener("touchstart", initOnUserGesture);
+    };
+
+    document.addEventListener("click", initOnUserGesture, { once: true });
+    document.addEventListener("keydown", initOnUserGesture, { once: true });
+    document.addEventListener("touchstart", initOnUserGesture, { once: true });
+  }
+
+  private async initializeAudioContext() {
+    if (this.isInitialized || this.initializationPromise) {
+      return this.initializationPromise;
     }
+
+    this.initializationPromise = new Promise<void>((resolve) => {
+      try {
+        this.audioContext = new AudioContext();
+
+        // Resume AudioContext if it's suspended (common in modern browsers)
+        if (this.audioContext.state === "suspended") {
+          this.audioContext.resume().then(() => {
+            this.generateSounds();
+            this.isInitialized = true;
+            resolve();
+          });
+        } else {
+          this.generateSounds();
+          this.isInitialized = true;
+          resolve();
+        }
+      } catch (error) {
+        console.warn("Failed to initialize AudioContext:", error);
+        this.isInitialized = true;
+        resolve();
+      }
+    });
+
+    return this.initializationPromise;
   }
 
   private generateSounds() {
@@ -172,11 +222,23 @@ class RPGSoundManager {
   }
 
   private async playSound(soundName: string, volume = 0.5) {
-    if (!this.isEnabled || !this.audioContext || !this.sounds.has(soundName)) {
+    if (!this.isEnabled || !this.sounds.has(soundName)) {
       return;
     }
 
     try {
+      // Ensure AudioContext is initialized before playing
+      await this.initializeAudioContext();
+
+      if (!this.audioContext) {
+        return;
+      }
+
+      // Ensure AudioContext is running
+      if (this.audioContext.state === "suspended") {
+        await this.audioContext.resume();
+      }
+
       const source = this.audioContext.createBufferSource();
       const gainNode = this.audioContext.createGain();
 
@@ -188,7 +250,7 @@ class RPGSoundManager {
 
       source.start();
     } catch (error) {
-      console.warn("Could not play sound:", error);
+      // Silently fail to avoid console spam
     }
   }
 
