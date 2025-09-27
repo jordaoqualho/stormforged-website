@@ -4,8 +4,8 @@
   "private": true,
   "description": "Idle Horizon Guild War Tracker for Stormforged Guild",
   "scripts": {
-    "start:dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "start:dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "release": "standard-version",
