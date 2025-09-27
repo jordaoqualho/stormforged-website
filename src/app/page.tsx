@@ -12,6 +12,8 @@ import MemberRankings from "@/components/MemberRankings";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
 import { getCurrentWeekNumber } from "@/lib/calculations";
+import { initializeDebugSubmission } from "@/lib/debugSubmission";
+import "@/lib/debugTest"; // Import for console testing utilities
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -85,6 +87,9 @@ export default function Home() {
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
+
+      // Initialize debug submission manager
+      initializeDebugSubmission();
 
       // If not showing loading screen, we can proceed immediately
       if (hasSeenLoading) {
@@ -281,9 +286,7 @@ export default function Home() {
 
           {activeTab === "data" && (
             <AnimatedContainer animationType="slide-up" delay={200}>
-              <div className="max-w-4xl">
-                <DataManagement onSuccess={showSuccess} onError={showError} />
-              </div>
+              <DataManagement onSuccess={showSuccess} onError={showError} />
             </AnimatedContainer>
           )}
         </main>
