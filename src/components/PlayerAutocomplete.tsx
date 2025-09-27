@@ -2,7 +2,6 @@
 
 import { Player, fuzzySearch, generatePlayerAvatar, getRecentPlayers } from "@/lib/players";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { Combobox } from "@headlessui/react";
 import { forwardRef, useEffect, useRef, useState } from "react";
 
 interface PlayerAutocompleteProps {
@@ -12,16 +11,29 @@ interface PlayerAutocompleteProps {
   className?: string;
   disabled?: boolean;
   error?: boolean;
+  id?: string;
+  onBlur?: () => void;
 }
 
 const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>(
   (
-    { value, onChange, placeholder = "Enter warrior name...", className = "", disabled = false, error = false },
+    {
+      value,
+      onChange,
+      placeholder = "Enter warrior name...",
+      className = "",
+      disabled = false,
+      error = false,
+      id,
+      onBlur,
+    },
     ref
   ) => {
     const [query, setQuery] = useState("");
     const [players, setPlayers] = useState<Player[]>([]);
     const [recentPlayers, setRecentPlayers] = useState<Player[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { attacks } = useGuildWarStore();
 
     // Generate players list from attack history
@@ -61,27 +73,74 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
       }
     }, [value]);
 
-    const handleSelect = (value: string | null) => {
-      if (!value) return; // Guard against null/undefined
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
+      };
 
-      // Find the player object if it's a string (from recent players)
-      const player = typeof value === "string" ? players.find((p) => p.name === value) || { name: value } : value;
+      if (isOpen) {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+      }
+    }, [isOpen]);
 
-      const selectedName = typeof player === "string" ? player : player?.name || "";
+    // Prevent body scroll issues when dropdown is open
+    useEffect(() => {
+      if (isOpen) {
+        // Ensure body overflow is not affected
+        const originalOverflow = document.body.style.overflow;
+        const originalOverflowX = document.body.style.overflowX;
+        const originalOverflowY = document.body.style.overflowY;
+
+        // Ensure scrolling remains enabled
+        document.body.style.overflow = "auto";
+        document.body.style.overflowX = "auto";
+        document.body.style.overflowY = "auto";
+
+        // Add scroll event listener to ensure scrolling works
+        const handleScroll = (e: Event) => {
+          // Allow scrolling to continue normally
+          e.stopPropagation();
+        };
+
+        document.addEventListener("wheel", handleScroll, { passive: true });
+        document.addEventListener("scroll", handleScroll, { passive: true });
+
+        // Restore original overflow when dropdown closes
+        return () => {
+          document.body.style.overflow = originalOverflow;
+          document.body.style.overflowX = originalOverflowX;
+          document.body.style.overflowY = originalOverflowY;
+          document.removeEventListener("wheel", handleScroll);
+          document.removeEventListener("scroll", handleScroll);
+        };
+      }
+    }, [isOpen]);
+
+    const handleSelect = (player: Player) => {
+      if (!player) return;
+
+      const selectedName = player.name || "";
       if (selectedName) {
-        onChange(selectedName.toLowerCase().trim());
+        onChange(selectedName.trim());
         setQuery("");
+        setIsOpen(false);
       }
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = event.target.value;
       setQuery(newValue);
-      onChange(newValue.toLowerCase().trim());
+      onChange(newValue.trim());
+      setIsOpen(true); // Open dropdown when typing
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
+        setIsOpen(false); // Close dropdown when Enter is pressed
         // Find the form and trigger submission
         const form = event.currentTarget.closest("form");
         if (form) {
@@ -93,13 +152,15 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
     };
 
     return (
-      <div className={`relative ${className}`}>
-        <Combobox value={value} onChange={handleSelect}>
-          <div className="relative">
-            <Combobox.Input
-              ref={ref}
-              disabled={disabled}
-              className={`
+      <div ref={containerRef} className={`relative ${className}`}>
+        <div className="relative">
+          <input
+            ref={ref}
+            id={id}
+            type="text"
+            value={value}
+            disabled={disabled}
+            className={`
               w-full px-4 py-3
               bg-[#2A2A2A] border-2 ${error ? "border-danger" : "border-mystic-blue"}
               text-text-primary font-pixel-operator text-base
@@ -111,26 +172,36 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
               hover:${error ? "border-danger-light" : "border-mystic-blue-light"}
               ${disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
-              displayValue={() => value}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              autoComplete="off"
-            />
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onBlur={(e) => {
+              // Delay closing to allow option clicks
+              setTimeout(() => setIsOpen(false), 150);
+              onBlur?.();
+            }}
+            onFocus={() => setIsOpen(true)}
+            placeholder={placeholder}
+            autoComplete="off"
+          />
 
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <div className="text-text-muted hover:text-gold transition-colors">🔍</div>
-            </Combobox.Button>
-          </div>
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <div className="text-text-muted hover:text-gold transition-colors">🔍</div>
+          </button>
+        </div>
 
-          <Combobox.Options
+        {/* Custom Dropdown */}
+        {isOpen && (filteredPlayers.length > 0 || showRecent) && (
+          <div
             className={`
-          absolute z-20 mt-2 w-full
-          bg-[#2A2A2A] border-2 border-mystic-blue
-          rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)]
-          max-h-60 overflow-auto
-          ${filteredPlayers.length > 0 || showRecent ? "block" : "hidden"}
-        `}
+              absolute z-10 mt-2 w-full
+              bg-[#2A2A2A] border-2 border-mystic-blue
+              rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)]
+              max-h-60 overflow-auto
+            `}
           >
             {showRecent && (
               <div className="px-3 py-2 border-b border-mystic-blue">
@@ -140,31 +211,26 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
 
             {showRecent &&
               recentPlayers.map((player) => (
-                <Combobox.Option
+                <button
                   key={player.id}
-                  value={player}
-                  className={({ active }) => `
-                relative cursor-pointer select-none py-3 px-4
-                transition-all duration-150
-                ${active ? "bg-mystic-blue text-text-primary" : "text-text-secondary"}
-                hover:bg-mystic-blue-light
-              `}
+                  type="button"
+                  onClick={() => handleSelect(player)}
+                  className={`
+                    w-full text-left relative cursor-pointer select-none py-3 px-4
+                    transition-all duration-150
+                    text-text-secondary hover:bg-mystic-blue hover:bg-opacity-20
+                  `}
                 >
-                  {({ selected }) => (
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">{player.avatar}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className={`font-pixel text-sm ${selected ? "text-gold" : "text-text-primary"}`}>
-                          {player.name}
-                        </div>
-                        <div className="text-xs text-text-muted font-pixel-operator">
-                          {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
-                        </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="text-lg">{player.avatar}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-pixel text-sm text-text-primary">{player.name}</div>
+                      <div className="text-xs text-text-muted font-pixel-operator">
+                        {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
                       </div>
-                      {selected && <span className="text-gold text-sm">✓</span>}
                     </div>
-                  )}
-                </Combobox.Option>
+                  </div>
+                </button>
               ))}
 
             {query && filteredPlayers.length > 0 && (
@@ -175,31 +241,26 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
 
             {query &&
               filteredPlayers.map((player) => (
-                <Combobox.Option
+                <button
                   key={player.id}
-                  value={player}
-                  className={({ active }) => `
-                relative cursor-pointer select-none py-3 px-4
-                transition-all duration-150
-                ${active ? "bg-mystic-blue text-text-primary" : "text-text-secondary"}
-                hover:bg-mystic-blue-light
-              `}
+                  type="button"
+                  onClick={() => handleSelect(player)}
+                  className={`
+                    w-full text-left relative cursor-pointer select-none py-3 px-4
+                    transition-all duration-150
+                    text-text-secondary hover:bg-mystic-blue hover:bg-opacity-20
+                  `}
                 >
-                  {({ selected }) => (
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg">{player.avatar}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className={`font-pixel text-sm ${selected ? "text-gold" : "text-text-primary"}`}>
-                          {player.name}
-                        </div>
-                        <div className="text-xs text-text-muted font-pixel-operator">
-                          {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
-                        </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="text-lg">{player.avatar}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-pixel text-sm text-text-primary">{player.name}</div>
+                      <div className="text-xs text-text-muted font-pixel-operator">
+                        {player.totalBattles} battles • {Math.round((player.winRate || 0) * 100)}% win rate
                       </div>
-                      {selected && <span className="text-gold text-sm">✓</span>}
                     </div>
-                  )}
-                </Combobox.Option>
+                  </div>
+                </button>
               ))}
 
             {query && filteredPlayers.length === 0 && (
@@ -207,8 +268,8 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
                 No members found. Press Enter to add "{query}"
               </div>
             )}
-          </Combobox.Options>
-        </Combobox>
+          </div>
+        )}
       </div>
     );
   }

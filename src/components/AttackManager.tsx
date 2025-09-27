@@ -64,7 +64,7 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
 
     try {
       await updateAttack(editingAttack.id, {
-        playerName: formData.playerName.toLowerCase().trim(),
+        playerName: formData.playerName.trim(),
         date: formData.date,
         attacks: formData.attacks,
         wins: formData.wins,
@@ -300,34 +300,43 @@ function EditAttackModal({ attack, onSave, onCancel, isSaving }: EditAttackModal
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Player Name */}
             <div className="space-y-1">
-              <label className="text-gold font-pixel text-sm">Member Name</label>
+              <label htmlFor="editPlayerName" className="text-gold font-pixel text-sm">
+                Member Name
+              </label>
               <PlayerAutocomplete
                 value={formData.playerName}
                 onChange={(value) => setFormData((prev) => ({ ...prev, playerName: value }))}
                 placeholder="Enter warrior name"
                 className="w-full"
                 disabled={isSaving}
+                id="editPlayerName"
               />
             </div>
 
             {/* Date */}
             <div className="space-y-1">
-              <label className="text-gold font-pixel text-sm">Battle Date</label>
+              <label htmlFor="editDate" className="text-gold font-pixel text-sm">
+                Battle Date
+              </label>
               <RPGDatePicker
                 value={formData.date}
                 onChange={(value) => setFormData((prev) => ({ ...prev, date: value }))}
                 className="w-full"
                 disabled={isSaving}
+                id="editDate"
               />
             </div>
 
             {/* Battle Results */}
             <div className="space-y-1">
-              <label className="text-gold font-pixel text-sm">Battle Results</label>
+              <label htmlFor="editBattleResults" className="text-gold font-pixel text-sm">
+                Battle Results
+              </label>
               <BattleResultSelector
                 onResultsChange={handleBattleResultChange}
                 initialResults={battleResultsArray}
                 disabled={isSaving}
+                id="editBattleResults"
               />
             </div>
 

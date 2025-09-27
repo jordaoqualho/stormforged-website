@@ -95,7 +95,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
     setIsSubmitting(true);
     try {
       await addAttack({
-        playerName: trimmedPlayerName.toLowerCase(),
+        playerName: trimmedPlayerName,
         date,
         attacks,
         wins,
@@ -144,7 +144,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   };
 
   return (
-    <div className="card-rpg bg-battlefield p-4">
+    <div className="card-rpg bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)] bg-battlefield p-4">
       <div className="relative">
         {/* RPG Header */}
         <div className="flex items-center space-x-4 mb-4">
@@ -167,6 +167,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
               disabled={isLoading}
               error={showNameRequiredWarning}
+              id="playerName"
             />
           </div>
 
@@ -181,6 +182,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
               placeholder="Select battle date..."
               className={`w-full transition-opacity duration-200 ${isLoading ? "opacity-50" : ""}`}
               disabled={isLoading}
+              id="date"
             />
           </div>
 
@@ -215,20 +217,23 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           {/* Submit Button */}
           <button
             type="submit"
-            onClick={(e) => {
-              if (isLoading) {
-                e.preventDefault();
-                return;
+            disabled={isLoading || !isFormValid || isDuplicateEntry}
+            onMouseDown={(e) => {
+              // Blur the input to close any open dropdowns before click
+              if (playerInputRef.current) {
+                playerInputRef.current.blur();
               }
-              if (!isFormValid || isDuplicateEntry) {
+            }}
+            onClick={(e) => {
+              if (isLoading || !isFormValid || isDuplicateEntry) {
                 e.preventDefault();
                 handleDisabledButtonClick();
                 return;
               }
             }}
             className={`btn-rpg w-full text-lg py-3 px-6 mt-4 ${
-              isDuplicateEntry ? "opacity-50 cursor-not-allowed" : ""
-            } ${!isFormValid ? "opacity-75" : ""} ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              isDuplicateEntry || !isFormValid || isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            } ${!isFormValid ? "opacity-75" : ""}`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">

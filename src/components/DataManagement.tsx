@@ -1,5 +1,6 @@
 "use client";
 
+import { triggerDebugSubmission } from "@/lib/debugSubmission";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useState } from "react";
 import RPGConfirmModal from "./RPGConfirmModal";
@@ -13,9 +14,9 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   const [isExporting, setIsExporting] = useState(false);
   const [importData, setImportData] = useState("");
   const [isImporting, setIsImporting] = useState(false);
-  const [showImportSection, setShowImportSection] = useState(false);
-  const [importMethod, setImportMethod] = useState<"text" | "file">("text");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [importMethod, setImportMethod] = useState<"text" | "file">("file");
+  const [jsonValidationError, setJsonValidationError] = useState<string | null>(null);
 
   // Confirmation modal states
   const [showImportConfirm, setShowImportConfirm] = useState(false);
@@ -37,6 +38,9 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      // Trigger debug submission when user exports data
+      await triggerDebugSubmission();
+
       onSuccess?.("Battle records exported successfully! 📜⚔️");
     } catch (error) {
       console.error("Error exporting data:", error);
@@ -46,14 +50,30 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
     }
   };
 
+  const validateJson = (jsonString: string): boolean => {
+    try {
+      JSON.parse(jsonString);
+      setJsonValidationError(null);
+      return true;
+    } catch {
+      setJsonValidationError("Invalid JSON format. Please check your data.");
+      return false;
+    }
+  };
+
   const handleImport = async () => {
-    if (importMethod === "text" && !importData.trim()) {
-      onError?.("Please paste the battle data to import!");
+    if (importMethod === "file" && !selectedFile) {
+      onError?.("Please select a JSON file to import!");
       return;
     }
 
-    if (importMethod === "file" && !selectedFile) {
-      onError?.("Please select a file to import!");
+    if (importMethod === "text" && !importData.trim()) {
+      onError?.("Please paste the JSON data to import!");
+      return;
+    }
+
+    // Validate JSON
+    if (!validateJson(importData)) {
       return;
     }
 
@@ -83,6 +103,8 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       setImportData(text);
       setSelectedFile(file);
       setImportMethod("file");
+      // Validate JSON immediately after file selection
+      validateJson(text);
     } catch (error) {
       console.error("❌ [UI] Error reading file:", error);
       onError?.("Failed to read the file. Please try again.");
@@ -92,7 +114,7 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
   const resetImport = () => {
     setImportData("");
     setSelectedFile(null);
-    setImportMethod("text");
+    setJsonValidationError(null);
   };
 
   const confirmImport = async () => {
@@ -101,7 +123,6 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       await importDataAction(importData);
 
       resetImport();
-      setShowImportSection(false);
       onSuccess?.("Battle records imported successfully! The archives have been restored! 🏰");
     } catch (error) {
       console.error("❌ [UI] Error importing data:", error);
@@ -166,139 +187,188 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
 
           {/* Import Section */}
           <div className="panel-rpg p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="icon-rpg text-xl">🏰</div>
-                <h3 className="text-xl font-pixel text-gold">Import Battle Records</h3>
-              </div>
-              <button onClick={() => setShowImportSection(!showImportSection)} className="btn-rpg text-sm px-4 py-2">
-                {showImportSection ? "Hide Archive" : "Open Archive"}
-              </button>
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="icon-rpg text-xl">🏰</div>
+              <h3 className="text-xl font-pixel text-gold">Import Battle Records</h3>
             </div>
             <p className="text-sm text-text-secondary font-pixel-operator mb-6 leading-relaxed">
               Import previously exported battle records. This will replace all current data in Stormforged's archives.
             </p>
 
-            {showImportSection && (
-              <div className="space-y-6">
-                {/* Import Method Selection */}
-                <div className="flex space-x-2 mb-4">
-                  <button
-                    onClick={() => setImportMethod("text")}
-                    className={`btn-rpg flex-1 py-2 px-4 ${
-                      importMethod === "text"
-                        ? "bg-gold text-[#0D0D0D] border-gold"
-                        : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
-                    }`}
-                  >
-                    📜 Paste Text
-                  </button>
-                  <button
-                    onClick={() => setImportMethod("file")}
-                    className={`btn-rpg flex-1 py-2 px-4 ${
-                      importMethod === "file"
-                        ? "bg-gold text-[#0D0D0D] border-gold"
-                        : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
-                    }`}
-                  >
-                    📁 Upload File
-                  </button>
-                </div>
+            <div className="space-y-6">
+              {/* Import Method Selection */}
+              <div className="flex space-x-2 mb-6">
+                <button
+                  onClick={() => {
+                    setImportMethod("file");
+                    setImportData("");
+                    setSelectedFile(null);
+                    setJsonValidationError(null);
+                  }}
+                  className={`btn-rpg flex-1 py-3 px-4 text-lg ${
+                    importMethod === "file"
+                      ? "bg-gold text-[#0D0D0D] border-gold"
+                      : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
+                  }`}
+                >
+                  <span className="flex items-center justify-center space-x-2">
+                    <span>📁</span>
+                    <span>Upload File</span>
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    setImportMethod("text");
+                    setSelectedFile(null);
+                    setJsonValidationError(null);
+                  }}
+                  className={`btn-rpg flex-1 py-3 px-4 text-lg ${
+                    importMethod === "text"
+                      ? "bg-gold text-[#0D0D0D] border-gold"
+                      : "bg-[#2A2A2A] text-text-primary border-mystic-blue"
+                  }`}
+                >
+                  <span className="flex items-center justify-center space-x-2">
+                    <span>📜</span>
+                    <span>Paste JSON</span>
+                  </span>
+                </button>
+              </div>
 
-                {/* File Upload Section */}
-                {importMethod === "file" && (
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                        id="file-upload"
-                      />
-                      <label
-                        htmlFor="file-upload"
-                        className="btn-rpg w-full py-4 px-6 text-lg cursor-pointer flex items-center justify-center space-x-2 hover:bg-gold hover:text-[#0D0D0D] transition-all duration-200"
-                      >
-                        <span>📁</span>
-                        <span>Choose JSON File</span>
-                        <span>📜</span>
-                      </label>
+              {/* File Upload Section */}
+              {importMethod === "file" && (
+                <div className="space-y-4">
+                  <div
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const files = e.dataTransfer.files;
+                      if (files.length > 0 && files[0].name.endsWith(".json")) {
+                        const mockEvent = {
+                          target: {
+                            files: [files[0]],
+                          },
+                        } as any;
+                        handleFileSelect(mockEvent);
+                      }
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.add("border-gold", "bg-gold", "bg-opacity-10");
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove("border-gold", "bg-gold", "bg-opacity-10");
+                    }}
+                    onClick={() => {
+                      // Create and trigger file input directly
+                      const input = document.createElement("input");
+                      input.type = "file";
+                      input.accept = ".json";
+                      input.style.display = "none";
+                      input.onchange = (e) => {
+                        const target = e.target as HTMLInputElement;
+                        if (target.files?.[0]) {
+                          handleFileSelect({ target } as any);
+                        }
+                        document.body.removeChild(input);
+                      };
+                      document.body.appendChild(input);
+                      input.click();
+                    }}
+                    className="w-full border-2 border-dashed border-mystic-blue rounded-pixel p-12 cursor-pointer transition-all duration-200 hover:border-gold hover:bg-gold hover:bg-opacity-10 hover:text-[#0D0D0D] group"
+                  >
+                    <div className="flex flex-col items-center justify-center space-y-4">
+                      <div className="text-6xl group-hover:scale-110 transition-transform duration-200">📁</div>
+                      <div className="text-center space-y-2">
+                        <div className="text-xl font-pixel text-gold group-hover:text-[#0D0D0D]">
+                          Drop JSON File Here
+                        </div>
+                        <div className="text-sm text-text-secondary group-hover:text-[#0D0D0D]">or click to browse</div>
+                        <div className="text-xs text-text-muted group-hover:text-[#0D0D0D] opacity-75">
+                          Supports .json files only
+                        </div>
+                      </div>
                     </div>
-
-                    {selectedFile && (
-                      <div className="bg-success bg-opacity-20 border border-success rounded-pixel p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-success">✅</span>
-                            <span className="text-success font-pixel-operator">Selected: {selectedFile.name}</span>
-                          </div>
-                          <div className="text-xs text-text-muted">{(selectedFile.size / 1024).toFixed(1)} KB</div>
-                        </div>
-                      </div>
-                    )}
-
-                    {importData && (
-                      <div className="bg-mystic-blue bg-opacity-20 border border-mystic-blue rounded-pixel p-4">
-                        <div className="text-sm text-text-secondary font-pixel-operator mb-2">
-                          File Preview ({importData.length} characters):
-                        </div>
-                        <div className="bg-[#1A1A1A] border border-mystic-blue rounded-pixel p-3 max-h-32 overflow-y-auto">
-                          <pre className="text-xs text-text-primary font-mono whitespace-pre-wrap">
-                            {importData.substring(0, 500)}
-                            {importData.length > 500 && "..."}
-                          </pre>
-                        </div>
-                      </div>
-                    )}
                   </div>
-                )}
 
-                {/* Text Input Section */}
-                {importMethod === "text" && (
+                  {selectedFile && (
+                    <div className="bg-success bg-opacity-20 border border-success rounded-pixel p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-success">✅</span>
+                          <span className="text-success font-pixel-operator">Selected: {selectedFile.name}</span>
+                        </div>
+                        <div className="text-xs text-text-muted">{(selectedFile.size / 1024).toFixed(1)} KB</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Text Input Section */}
+              {importMethod === "text" && (
+                <div className="space-y-4">
                   <div className="relative">
                     <textarea
                       value={importData}
                       onChange={(e) => {
                         setImportData(e.target.value);
+                        // Validate JSON as user types
+                        if (e.target.value.trim()) {
+                          validateJson(e.target.value);
+                        } else {
+                          setJsonValidationError(null);
+                        }
                       }}
-                      placeholder="Paste your exported battle scroll here..."
-                      className="input-rpg w-full h-40 resize-none p-4"
-                      rows={8}
+                      placeholder="Paste your JSON battle data here..."
+                      className="input-rpg w-full h-48 resize-none p-4"
+                      rows={10}
                     />
                     <div className="absolute top-3 right-3 text-xs text-text-muted font-pixel-operator bg-[#1A1A1A] px-2 py-1 rounded-pixel border border-mystic-blue">
                       {importData.length} characters
                     </div>
                   </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex space-x-4">
-                  <button
-                    onClick={handleImport}
-                    disabled={isLoading || (importMethod === "text" ? !importData.trim() : !selectedFile)}
-                    className="btn-rpg flex-1 py-3 px-6"
-                  >
-                    {isImporting ? (
-                      <span className="flex items-center justify-center space-x-2">
-                        <div className="loading-rpg w-4 h-4" />
-                        <span>Decrypting Scroll...</span>
-                      </span>
-                    ) : (
-                      <span className="flex items-center space-x-2">
-                        <span>🏰</span>
-                        <span>Import Records</span>
-                        <span>📚</span>
-                      </span>
-                    )}
-                  </button>
-
-                  <button onClick={resetImport} className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark">
-                    Clear
-                  </button>
                 </div>
+              )}
+
+              {/* JSON Validation Error */}
+              {jsonValidationError && (
+                <div className="bg-danger bg-opacity-20 border border-danger rounded-pixel p-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-danger">❌</span>
+                    <span className="text-danger font-pixel-operator text-sm">{jsonValidationError}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleImport}
+                  disabled={
+                    isLoading || (importMethod === "file" ? !selectedFile : !importData.trim()) || !!jsonValidationError
+                  }
+                  className="btn-rpg flex-1 py-3 px-6"
+                >
+                  {isImporting ? (
+                    <span className="flex items-center justify-center space-x-2">
+                      <div className="loading-rpg w-4 h-4" />
+                      <span>Decrypting Scroll...</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center space-x-2">
+                      <span>🏰</span>
+                      <span>Import Records</span>
+                      <span>📚</span>
+                    </span>
+                  )}
+                </button>
+
+                <button onClick={resetImport} className="btn-rpg bg-danger hover:bg-danger-dark border-danger-dark">
+                  Clear
+                </button>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Clear Data Section */}

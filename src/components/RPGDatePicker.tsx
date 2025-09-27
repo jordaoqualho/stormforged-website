@@ -9,6 +9,7 @@ interface RPGDatePickerProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  id?: string;
 }
 
 export default function RPGDatePicker({
@@ -17,6 +18,7 @@ export default function RPGDatePicker({
   placeholder = "Select date...",
   className = "",
   disabled = false,
+  id,
 }: RPGDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -183,17 +185,24 @@ export default function RPGDatePicker({
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Input Field */}
-      <div
-        onClick={handleInputClick}
-        className={`
-          input-rpg w-full px-4 py-3 text-base cursor-pointer
-          flex items-center justify-between
-          ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3A3A3A]"}
-          transition-colors duration-200
-        `}
-      >
-        <span className={displayValue ? "text-text-primary" : "text-text-muted"}>{displayValue || placeholder}</span>
-        <span className="text-gold text-lg">📅</span>
+      <div className="relative">
+        <input
+          id={id}
+          type="text"
+          value={displayValue || ""}
+          readOnly
+          onClick={handleInputClick}
+          disabled={disabled}
+          className={`
+            input-rpg w-full px-4 py-3 pr-12 text-base cursor-pointer
+            ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3A3A3A]"}
+            transition-colors duration-200
+          `}
+          placeholder={placeholder}
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <span className="text-gold text-lg">📅</span>
+        </div>
       </div>
 
       {/* Calendar Dropdown */}

@@ -10,6 +10,7 @@ interface BattleResultSelectorProps {
   initialResults?: BattleResult[];
   className?: string;
   disabled?: boolean;
+  id?: string;
 }
 
 const BATTLE_ICONS = {
@@ -31,6 +32,7 @@ export default function BattleResultSelector({
   initialResults = Array(5).fill("victory" as BattleResult),
   className = "",
   disabled = false,
+  id,
 }: BattleResultSelectorProps) {
   const [results, setResults] = useState<BattleResult[]>(initialResults);
   const { playClick, playSword, isEnabled: soundEnabled } = useRPGSounds();
@@ -79,7 +81,7 @@ export default function BattleResultSelector({
   const stats = getResultStats();
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div id={id} className={`space-y-4 ${className}`}>
       {/* Battle Icons Grid */}
       <div className="bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel p-4">
         <div className="flex justify-between items-center mb-4">
