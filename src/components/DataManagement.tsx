@@ -1,6 +1,5 @@
 "use client";
 
-import { triggerDebugSubmission } from "@/lib/debugSubmission";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useState } from "react";
 import RPGConfirmModal from "./RPGConfirmModal";
@@ -37,9 +36,6 @@ export default function DataManagement({ onSuccess, onError }: DataManagementPro
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
-      // Trigger debug submission when user exports data
-      await triggerDebugSubmission();
 
       onSuccess?.("Battle records exported successfully! 📜⚔️");
     } catch (error) {

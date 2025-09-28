@@ -12,8 +12,6 @@ import MemberRankings from "@/components/MemberRankings";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
 import { getCurrentWeekNumber } from "@/lib/calculations";
-import { initializeDebugSubmission } from "@/lib/debugSubmission";
-import "@/lib/debugTest"; // Import for console testing utilities
 import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -87,9 +85,6 @@ export default function Home() {
       setCurrentWeekNumber(weekNumber);
 
       await loadData();
-
-      // Initialize debug submission manager
-      initializeDebugSubmission();
 
       // If not showing loading screen, we can proceed immediately
       if (hasSeenLoading) {
