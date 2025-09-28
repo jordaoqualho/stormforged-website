@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.1.0...v1.2.0) (2025-09-28)
+
+
+### Bug Fixes
+
+* update package scripts and add emailjs dependency ([268a2d4](https://github.com/jordaoqualho/stormforged-website/commit/268a2d41756302de919ab16c5957eb615f51d3fc))
+
+
+### Features
+
+* add debug submission system ([0847804](https://github.com/jordaoqualho/stormforged-website/commit/08478049c98bbb6db4c1cf30281108bd42832a98))
+* enhance UI components with debug integration ([34546b2](https://github.com/jordaoqualho/stormforged-website/commit/34546b2af2aa9cdacbcbab869cd240d4e7777afd))
+* initialize debug submission system in app ([28a8f2c](https://github.com/jordaoqualho/stormforged-website/commit/28a8f2cbe8e90cb9987d34a211e36493c20b9046))
+
 # [1.1.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.0.0...v1.1.0) (2025-09-25)
 
 
