@@ -11,20 +11,21 @@ import InitialLoadingScreen from "@/components/InitialLoadingScreen";
 import MemberRankings from "@/components/MemberRankings";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
+import TopMenu from "@/components/TopMenu";
 import { getCurrentWeekNumber } from "@/lib/calculations";
-import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import packageJson from "../../package.json";
 
 export default function Home() {
   const { loadData, isLoading, attacks } = useGuildWarStore();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(false); // Will be set based on first visit
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
-  const { playClick } = useRPGSounds();
 
   // Memoized calculations to prevent unnecessary re-renders
   const totalBattles = useMemo(() => attacks.length, [attacks.length]);
@@ -42,14 +43,15 @@ export default function Home() {
     return `Week ${currentWeekNumber} Epic`;
   }, [currentWeekNumber]);
 
-  const tabConfig = useMemo(
-    () => [
-      { id: "overview", label: "Battle Command", mobileLabel: "Battle", icon: "⚔️", desc: "Record & Monitor" },
-      { id: "charts", label: "War Analytics", mobileLabel: "Analytics", icon: "📈", desc: "Visual Reports" },
-      { id: "data", label: "Guild Archives", mobileLabel: "Archives", icon: "📚", desc: "Data Management" },
-    ],
-    []
-  );
+  // Handle URL parameters for tabs
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "charts" || tab === "data") {
+      setActiveTab(tab);
+    } else {
+      setActiveTab("overview");
+    }
+  }, [searchParams]);
 
   // Memoize the loading completion callback
   const handleLoadingComplete = useCallback(() => {
@@ -186,35 +188,7 @@ export default function Home() {
         </AnimatedContainer>
 
         {/* Navigation Tabs */}
-        <AnimatedContainer animationType="slide-up" delay={100}>
-          <nav className="w-full overflow-hidden">
-            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-              <div className="flex w-full space-x-1">
-                {tabConfig.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id as "overview" | "charts" | "data");
-                      playClick();
-                    }}
-                    className={`tab-rpg flex-1 min-w-0 ${activeTab === tab.id ? "active" : ""}`}
-                  >
-                    <div className="flex flex-col items-center space-y-0.5 px-0.5">
-                      <span className="text-sm sm:text-xl md:text-2xl">{tab.icon}</span>
-                      <span className="font-pixel text-[10px] sm:text-sm leading-tight text-center">
-                        <span className="sm:hidden">{tab.mobileLabel}</span>
-                        <span className="hidden sm:inline">{tab.label}</span>
-                      </span>
-                      <span className="font-pixel-operator text-[8px] opacity-75 hidden sm:block leading-tight text-center">
-                        {tab.desc}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </nav>
-        </AnimatedContainer>
+        <TopMenu />
 
         {/* Main Content */}
         <main className="max-w-screen-xl mx-auto px-3 sm:px-4 md:px-8 py-4 sm:py-8">
