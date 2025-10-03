@@ -151,7 +151,7 @@ export default function Home() {
                   <div>
                     <h1 className="text-lg sm:text-2xl font-pixel text-gold text-glow">Stormforged</h1>
                     <p className="text-xs sm:text-sm text-text-secondary font-pixel-operator hidden sm:block">
-                      Idle Horizon Guild War Command Center
+                      Idle Horizon Guild Manager and Tools
                     </p>
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export default function Home() {
                 <div className="text-center">
                   <div className="icon-rpg text-3xl mb-2">🏰</div>
                   <h3 className="font-pixel text-gold mb-2">Stormforged</h3>
-                  <p className="text-xs text-text-muted font-pixel-operator">Idle Horizon Guild War Command Center</p>
+                  <p className="text-xs text-text-muted font-pixel-operator">Idle Horizon Guild Manager and Tools</p>
                 </div>
                 <div className="text-center">
                   <div className="icon-rpg text-3xl mb-2">⚔️</div>

@@ -14,9 +14,11 @@ interface ProgressPanelProps {
   onCloverUpgrade: () => void;
   onEyeUpgrade: () => void;
   onEyeUnlock: () => void;
+  onEyeReroll: () => void;
   canCloverUpgrade: boolean;
   canEyeUpgrade: boolean;
   canEyeUnlock: boolean;
+  canEyeReroll: boolean;
 }
 
 const rarityColor: Record<Rarity, string> = {
@@ -42,16 +44,18 @@ export default function ProgressPanel({
   onCloverUpgrade,
   onEyeUpgrade,
   onEyeUnlock,
+  onEyeReroll,
   canCloverUpgrade,
   canEyeUpgrade,
   canEyeUnlock,
+  canEyeReroll,
 }: ProgressPanelProps) {
   const MAX_ROWS = 5;
 
   return (
     <div className="space-y-6">
       {/* Charm Status */}
-      <div className="bg-[#1A1A1A] border-2 border-mystic-blue rounded-pixel p-4">
+      <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-4 transition-all duration-300 hover:border-gold">
         <div className="flex items-center space-x-2 mb-3">
           <span className="font-pixel text-gold text-glow">Charm Status</span>
         </div>
@@ -97,7 +101,7 @@ export default function ProgressPanel({
       </div>
 
       {/* Upgrade Controls */}
-      <div className="bg-[#1A1A1A] border-2 border-warning rounded-pixel p-4">
+      <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-4 transition-all duration-300 hover:border-gold">
         <div className="flex items-center space-x-2 mb-3">
           <span className="text-lg">⬆️</span>
           <span className="font-pixel text-gold text-glow">Upgrade Options</span>
@@ -108,9 +112,13 @@ export default function ProgressPanel({
             onClick={onCloverUpgrade}
             disabled={!canCloverUpgrade}
             className="w-full btn-rpg py-2 px-3 text-sm bg-green-600 border-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Upgrade with 100 Clovers (instant)"
+            title={
+              rarity === "Legendary" && maxRows === 5
+                ? "Unlock locked rows with 100 Clovers"
+                : "Upgrade with 100 Clovers (instant)"
+            }
           >
-            Upgrade (100 🍀)
+            {rarity === "Legendary" && maxRows === 5 ? "Unlock (100 🍀)" : "Upgrade (100 🍀)"}
           </button>
 
           <button
@@ -122,19 +130,31 @@ export default function ProgressPanel({
             Upgrade (10 👁️)
           </button>
 
-          {canEyeUnlock && (
-            <button
-              onClick={onEyeUnlock}
-              className="w-full btn-rpg py-2 px-3 text-sm bg-purple-600 border-purple-500 hover:bg-purple-500 hover:border-purple-400 transition-colors duration-200"
-              title="Unlock currently locked row with 100 Eyes"
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <span className="text-lg">👁️</span>
-                <span>Unlock Row</span>
-                <span className="text-xs opacity-75">(100 Eyes)</span>
-              </div>
-            </button>
-          )}
+          <button
+            onClick={onEyeReroll}
+            disabled={!canEyeReroll}
+            className="w-full btn-rpg py-2 px-3 text-sm bg-orange-600 border-orange-500 hover:bg-orange-500 hover:border-orange-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Reroll selected row stats with 20 Eyes (keep rarity)"
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-lg">👁️</span>
+              <span>Reroll Stats</span>
+              <span className="text-xs opacity-75">(20 Eyes)</span>
+            </div>
+          </button>
+
+          <button
+            onClick={onEyeUnlock}
+            disabled={!canEyeUnlock}
+            className="w-full btn-rpg py-2 px-3 text-sm bg-purple-600 border-purple-500 hover:bg-purple-500 hover:border-purple-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Unlock currently locked row with 100 Eyes"
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-lg">👁️</span>
+              <span>Unlock Row</span>
+              <span className="text-xs opacity-75">(100 Eyes)</span>
+            </div>
+          </button>
         </div>
       </div>
     </div>

@@ -127,13 +127,13 @@ export default function AttackManager({ className = "" }: AttackManagerProps) {
           <div className="icon-rpg pixel-glow text-xl">⚔️</div>
           <h3 className="text-xl font-pixel text-gold text-glow">Attack Records</h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
-          <div className="text-sm text-text-muted font-pixel-operator bg-[#1A1A1A] px-3 py-1 rounded-pixel border border-mystic-blue">
+          <div className="text-sm text-text-muted font-pixel-operator bg-[#1A1A1A] px-3 py-1 border border-mystic-blue">
             {attacks.length} records
           </div>
         </div>
 
         {/* Attack Records Table */}
-        <div className="panel-rpg overflow-hidden rounded-md border border-gray-700">
+        <div className="panel-rpg overflow-hidden border border-gray-700">
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>

@@ -3,8 +3,6 @@
 import { Rarity } from "./CharmBuilderSimulator";
 import PixelButton from "./PixelButton";
 
-type StatKey = string; // Simplified for interface compatibility
-
 interface CharmRowCardProps {
   row: {
     id: string;
@@ -17,9 +15,9 @@ interface CharmRowCardProps {
   isSelected: boolean;
   isRollLocked: boolean;
   rollLockTimeRemaining: number | null;
+  hasLockedRow: boolean;
   onSelectRow: () => void;
   onRollSelected: () => void;
-  onEyeReroll: () => void;
   getStatDef: (key: string) => any;
 }
 
@@ -45,9 +43,9 @@ export default function CharmRowCard({
   isSelected,
   isRollLocked,
   rollLockTimeRemaining,
+  hasLockedRow,
   onSelectRow,
   onRollSelected,
-  onEyeReroll,
   getStatDef,
 }: CharmRowCardProps) {
   const statDef = getStatDef(row.statKey);
@@ -56,11 +54,11 @@ export default function CharmRowCard({
   return (
     <div
       className={`
-        rounded-pixel border-2 p-4 bg-[#1A1A1A] transition-all duration-300
+        border-2 p-4 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] transition-all duration-300
         ${rarityColor[row.rarity]}
         ${rarityGlow[row.rarity]}
-        ${isSelected ? "ring-2 ring-gold ring-opacity-50" : ""}
-        ${isLocked ? "opacity-75" : "hover:scale-[1.02]"}
+        ${isSelected && !isLocked ? "ring-2 ring-gold ring-opacity-50" : ""}
+        ${isLocked ? "opacity-100" : hasLockedRow ? "opacity-60" : "opacity-100"}
       `}
     >
       {/* Header */}
@@ -69,13 +67,10 @@ export default function CharmRowCard({
           <span className="font-pixel text-sm">Row {index + 1}</span>
           <span className={`font-pixel text-xs ${rarityColor[row.rarity]}`}>{row.rarity}</span>
         </div>
-        {(isLocked || isRollLocked) && (
+        {isLocked && (
           <div className="flex items-center">
-            <span
-              className="text-gold text-lg"
-              title={isRollLocked ? `Roll locked for ${rollLockTimeRemaining}s` : "This row is locked for rolling"}
-            >
-              {isRollLocked ? `🔒 ${rollLockTimeRemaining}s` : "🔒"}
+            <span className="text-gold text-lg" title="This row is locked for rolling">
+              🔒
             </span>
           </div>
         )}
@@ -101,11 +96,14 @@ export default function CharmRowCard({
           >
             {isRollLocked ? `🔒 ${rollLockTimeRemaining}s` : "🎲 Roll"}
           </PixelButton>
-        ) : null}
-
-        <PixelButton variant="eye" size="sm" onClick={onEyeReroll} title="Reroll with 20 Eyes (keep rarity)">
-          👁️
-        </PixelButton>
+        ) : (
+          // Only show Select button if no other row is locked
+          !hasLockedRow && (
+            <PixelButton variant="secondary" size="sm" onClick={onSelectRow} title="Select this row for rolling">
+              🎯 Select
+            </PixelButton>
+          )
+        )}
       </div>
     </div>
   );

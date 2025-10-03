@@ -219,7 +219,7 @@ export default function AchievementSystem() {
           <div className="icon-rpg pixel-glow text-2xl">🏆</div>
           <h3 className="text-xl font-pixel text-gold text-glow">Achievements</h3>
           <div className="flex-1 h-px bg-gradient-to-r from-[#FFD700] to-transparent"></div>
-          <div className="text-sm text-text-muted font-pixel-operator bg-[#1A1A1A] px-3 py-1 rounded-pixel border border-mystic-blue">
+          <div className="text-sm text-text-muted font-pixel-operator bg-[#1A1A1A] px-3 py-1 border border-mystic-blue">
             {unlockedAchievementObjects.length}/{ACHIEVEMENTS.length}
           </div>
         </div>

@@ -144,7 +144,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
   };
 
   return (
-    <div className="card-rpg bg-[#2A2A2A] border-2 border-mystic-blue rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)] bg-battlefield p-4">
+    <div className="card-rpg bg-[#2A2A2A] border-2 border-mystic-blue bg-battlefield p-4">
       <div className="relative">
         {/* RPG Header */}
         <div className="flex items-center space-x-4 mb-4">

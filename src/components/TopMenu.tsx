@@ -92,7 +92,6 @@ export default function TopMenu() {
           <div ref={dropdownRef} className="relative flex-1 min-w-48 sm:min-w-64">
             <button
               onClick={() => {
-                console.log("Tools dropdown clicked, current state:", showToolsDropdown);
                 setShowToolsDropdown(!showToolsDropdown);
               }}
               className={`tab-rpg w-full ${isToolsActive ? "active" : ""}`}
@@ -118,7 +117,7 @@ export default function TopMenu() {
                       key={tool.href}
                       href={tool.href}
                       onClick={() => setShowToolsDropdown(false)}
-                      className={`block w-full px-4 py-3 hover:bg-mystic-blue hover:bg-opacity-20 transition-colors ${
+                      className={`block w-full px-4 py-3 hover:bg-mystic-blue hover:bg-opacity-20 ${
                         isActive ? "bg-mystic-blue bg-opacity-30" : ""
                       }`}
                     >

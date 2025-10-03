@@ -11,17 +11,17 @@ export default function DailyBattleLogSkeleton() {
       <div className="grid grid-cols-7 gap-2">
         {Array.from({ length: 7 }).map((_, index) => (
           <div key={index} className="panel-rpg p-3 text-center w-full aspect-[3/4] animate-pulse">
-            <div className="h-4 bg-gray-600 rounded mb-2"></div>
-            <div className="h-3 bg-gray-700 rounded mb-3"></div>
+            <div className="h-4 bg-gray-600 mb-2"></div>
+            <div className="h-3 bg-gray-700 mb-3"></div>
             <div className="space-y-2">
-              <div className="h-3 bg-gray-600 rounded"></div>
-              <div className="h-4 bg-gray-500 rounded"></div>
-              <div className="h-3 bg-gray-600 rounded"></div>
-              <div className="h-4 bg-gray-500 rounded"></div>
-              <div className="h-3 bg-gray-600 rounded"></div>
-              <div className="h-4 bg-gray-500 rounded"></div>
-              <div className="h-3 bg-gray-600 rounded"></div>
-              <div className="h-3 bg-gray-700 rounded"></div>
+              <div className="h-3 bg-gray-600"></div>
+              <div className="h-4 bg-gray-500"></div>
+              <div className="h-3 bg-gray-600"></div>
+              <div className="h-4 bg-gray-500"></div>
+              <div className="h-3 bg-gray-600"></div>
+              <div className="h-4 bg-gray-500"></div>
+              <div className="h-3 bg-gray-600"></div>
+              <div className="h-3 bg-gray-700"></div>
             </div>
           </div>
         ))}

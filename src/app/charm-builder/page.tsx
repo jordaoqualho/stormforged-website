@@ -7,7 +7,7 @@ export default function CharmBuilderPage() {
     <>
       <SiteHeader />
       <TopMenu />
-      <main className="max-w-7xl mx-auto p-4 sm:p-6 space-y-4">
+      <main className="max-w-screen-xl mx-auto px-3 sm:px-4 md:px-8 py-4 sm:py-8">
         <CharmBuilderSimulator />
       </main>
     </>

@@ -199,7 +199,7 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
             className={`
               absolute z-10 mt-2 w-full
               bg-[#2A2A2A] border-2 border-mystic-blue
-              rounded-pixel shadow-[8px_8px_0px_rgba(0,0,0,0.8)]
+              shadow-[8px_8px_0px_rgba(0,0,0,0.8)]
               max-h-60 overflow-auto
             `}
           >

@@ -1,12 +1,11 @@
 "use client";
 
 import { useRPGSounds } from "@/lib/sounds";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CharmRowCard from "./CharmRowCard";
 import CostTracker from "./CostTracker";
 import PixelButton from "./PixelButton";
 import ProgressPanel from "./ProgressPanel";
-import RPGConfirmModal from "./RPGConfirmModal";
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary";
 
@@ -106,6 +105,8 @@ type Row = {
 };
 
 type CharmState = {
+  id: string; // Unique charm identifier
+  name: string; // User-defined charm name
   rarity: Rarity;
   maxRows: number;
   rows: Row[];
@@ -115,11 +116,19 @@ type CharmState = {
   tomesSpent: number;
   daysSpent: number;
   selectedRowIndex: number | null; // Currently selected row for rolling
-  clovers: number; // Clover currency for upgrades
+  cloversSpent: number; // Clovers spent on upgrades (simulation only)
   rollLockedUntil: number | null; // Timestamp when roll lock expires
 };
 
-const STORAGE_KEY = "ih_charm_builder_v2";
+type CharmSlot = {
+  id: string | null;
+  name: string;
+  isEmpty: boolean;
+};
+
+const STORAGE_KEY = "ih_charm_builder_v3";
+const CHARMS_STORAGE_KEY = "builder-charm-storage";
+const MAX_CHARMS = 5;
 
 function randomOf<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -127,10 +136,12 @@ function randomOf<T>(arr: T[]): T {
 
 function weightedRarityRoll(): Rarity {
   const total = RARITIES.reduce((sum, r) => sum + RARITY_WEIGHTS[r], 0);
-  let roll = Math.random() * total;
+  const roll = Math.random() * total;
+  let cumulativeWeight = 0;
+
   for (const r of RARITIES) {
-    roll -= RARITY_WEIGHTS[r];
-    if (roll <= 0) return r;
+    cumulativeWeight += RARITY_WEIGHTS[r];
+    if (roll <= cumulativeWeight) return r;
   }
   return "Common";
 }
@@ -153,10 +164,12 @@ function rollFullRow(): Row {
   };
 }
 
-function createNewCharm(): CharmState {
+function createNewCharm(name: string = "New Charm"): CharmState {
   const rarity: Rarity = "Common";
   const maxRows = 1;
   return {
+    id: Math.random().toString(36).substr(2, 9),
+    name,
     rarity,
     maxRows,
     rows: Array.from({ length: maxRows }, () => rollFullRow()),
@@ -166,9 +179,65 @@ function createNewCharm(): CharmState {
     tomesSpent: 0,
     daysSpent: 0,
     selectedRowIndex: null,
-    clovers: 100, // Start with 100 clovers
+    cloversSpent: 0, // Start with 0 clovers spent
     rollLockedUntil: null,
   };
+}
+
+// Charm Management Functions
+function loadSavedCharms(): CharmState[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const saved = localStorage.getItem(CHARMS_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCharm(charm: CharmState): void {
+  if (typeof window === "undefined") return;
+  try {
+    const saved = loadSavedCharms();
+    const existingIndex = saved.findIndex((c) => c.id === charm.id);
+
+    if (existingIndex >= 0) {
+      saved[existingIndex] = charm;
+    } else {
+      saved.push(charm);
+    }
+
+    localStorage.setItem(CHARMS_STORAGE_KEY, JSON.stringify(saved));
+  } catch (error) {
+    console.error("Failed to save charm:", error);
+  }
+}
+
+function deleteCharm(charmId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const saved = loadSavedCharms();
+    const filtered = saved.filter((c) => c.id !== charmId);
+    localStorage.setItem(CHARMS_STORAGE_KEY, JSON.stringify(filtered));
+  } catch (error) {
+    console.error("Failed to delete charm:", error);
+  }
+}
+
+function getCharmSlots(): CharmSlot[] {
+  const saved = loadSavedCharms();
+  const slots: CharmSlot[] = [];
+
+  for (let i = 0; i < MAX_CHARMS; i++) {
+    const charm = saved[i];
+    slots.push({
+      id: charm?.id || null,
+      name: charm?.name || `Slot ${i + 1}`,
+      isEmpty: !charm,
+    });
+  }
+
+  return slots;
 }
 
 function rarityUp(r: Rarity): Rarity {
@@ -193,30 +262,57 @@ function computeNextCost(rerolls: number) {
 export default function CharmBuilderSimulatorV2() {
   const [state, setState] = useState<CharmState>(() => createNewCharm());
   const [isClient, setIsClient] = useState(false);
-  const [showNewCharmConfirm, setShowNewCharmConfirm] = useState(false);
   const [showReferenceModal, setShowReferenceModal] = useState(false);
+  const [showCharmDropdown, setShowCharmDropdown] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [newCharmName, setNewCharmName] = useState("");
+  const [charmSlots, setCharmSlots] = useState<CharmSlot[]>([]);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { playClick, playSuccess, playError } = useRPGSounds();
+  const { playClick, playSuccess, playError, playEpic, playLegendary } = useRPGSounds();
 
   // Handle client-side hydration
   useEffect(() => {
     setIsClient(true);
+    setCharmSlots(getCharmSlots());
+
+    // Try to load the last used charm or create a new one
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const savedState = JSON.parse(raw) as CharmState;
-        setState(savedState);
+        // Reset days count to 0 when loading saved state
+        setState({ ...savedState, daysSpent: 0, cloversSpent: savedState.cloversSpent || 0 });
       }
     } catch {}
   }, []);
 
+  // Save current charm when state changes
   useEffect(() => {
-    if (isClient) {
+    if (isClient && state.id) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        saveCharm(state);
+        setCharmSlots(getCharmSlots());
       } catch {}
     }
   }, [state, isClient]);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowCharmDropdown(false);
+      }
+    };
+
+    if (showCharmDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCharmDropdown]);
 
   const rarityIdx = useMemo(() => rarityIndex(state.rarity), [state.rarity]);
   const nextPaidCost = useMemo(() => computeNextCost(state.rerolls), [state.rerolls]);
@@ -314,6 +410,13 @@ export default function CharmBuilderSimulatorV2() {
       rows[prev.selectedRowIndex] = { ...newRow };
       const { gold, tomes } = computeNextCost(prev.rerolls);
 
+      // Play special sounds for Epic or Legendary rolls
+      if (newRow.rarity === "Epic") {
+        playEpic();
+      } else if (newRow.rarity === "Legendary") {
+        playLegendary();
+      }
+
       // Check if the rolled stat is Epic or Legendary to apply lock
       const shouldLock = newRow.rarity === "Epic" || newRow.rarity === "Legendary";
       const lockUntil = shouldLock ? Date.now() + 3000 : null; // 3 seconds lock
@@ -331,14 +434,6 @@ export default function CharmBuilderSimulatorV2() {
 
   const upgradeWithClovers = () => {
     setState((prev) => {
-      if (prev.rarity === "Legendary" && prev.maxRows === MAX_ROWS) {
-        playError();
-        return prev;
-      }
-      if (prev.clovers < 100) {
-        playError();
-        return prev;
-      }
       playSuccess();
       const newRarity = rarityUp(prev.rarity);
       const newMaxRows = Math.min(prev.maxRows + 1, MAX_ROWS);
@@ -360,7 +455,7 @@ export default function CharmBuilderSimulatorV2() {
         rarity: finalRarity,
         maxRows: newMaxRows,
         rows,
-        clovers: prev.clovers - 100, // Spend 100 clovers
+        cloversSpent: prev.cloversSpent + 100, // Track clovers spent
         selectedRowIndex: null, // Clear selection after upgrade
         rerolls: 0, // Reset reroll cost
         rollLockedUntil: null, // Clear roll lock after upgrade
@@ -441,26 +536,54 @@ export default function CharmBuilderSimulatorV2() {
     });
   };
 
-  const newCharm = () => {
-    playSuccess();
-    setState(createNewCharm());
-    setShowNewCharmConfirm(false);
-  };
-
   const canEyeUpgrade = rarityIdx < rarityIndex("Rare");
   const canEyeUnlock = state.selectedRowIndex !== null;
 
-  const rarityColor: Record<Rarity, string> = {
-    Common: "text-gray-300",
-    Uncommon: "text-green-400",
-    Rare: "text-mystic-blue-light",
-    Epic: "text-purple-400",
-    Legendary: "text-gold",
+  // Prevent hydration mismatch by showing loading state until client-side
+  // Charm management functions
+  const loadCharm = (charmId: string) => {
+    const saved = loadSavedCharms();
+    const charm = saved.find((c) => c.id === charmId);
+    if (charm) {
+      setState({ ...charm, daysSpent: 0, cloversSpent: charm.cloversSpent || 0 }); // Reset days count when loading
+      playSuccess();
+    } else {
+      playError();
+    }
   };
 
-  const rarityTitleColor = rarityColor[state.rarity];
+  const deleteCharmSlot = (charmId: string) => {
+    if (state.id === charmId) {
+      // If deleting current charm, create a new one
+      const newCharm = createNewCharm();
+      setState(newCharm);
+    }
+    deleteCharm(charmId);
+    setCharmSlots(getCharmSlots());
+    playSuccess();
+  };
 
-  // Prevent hydration mismatch by showing loading state until client-side
+  const createCharmInSlot = (name: string) => {
+    // Find the first empty slot
+    const emptySlotIndex = charmSlots.findIndex((s) => s.isEmpty);
+    if (emptySlotIndex === -1) {
+      playError();
+      return;
+    }
+
+    const newCharm = createNewCharm(name);
+    setState(newCharm);
+
+    // Save the charm immediately
+    saveCharm(newCharm);
+
+    // Update slots and close modal
+    setCharmSlots(getCharmSlots());
+    setShowNameInput(false);
+    setNewCharmName("");
+    playSuccess();
+  };
+
   if (!isClient) {
     return (
       <div className="space-y-6">
@@ -474,35 +597,39 @@ export default function CharmBuilderSimulatorV2() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div>
-            <h1 className={`text-2xl sm:text-3xl font-pixel text-glow ${rarityTitleColor} animate-pulse`}>
-              Charm Builder Simulator
-            </h1>
-            <div className="text-text-muted font-pixel-operator text-sm">Idle Horizon Charm Crafting</div>
+      <div className="card-rpg relative p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div>
+              <h1 className={`text-2xl sm:text-3xl font-pixel transition-all duration-500`}>Charm Builder</h1>
+              <div className="text-text-muted font-pixel-operator text-sm transition-colors duration-300">
+                Idle Horizon Charm Crafting
+              </div>
+            </div>
+          </div>
+
+          {/* Charm Management Dropdown */}
+          <div ref={dropdownRef} className="relative">
+            <PixelButton
+              variant="primary"
+              size="lg"
+              onClick={() => {
+                playClick();
+                setShowCharmDropdown(!showCharmDropdown);
+              }}
+              title="Manage your charms"
+            >
+              🎲 Charm Slots ({charmSlots.filter((s) => !s.isEmpty).length}/5)
+            </PixelButton>
           </div>
         </div>
-
-        {/* New Charm Button */}
-        <PixelButton
-          variant="primary"
-          size="lg"
-          onClick={() => {
-            playClick();
-            setShowNewCharmConfirm(true);
-          }}
-          title="Start a new charm from scratch"
-        >
-          ✨ New Charm
-        </PixelButton>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Charm Rows */}
         <div className="lg:col-span-2">
-          <div className="bg-[#1A1A1A] border-2 border-warning rounded-pixel p-6">
+          <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-6 transition-all duration-300 hover:border-gold">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-2">
                 <span className="text-xl">⚔️</span>
@@ -526,16 +653,16 @@ export default function CharmBuilderSimulatorV2() {
                   isSelected={state.selectedRowIndex === idx}
                   isRollLocked={isRollLocked}
                   rollLockTimeRemaining={rollLockTimeRemaining}
+                  hasLockedRow={state.rows.some((r) => r.locked)}
                   onSelectRow={() => selectRowForRolling(idx)}
                   onRollSelected={() => rollSelectedRow()}
-                  onEyeReroll={() => eyeReroll20(idx)}
                   getStatDef={(key: string) => getStatDef(key as any)}
                 />
               ))}
             </div>
 
             {state.rows.length < state.maxRows && (
-              <div className="mt-4 p-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-pixel">
+              <div className="mt-4 p-3 bg-[#2A2A2A] border border-[#3A3A3A]">
                 <div className="text-text-muted font-pixel-operator text-sm text-center">
                   New row slot available. Roll to fill.
                 </div>
@@ -553,9 +680,11 @@ export default function CharmBuilderSimulatorV2() {
             onCloverUpgrade={upgradeWithClovers}
             onEyeUpgrade={eyeUpgrade10}
             onEyeUnlock={eyeUnlock100}
-            canCloverUpgrade={(state.rarity !== "Legendary" || state.maxRows < MAX_ROWS) && state.clovers >= 100}
+            onEyeReroll={() => eyeReroll20(state.selectedRowIndex!)}
+            canCloverUpgrade={true}
             canEyeUpgrade={canEyeUpgrade}
             canEyeUnlock={canEyeUnlock}
+            canEyeReroll={state.selectedRowIndex !== null}
           />
         </div>
       </div>
@@ -569,26 +698,15 @@ export default function CharmBuilderSimulatorV2() {
             tomesSpent: state.tomesSpent,
             eyesSpent: state.eyesSpent,
             daysSpent: state.daysSpent,
-            clovers: state.clovers,
+            cloversSpent: state.cloversSpent,
           }}
         />
       </div>
 
-      {/* Confirmation Modal */}
-      <RPGConfirmModal
-        isOpen={showNewCharmConfirm}
-        onClose={() => setShowNewCharmConfirm(false)}
-        onConfirm={newCharm}
-        title="Start New Charm"
-        message="Are you sure you want to start over? All progress on your current charm will be lost!"
-        type="warning"
-        icon="⚠️"
-      />
-
       {/* Reference Information Modal */}
       {showReferenceModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1A1A1A] border-2 border-gold rounded-pixel max-w-2xl w-full max-h-[80vh] overflow-hidden">
+          <div className="bg-[#1A1A1A] border-2 border-gold max-w-2xl w-full max-h-[80vh] overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#0D0D0D] to-[#1A1A1A] border-b-2 border-gold p-4">
               <div className="flex items-center justify-between">
@@ -610,7 +728,7 @@ export default function CharmBuilderSimulatorV2() {
             <div className="p-6 overflow-y-auto max-h-[60vh]">
               <div className="space-y-6">
                 {/* Rolling Mechanics */}
-                <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-pixel p-4">
+                <div className="bg-[#2A2A2A] border border-[#3A3A3A] p-4">
                   <h3 className="font-pixel text-gold mb-3 flex items-center space-x-2">
                     <span className="text-lg">🎲</span>
                     <span>Rolling Mechanics</span>
@@ -641,7 +759,7 @@ export default function CharmBuilderSimulatorV2() {
                 </div>
 
                 {/* Upgrade Options */}
-                <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-pixel p-4">
+                <div className="bg-[#2A2A2A] border border-[#3A3A3A] p-4">
                   <h3 className="font-pixel text-gold mb-3 flex items-center space-x-2">
                     <span className="text-lg">🔼</span>
                     <span>Upgrade Options</span>
@@ -670,7 +788,7 @@ export default function CharmBuilderSimulatorV2() {
                 </div>
 
                 {/* Special Rules */}
-                <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-pixel p-4">
+                <div className="bg-[#2A2A2A] border border-[#3A3A3A] p-4">
                   <h3 className="font-pixel text-gold mb-3 flex items-center space-x-2">
                     <span className="text-lg">📜</span>
                     <span>Special Rules</span>
@@ -709,7 +827,7 @@ export default function CharmBuilderSimulatorV2() {
                 </div>
 
                 {/* Progress Tracking */}
-                <div className="bg-[#2A2A2A] border border-[#3A3A3A] rounded-pixel p-4">
+                <div className="bg-[#2A2A2A] border border-[#3A3A3A] p-4">
                   <h3 className="font-pixel text-gold mb-3 flex items-center space-x-2">
                     <span className="text-lg">📊</span>
                     <span>Progress Tracking</span>
@@ -751,6 +869,198 @@ export default function CharmBuilderSimulatorV2() {
                   <span>✅</span>
                   <span>Got it!</span>
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Name Input Modal */}
+      {showNameInput && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1A1A1A] border-2 border-gold max-w-md w-full">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#0D0D0D] to-[#1A1A1A] border-b-2 border-gold p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-gold font-pixel text-lg">✨ Create New Charm</h2>
+                <button
+                  onClick={() => {
+                    setShowNameInput(false);
+                    setNewCharmName("");
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  ❌
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div className="text-white font-pixel text-sm">Enter a name for your new charm:</div>
+
+              <input
+                type="text"
+                value={newCharmName}
+                onChange={(e) => setNewCharmName(e.target.value)}
+                placeholder="Enter charm name..."
+                className="w-full px-3 py-2 bg-[#2A2A2A] border border-gray-600 rounded text-white font-pixel text-sm focus:border-gold focus:outline-none"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newCharmName.trim()) {
+                    createCharmInSlot(newCharmName.trim());
+                  }
+                }}
+              />
+
+              {/* Actions */}
+              <div className="flex justify-end space-x-2 pt-4">
+                <button
+                  onClick={() => {
+                    setShowNameInput(false);
+                    setNewCharmName("");
+                  }}
+                  className="px-4 py-2 bg-gray-600 border border-gray-500 rounded text-white font-pixel text-sm hover:bg-gray-500 transition-colors"
+                >
+                  ❌ Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    if (newCharmName.trim()) {
+                      createCharmInSlot(newCharmName.trim());
+                    }
+                  }}
+                  disabled={!newCharmName.trim()}
+                  className="px-4 py-2 bg-green-600 border border-green-500 rounded text-white font-pixel text-sm hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  ✨ Create
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Charm Slots Management Modal */}
+      {showCharmDropdown && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowCharmDropdown(false);
+            }
+          }}
+        >
+          <div
+            className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-gold shadow-[4px_4px_0px_rgba(0,0,0,0.8)] max-w-lg w-full max-h-[80vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#0D0D0D] to-[#1A1A1A] border-b-2 border-gold p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">🎲</span>
+                  <h2 className="text-gold font-pixel text-lg text-glow">Charm Management</h2>
+                </div>
+                <button
+                  onClick={() => {
+                    playClick();
+                    setShowCharmDropdown(false);
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors text-xl"
+                  title="Close modal"
+                >
+                  ❌
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 space-y-4 overflow-y-auto max-h-[60vh]">
+              {/* Current Charm Info */}
+              <div className="bg-[#1A1A1A] border border-gold p-3">
+                <div className="text-center">
+                  <div className="text-gold font-pixel text-sm mb-1">Current Charm</div>
+                  <div className="text-white font-pixel text-base">{state.name}</div>
+                  <div className="text-gray-400 font-pixel-operator text-xs mt-1">
+                    {charmSlots.filter((s) => !s.isEmpty).length}/5 slots used
+                  </div>
+                </div>
+              </div>
+
+              {/* Charm Slots */}
+              <div className="space-y-3">
+                <div className="text-gold font-pixel text-sm text-center mb-2">Charm Slots</div>
+
+                {charmSlots.map((slot, index) => (
+                  <div key={index} className="bg-[#1A1A1A] border border-[#3A3A3A] p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">⚔️</span>
+                          <div>
+                            <div className="text-white font-pixel text-sm">
+                              {slot.isEmpty ? `Slot ${index + 1}` : slot.name}
+                            </div>
+                            {slot.isEmpty ? (
+                              <div className="text-gray-500 font-pixel-operator text-xs">Empty</div>
+                            ) : (
+                              <div className="text-gray-400 font-pixel-operator text-xs">
+                                ID: {slot.id?.substring(0, 8)}...
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex space-x-2">
+                        {slot.isEmpty ? (
+                          <button
+                            onClick={() => {
+                              playClick();
+                              setShowNameInput(true);
+                              setShowCharmDropdown(false);
+                            }}
+                            className="px-3 py-1 bg-green-600 border border-green-500 text-xs text-white font-pixel hover:bg-green-500 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,0.6)]"
+                            title="Create new charm in this slot"
+                          >
+                            ✨ New
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                playClick();
+                                loadCharm(slot.id!);
+                                setShowCharmDropdown(false);
+                              }}
+                              className="px-3 py-1 bg-blue-600 border border-blue-500 text-xs text-white font-pixel hover:bg-blue-500 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,0.6)]"
+                              title="Load this charm"
+                            >
+                              📂 Load
+                            </button>
+                            <button
+                              onClick={() => {
+                                playClick();
+                                deleteCharmSlot(slot.id!);
+                                setShowCharmDropdown(false);
+                              }}
+                              className="px-3 py-1 bg-red-600 border border-red-500 text-xs text-white font-pixel hover:bg-red-500 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,0.6)]"
+                              title="Delete this charm"
+                            >
+                              🗑️ Del
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Footer Info */}
+              <div className="text-center text-gray-500 font-pixel-operator text-xs pt-2 border-t border-[#3A3A3A]">
+                Click outside or press ❌ to close
               </div>
             </div>
           </div>
