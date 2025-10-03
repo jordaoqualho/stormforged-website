@@ -1,13 +1,16 @@
 import Footer from "@/components/Footer";
 import SiteHeader from "@/components/SiteHeader";
 import TopMenu from "@/components/TopMenu";
+import { Suspense } from "react";
 
 export default function CalculatorPage() {
   return (
     <>
       <div className="min-h-screen bg-battlefield">
         <SiteHeader />
-        <TopMenu />
+        <Suspense fallback={<div className="h-16 bg-[#1A1A1A] border-b-2 border-mystic-blue animate-pulse"></div>}>
+          <TopMenu />
+        </Suspense>
         <main className="max-w-screen-xl mx-auto px-3 sm:px-4 md:px-8 py-4 sm:py-8">
           <div className="space-y-6">
             {/* Header */}
