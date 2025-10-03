@@ -207,8 +207,8 @@ function saveCharm(charm: CharmState): void {
     }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-  } catch (error) {
-    console.error("Failed to save charm:", error);
+  } catch {
+    // Silently handle save errors
   }
 }
 
@@ -218,8 +218,8 @@ function deleteCharm(charmId: string): void {
     const saved = loadSavedCharms();
     const filtered = saved.filter((c) => c.id !== charmId);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-  } catch (error) {
-    console.error("Failed to delete charm:", error);
+  } catch {
+    // Silently handle delete errors
   }
 }
 
@@ -284,7 +284,9 @@ export default function CharmBuilderSimulatorV2() {
         // Reset days count to 0 when loading saved state
         setState({ ...savedState, daysSpent: 0, cloversSpent: savedState.cloversSpent || 0 });
       }
-    } catch {}
+    } catch {
+      // Silently handle loading errors
+    }
   }, []);
 
   // Save current charm when state changes
@@ -293,7 +295,9 @@ export default function CharmBuilderSimulatorV2() {
       try {
         saveCharm(state);
         setCharmSlots(getCharmSlots());
-      } catch {}
+      } catch {
+        // Silently handle save errors
+      }
     }
   }, [state, isClient]);
 
