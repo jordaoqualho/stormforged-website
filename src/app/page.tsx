@@ -16,9 +16,10 @@ import TopMenu from "@/components/TopMenu";
 import { getCurrentWeekNumber } from "@/lib/calculations";
 import { useGuildWarStore } from "@/store/guildWarStore";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
-export default function Home() {
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+function HomeContent() {
   const { loadData, isLoading, attacks } = useGuildWarStore();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
@@ -188,7 +189,9 @@ export default function Home() {
         </AnimatedContainer>
 
         {/* Navigation Tabs */}
-        <TopMenu />
+        <Suspense fallback={<div className="h-16 bg-[#1A1A1A] border-b-2 border-mystic-blue animate-pulse"></div>}>
+          <TopMenu />
+        </Suspense>
 
         {/* Main Content */}
         <main className="max-w-screen-xl mx-auto px-3 sm:px-4 md:px-8 py-4 sm:py-8">
@@ -263,5 +266,21 @@ export default function Home() {
         <Footer />
       </div>
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-battlefield flex items-center justify-center">
+        <div className="text-center">
+          <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
+          <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
+          <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged...</p>
+        </div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
