@@ -36,7 +36,7 @@ const formatNumber = (num: number | undefined, useShort: boolean): string => {
 };
 
 export default function CostTracker({ nextRerollCost, totalCosts }: CostTrackerProps) {
-  const [useShortFormat, setUseShortFormat] = useState(false);
+  const [useShortFormat, setUseShortFormat] = useState(true);
 
   // Calculate days spent based on clovers spent (30 clovers = 1 day)
   const daysSpent = Math.ceil((totalCosts.cloversSpent || 0) / 30);
@@ -62,13 +62,13 @@ export default function CostTracker({ nextRerollCost, totalCosts }: CostTrackerP
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-lg">🪙</span>
-            <span className="font-pixel text-sm text-text-muted">
+            <span className="font-pixel text-sm text-gold">
               {formatNumber(nextRerollCost.gold, useShortFormat)} gold
             </span>
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-lg">📖</span>
-            <span className="font-pixel text-sm text-text-muted">
+            <span className="font-pixel text-sm text-gold">
               {formatNumber(nextRerollCost.tomes, useShortFormat)} tomes
             </span>
           </div>

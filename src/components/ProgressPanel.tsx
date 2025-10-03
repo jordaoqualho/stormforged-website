@@ -111,35 +111,37 @@ export default function ProgressPanel({
           <button
             onClick={onCloverUpgrade}
             disabled={!canCloverUpgrade}
-            className="w-full btn-rpg py-2 px-3 text-sm bg-green-600 border-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-rpg py-2 px-3 text-sm bg-green-600 border-green-500 hover:bg-green-500 hover:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed space-x-2"
             title={
               rarity === "Legendary" && maxRows === 5
                 ? "Unlock locked rows with 100 Clovers"
                 : "Upgrade with 100 Clovers (instant)"
             }
           >
-            {rarity === "Legendary" && maxRows === 5 ? "Unlock (100 🍀)" : "Upgrade (100 🍀)"}
+                 
+            {rarity === "Legendary" && maxRows === 5 ? <span>Unlock</span>: <span>Upgrade</span>}
+                 <span className="text-xs opacity-75">(100 🍀)</span>
           </button>
 
           <button
             onClick={onEyeUpgrade}
             disabled={!canEyeUpgrade}
-            className="w-full btn-rpg py-2 px-3 text-sm bg-mystic-blue border-mystic-blue-light disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-rpg py-2 px-3 text-sm border-mystic-blue-light hover:bg-purple-500 hover:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed space-x-2"
             title="Upgrade with 10 Eyes (max Rare)"
           >
-            Upgrade (10 👁️)
+            <span>Upgrade</span>
+            <span className="text-xs opacity-75">(10 👁️)</span>
           </button>
 
           <button
             onClick={onEyeReroll}
             disabled={!canEyeReroll}
-            className="w-full btn-rpg py-2 px-3 text-sm bg-orange-600 border-orange-500 hover:bg-orange-500 hover:border-orange-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-rpg py-2 px-3 text-sm bg-orange-600 border-orange-500 hover:bg-purple-500 hover:border-purple-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Reroll selected row stats with 20 Eyes (keep rarity)"
           >
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-lg">👁️</span>
               <span>Reroll Stats</span>
-              <span className="text-xs opacity-75">(20 Eyes)</span>
+              <span className="text-xs opacity-75">(20 👁️)</span>
             </div>
           </button>
 
@@ -150,9 +152,8 @@ export default function ProgressPanel({
             title="Unlock currently locked row with 100 Eyes"
           >
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-lg">👁️</span>
               <span>Unlock Row</span>
-              <span className="text-xs opacity-75">(100 Eyes)</span>
+              <span className="text-xs opacity-75">(100 👁️)</span>
             </div>
           </button>
         </div>

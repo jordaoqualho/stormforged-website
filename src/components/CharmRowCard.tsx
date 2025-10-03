@@ -54,9 +54,9 @@ export default function CharmRowCard({
   return (
     <div
       className={`
-        border-2 p-4 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] transition-all duration-300
+        border-2 p-4 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] transition-all duration-300
         ${rarityColor[row.rarity]}
-        ${rarityGlow[row.rarity]}
+        ${isSelected || isLocked ? rarityGlow[row.rarity] : "shadow-none"}
         ${isSelected && !isLocked ? "ring-2 ring-gold ring-opacity-50" : ""}
         ${isLocked ? "opacity-100" : hasLockedRow ? "opacity-60" : "opacity-100"}
       `}

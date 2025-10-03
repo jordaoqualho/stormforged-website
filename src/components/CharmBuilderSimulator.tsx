@@ -126,8 +126,7 @@ type CharmSlot = {
   isEmpty: boolean;
 };
 
-const STORAGE_KEY = "ih_charm_builder_v3";
-const CHARMS_STORAGE_KEY = "builder-charm-storage";
+const STORAGE_KEY = "builder-charm-storage";
 const MAX_CHARMS = 5;
 
 function randomOf<T>(arr: T[]): T {
@@ -188,7 +187,7 @@ function createNewCharm(name: string = "New Charm"): CharmState {
 function loadSavedCharms(): CharmState[] {
   if (typeof window === "undefined") return [];
   try {
-    const saved = localStorage.getItem(CHARMS_STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
   } catch {
     return [];
@@ -207,7 +206,7 @@ function saveCharm(charm: CharmState): void {
       saved.push(charm);
     }
 
-    localStorage.setItem(CHARMS_STORAGE_KEY, JSON.stringify(saved));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
   } catch (error) {
     console.error("Failed to save charm:", error);
   }
@@ -218,7 +217,7 @@ function deleteCharm(charmId: string): void {
   try {
     const saved = loadSavedCharms();
     const filtered = saved.filter((c) => c.id !== charmId);
-    localStorage.setItem(CHARMS_STORAGE_KEY, JSON.stringify(filtered));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
   } catch (error) {
     console.error("Failed to delete charm:", error);
   }
@@ -278,9 +277,10 @@ export default function CharmBuilderSimulatorV2() {
 
     // Try to load the last used charm or create a new one
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const savedState = JSON.parse(raw) as CharmState;
+      const saved = loadSavedCharms();
+      if (saved.length > 0) {
+        // Load the first saved charm as default
+        const savedState = saved[0];
         // Reset days count to 0 when loading saved state
         setState({ ...savedState, daysSpent: 0, cloversSpent: savedState.cloversSpent || 0 });
       }
@@ -404,18 +404,22 @@ export default function CharmBuilderSimulatorV2() {
         return prev;
       }
 
-      playClick();
       const rows = [...prev.rows];
       const newRow = rollFullRow();
-      rows[prev.selectedRowIndex] = { ...newRow };
+      // Keep the row locked when rolling
+      rows[prev.selectedRowIndex] = { ...newRow, locked: true };
       const { gold, tomes } = computeNextCost(prev.rerolls);
 
-      // Play special sounds for Epic or Legendary rolls
+      // Play sounds based on rarity
       if (newRow.rarity === "Epic") {
         playEpic();
       } else if (newRow.rarity === "Legendary") {
         playLegendary();
+      } else if (newRow.rarity === "Common" || newRow.rarity === "Uncommon") {
+        // Play general click sound for Common and Uncommon only
+        playClick();
       }
+      // No sound for Rare rolls
 
       // Check if the rolled stat is Epic or Legendary to apply lock
       const shouldLock = newRow.rarity === "Epic" || newRow.rarity === "Legendary";
@@ -434,14 +438,25 @@ export default function CharmBuilderSimulatorV2() {
 
   const upgradeWithClovers = () => {
     setState((prev) => {
+      // Check if upgrade is allowed: less than 5 rows OR has locked rows
+      const hasLockedRow = prev.rows.some((row) => row.locked);
+      const canUpgrade = prev.maxRows < 5 || hasLockedRow;
+
+      if (!canUpgrade) {
+        playError();
+        return prev;
+      }
+
       playSuccess();
       const newRarity = rarityUp(prev.rarity);
       const newMaxRows = Math.min(prev.maxRows + 1, MAX_ROWS);
       const rows = [...prev.rows];
+
       // Unlock all existing rows (keep their current stats)
       for (let i = 0; i < rows.length; i++) {
         rows[i] = { ...rows[i], locked: false };
       }
+
       // If we've unlocked all 5 rows, the charm becomes Legendary
       const finalRarity = newMaxRows === MAX_ROWS ? "Legendary" : newRarity;
 
@@ -500,10 +515,12 @@ export default function CharmBuilderSimulatorV2() {
       playClick();
       const def = randomOf(SUBSTAT_POOL);
       const idx = rarityIndex(row.rarity);
+      // Keep the row locked when rerolling with eyes
       rows[rowIndex] = {
         ...row,
         statKey: def.key,
         value: def.values[idx],
+        locked: true,
       };
       return { ...prev, rows, eyesSpent: prev.eyesSpent + 20 };
     });
@@ -587,8 +604,77 @@ export default function CharmBuilderSimulatorV2() {
   if (!isClient) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-gold font-pixel text-lg">Loading Charm Builder...</div>
+        {/* Header Skeleton */}
+        <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-6 mb-6 animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-32 bg-gray-600 rounded"></div>
+            </div>
+            <div className="h-8 w-32 bg-gray-600 rounded"></div>
+          </div>
+        </div>
+
+        {/* Main Content Grid Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: Charm Rows Skeleton */}
+          <div className="lg:col-span-2">
+            <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-6 animate-pulse">
+              <div className="flex items-center justify-between mb-6">
+                <div className="h-6 w-24 bg-gray-600 rounded"></div>
+                <div className="h-6 w-6 bg-gray-600 rounded"></div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className="border-2 border-gray-600 p-4 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] animate-pulse"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="h-4 w-16 bg-gray-600 rounded"></div>
+                      <div className="h-4 w-20 bg-gray-600 rounded"></div>
+                    </div>
+                    <div className="h-6 w-32 bg-gray-600 rounded mb-3"></div>
+                    <div className="h-8 w-20 bg-gray-600 rounded mx-auto"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Controls Skeleton */}
+          <div className="space-y-6">
+            {/* Charm Status Skeleton */}
+            <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-4 animate-pulse">
+              <div className="h-6 w-24 bg-gray-600 rounded mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-4 w-20 bg-gray-600 rounded"></div>
+                <div className="h-4 w-16 bg-gray-600 rounded"></div>
+                <div className="h-4 w-24 bg-gray-600 rounded"></div>
+              </div>
+            </div>
+
+            {/* Upgrade Options Skeleton */}
+            <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-4 animate-pulse">
+              <div className="h-6 w-32 bg-gray-600 rounded mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-10 w-full bg-gray-600 rounded"></div>
+                <div className="h-10 w-full bg-gray-600 rounded"></div>
+                <div className="h-10 w-full bg-gray-600 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom: Cost Tracker Skeleton */}
+        <div className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-mystic-blue shadow-[4px_4px_0px_rgba(0,0,0,0.8)] p-4 animate-pulse">
+          <div className="h-6 w-32 bg-gray-600 rounded mb-4"></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="h-16 bg-gray-600 rounded"></div>
+            <div className="h-16 bg-gray-600 rounded"></div>
+            <div className="h-16 bg-gray-600 rounded"></div>
+            <div className="h-16 bg-gray-600 rounded"></div>
+          </div>
         </div>
       </div>
     );
@@ -619,7 +705,7 @@ export default function CharmBuilderSimulatorV2() {
               }}
               title="Manage your charms"
             >
-              🎲 Charm Slots ({charmSlots.filter((s) => !s.isEmpty).length}/5)
+              Charm Slots ({charmSlots.filter((s) => !s.isEmpty).length}/5)
             </PixelButton>
           </div>
         </div>
@@ -681,7 +767,7 @@ export default function CharmBuilderSimulatorV2() {
             onEyeUpgrade={eyeUpgrade10}
             onEyeUnlock={eyeUnlock100}
             onEyeReroll={() => eyeReroll20(state.selectedRowIndex!)}
-            canCloverUpgrade={true}
+            canCloverUpgrade={state.maxRows < 5 || state.rows.some((row) => row.locked)}
             canEyeUpgrade={canEyeUpgrade}
             canEyeUnlock={canEyeUnlock}
             canEyeReroll={state.selectedRowIndex !== null}
@@ -753,6 +839,13 @@ export default function CharmBuilderSimulatorV2() {
                       <span>
                         <strong className="text-purple-400">Epic/Legendary Lock:</strong> 3-second cooldown after
                         rolling Epic or Legendary stats
+                      </span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="text-text-muted mt-0.5">•</span>
+                      <span>
+                        <strong className="text-yellow-400">Reroll Cost:</strong> Each reroll increases cost by 10%
+                        (base: 10K gold, 1K tomes)
                       </span>
                     </li>
                   </ul>
@@ -943,17 +1036,10 @@ export default function CharmBuilderSimulatorV2() {
 
       {/* Charm Slots Management Modal */}
       {showCharmDropdown && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowCharmDropdown(false);
-            }
-          }}
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div
+            ref={dropdownRef}
             className="bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] border-2 border-gold shadow-[4px_4px_0px_rgba(0,0,0,0.8)] max-w-lg w-full max-h-[80vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-[#0D0D0D] to-[#1A1A1A] border-b-2 border-gold p-4">
