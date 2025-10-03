@@ -25,7 +25,7 @@ const MAIN_MENU: MenuItem[] = [
 
 const TOOLS: ToolItem[] = [
   { href: "/charm-builder", label: "Charm Builder", icon: "🧿" },
-  { href: "/sigmund", label: "Sigmund Calculator", icon: "🧠" },
+  { href: "/sigmund", label: "Calculator", icon: "🧠" },
 ];
 
 export default function TopMenu() {
