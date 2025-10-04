@@ -174,7 +174,7 @@ const PlayerAutocomplete = forwardRef<HTMLInputElement, PlayerAutocompleteProps>
             `}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            onBlur={(e) => {
+            onBlur={() => {
               // Delay closing to allow option clicks
               setTimeout(() => setIsOpen(false), 150);
               onBlur?.();

@@ -218,7 +218,7 @@ export default function AddAttackForm({ onSuccess, onError }: AddAttackFormProps
           <button
             type="submit"
             disabled={isLoading || !isFormValid || isDuplicateEntry}
-            onMouseDown={(e) => {
+            onMouseDown={() => {
               // Blur the input to close any open dropdowns before click
               if (playerInputRef.current) {
                 playerInputRef.current.blur();

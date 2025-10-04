@@ -271,15 +271,17 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-battlefield flex items-center justify-center">
-        <div className="text-center">
-          <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
-          <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-battlefield flex items-center justify-center">
+          <div className="text-center">
+            <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
+            <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
+            <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <HomeContent />
     </Suspense>
   );

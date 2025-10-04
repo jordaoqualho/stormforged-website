@@ -293,7 +293,7 @@ class RPGSoundManager {
       gainNode.connect(this.audioContext.destination);
 
       source.start();
-    } catch (error) {
+    } catch {
       // Silently fail to avoid console spam
     }
   }
