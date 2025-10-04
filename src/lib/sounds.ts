@@ -74,6 +74,8 @@ class RPGSoundManager {
     this.generateHoverSound();
     this.generateVictorySound();
     this.generateNotificationSound();
+    this.generateEpicSound();
+    this.generateLegendarySound();
   }
 
   private generateClickSound() {
@@ -221,6 +223,48 @@ class RPGSoundManager {
     this.sounds.set("notification", buffer);
   }
 
+  private generateEpicSound() {
+    if (!this.audioContext) return;
+
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 0.8, this.audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < buffer.length; i++) {
+      const t = i / this.audioContext.sampleRate;
+      // Epic purple-themed sound with mystical undertones
+      const note1 = Math.sin(2 * Math.PI * 554.37 * t) * 0.15; // C#5
+      const note2 = Math.sin(2 * Math.PI * 739.99 * t) * 0.12; // F#5
+      const note3 = Math.sin(2 * Math.PI * 987.77 * t) * 0.1; // B5
+      const shimmer = Math.sin(2 * Math.PI * 2200 * t) * 0.05 * Math.sin(t * 15); // Shimmer effect
+      const envelope = Math.exp(-t * 1.5) * (1 + Math.sin(t * 12) * 0.3);
+      data[i] = (note1 + note2 + note3 + shimmer) * envelope;
+    }
+
+    this.sounds.set("epic", buffer);
+  }
+
+  private generateLegendarySound() {
+    if (!this.audioContext) return;
+
+    const buffer = this.audioContext.createBuffer(1, this.audioContext.sampleRate * 1.5, this.audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < buffer.length; i++) {
+      const t = i / this.audioContext.sampleRate;
+      // Legendary gold-themed sound with triumphant fanfare
+      const note1 = Math.sin(2 * Math.PI * 523.25 * t) * 0.2; // C5
+      const note2 = Math.sin(2 * Math.PI * 659.25 * t) * 0.18; // E5
+      const note3 = Math.sin(2 * Math.PI * 783.99 * t) * 0.15; // G5
+      const note4 = Math.sin(2 * Math.PI * 1046.5 * t) * 0.12; // C6
+      const note5 = Math.sin(2 * Math.PI * 1318.51 * t) * 0.1; // E6
+      const goldenShimmer = Math.sin(2 * Math.PI * 3000 * t) * 0.08 * Math.sin(t * 20); // Golden shimmer
+      const envelope = Math.exp(-t * 1.0) * (1 + Math.sin(t * 8) * 0.4);
+      data[i] = (note1 + note2 + note3 + note4 + note5 + goldenShimmer) * envelope;
+    }
+
+    this.sounds.set("legendary", buffer);
+  }
+
   private async playSound(soundName: string, volume = 0.5) {
     if (!this.isEnabled || !this.sounds.has(soundName)) {
       return;
@@ -249,7 +293,7 @@ class RPGSoundManager {
       gainNode.connect(this.audioContext.destination);
 
       source.start();
-    } catch (error) {
+    } catch {
       // Silently fail to avoid console spam
     }
   }
@@ -287,6 +331,14 @@ class RPGSoundManager {
     this.playSound("notification", 0.15);
   }
 
+  playEpic() {
+    this.playSound("epic", 0.35);
+  }
+
+  playLegendary() {
+    this.playSound("legendary", 0.4);
+  }
+
   setEnabled(enabled: boolean) {
     this.isEnabled = enabled;
   }
@@ -315,6 +367,8 @@ export function useRPGSounds() {
     playHover: () => soundManager.playHover(),
     playVictory: () => soundManager.playVictory(),
     playNotification: () => soundManager.playNotification(),
+    playEpic: () => soundManager.playEpic(),
+    playLegendary: () => soundManager.playLegendary(),
     setEnabled: (enabled: boolean) => soundManager.setEnabled(enabled),
     isEnabled: soundManager.isSoundEnabled(),
     toggleSound: () => soundManager.toggleSound(),

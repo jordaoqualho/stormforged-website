@@ -7,24 +7,26 @@ import Charts from "@/components/Charts";
 import CurrentWeekStats from "@/components/CurrentWeekStats";
 import DailyBattleLog from "@/components/DailyBattleLog";
 import DataManagement from "@/components/DataManagement";
+import Footer from "@/components/Footer";
 import InitialLoadingScreen from "@/components/InitialLoadingScreen";
 import MemberRankings from "@/components/MemberRankings";
 import NotificationSystem, { useNotifications } from "@/components/NotificationSystem";
 import SoundToggle from "@/components/SoundToggle";
+import TopMenu from "@/components/TopMenu";
 import { getCurrentWeekNumber } from "@/lib/calculations";
-import { useRPGSounds } from "@/lib/sounds";
 import { useGuildWarStore } from "@/store/guildWarStore";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import packageJson from "../../package.json";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
-export default function Home() {
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+function HomeContent() {
   const { loadData, isLoading, attacks } = useGuildWarStore();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"overview" | "charts" | "data">("overview");
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(false); // Will be set based on first visit
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { notifications, showSuccess, showError, removeNotification } = useNotifications();
-  const { playClick } = useRPGSounds();
 
   // Memoized calculations to prevent unnecessary re-renders
   const totalBattles = useMemo(() => attacks.length, [attacks.length]);
@@ -42,14 +44,15 @@ export default function Home() {
     return `Week ${currentWeekNumber} Epic`;
   }, [currentWeekNumber]);
 
-  const tabConfig = useMemo(
-    () => [
-      { id: "overview", label: "Battle Command", mobileLabel: "Battle", icon: "⚔️", desc: "Record & Monitor" },
-      { id: "charts", label: "War Analytics", mobileLabel: "Analytics", icon: "📈", desc: "Visual Reports" },
-      { id: "data", label: "Guild Archives", mobileLabel: "Archives", icon: "📚", desc: "Data Management" },
-    ],
-    []
-  );
+  // Handle URL parameters for tabs
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "charts" || tab === "data") {
+      setActiveTab(tab);
+    } else {
+      setActiveTab("overview");
+    }
+  }, [searchParams]);
 
   // Memoize the loading completion callback
   const handleLoadingComplete = useCallback(() => {
@@ -149,7 +152,7 @@ export default function Home() {
                   <div>
                     <h1 className="text-lg sm:text-2xl font-pixel text-gold text-glow">Stormforged</h1>
                     <p className="text-xs sm:text-sm text-text-secondary font-pixel-operator hidden sm:block">
-                      Idle Horizon Guild War Command Center
+                      Idle Horizon Guild Manager and Tools
                     </p>
                   </div>
                 </div>
@@ -186,35 +189,9 @@ export default function Home() {
         </AnimatedContainer>
 
         {/* Navigation Tabs */}
-        <AnimatedContainer animationType="slide-up" delay={100}>
-          <nav className="w-full overflow-hidden">
-            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-              <div className="flex w-full space-x-1">
-                {tabConfig.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id as "overview" | "charts" | "data");
-                      playClick();
-                    }}
-                    className={`tab-rpg flex-1 min-w-0 ${activeTab === tab.id ? "active" : ""}`}
-                  >
-                    <div className="flex flex-col items-center space-y-0.5 px-0.5">
-                      <span className="text-sm sm:text-xl md:text-2xl">{tab.icon}</span>
-                      <span className="font-pixel text-[10px] sm:text-sm leading-tight text-center">
-                        <span className="sm:hidden">{tab.mobileLabel}</span>
-                        <span className="hidden sm:inline">{tab.label}</span>
-                      </span>
-                      <span className="font-pixel-operator text-[8px] opacity-75 hidden sm:block leading-tight text-center">
-                        {tab.desc}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </nav>
-        </AnimatedContainer>
+        <Suspense fallback={<div className="h-16 bg-[#1A1A1A] border-b-2 border-mystic-blue animate-pulse"></div>}>
+          <TopMenu />
+        </Suspense>
 
         {/* Main Content */}
         <main className="max-w-screen-xl mx-auto px-3 sm:px-4 md:px-8 py-4 sm:py-8">
@@ -286,44 +263,26 @@ export default function Home() {
           )}
         </main>
 
-        {/* Footer */}
-        <AnimatedContainer animationType="slide-up" delay={300}>
-          <footer className="bg-gradient-to-r from-[#0D0D0D] via-[#1A1A1A] to-[#0D0D0D] border-t-2 border-mystic-blue mt-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="icon-rpg text-3xl mb-2">🏰</div>
-                  <h3 className="font-pixel text-gold mb-2">Stormforged</h3>
-                  <p className="text-xs text-text-muted font-pixel-operator">Idle Horizon Guild War Command Center</p>
-                </div>
-                <div className="text-center">
-                  <div className="icon-rpg text-3xl mb-2">⚔️</div>
-                  <h3 className="font-pixel text-gold mb-2">Battle Tracker</h3>
-                  <p className="text-xs text-text-muted font-pixel-operator">
-                    Track your guild's performance and dominate the battlefield!
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="icon-rpg text-3xl mb-2">📊</div>
-                  <h3 className="font-pixel text-gold mb-2">Analytics</h3>
-                  <p className="text-xs text-text-muted font-pixel-operator">
-                    Real-time statistics and performance insights
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-mystic-blue">
-                <div className="text-center">
-                  <p className="text-xs text-text-muted font-pixel-operator">
-                    Created by <span className="text-gold font-pixel">Jordones</span> for the Stormforged Guild •
-                    Version <span className="text-gold font-pixel">{packageJson.version}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </footer>
-        </AnimatedContainer>
+        <Footer />
       </div>
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-battlefield flex items-center justify-center">
+          <div className="text-center">
+            <div className="icon-rpg text-6xl mb-6 animate-pulse-glow">⚔️</div>
+            <div className="loading-rpg w-16 h-16 mx-auto mb-4"></div>
+            <p className="text-gold font-pixel-operator text-lg animate-pulse">Loading Stormforged...</p>
+          </div>
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }
