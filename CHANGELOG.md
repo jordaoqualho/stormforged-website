@@ -1,3 +1,30 @@
+# [1.3.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.2.0...v1.3.0) (2025-10-04)
+
+
+### Bug Fixes
+
+* **build:** wrap main page useSearchParams in Suspense boundary ([cad54df](https://github.com/jordaoqualho/stormforged-website/commit/cad54dfb414594a81a5d6a174c2e19f8453bdee6))
+* **build:** wrap TopMenu in Suspense boundary for static generation ([36f5f59](https://github.com/jordaoqualho/stormforged-website/commit/36f5f59608a6f866452f75cd08445cbc47186cd3))
+* correct Eye Unlock functionality and improve guide documentation ([44ddd7b](https://github.com/jordaoqualho/stormforged-website/commit/44ddd7b83c26c667f05832f4faf95ebb711cac0b))
+* improve TopMenu dropdown visibility and active tab detection ([9fa3839](https://github.com/jordaoqualho/stormforged-website/commit/9fa38394cdd853af8f58f8292f834e442a7b8df1))
+* **lint:** resolve all linting issues and improve error handling ([192a81f](https://github.com/jordaoqualho/stormforged-website/commit/192a81fbc84b02f56951f7ab4751c2500c6415ad))
+* **workflow:** remove unused NPM_TOKEN from semantic-release workflow ([35b7686](https://github.com/jordaoqualho/stormforged-website/commit/35b768658a5c9f2777b116ab84794258d6d1ac7f))
+
+
+### Features
+
+* add consistent site header and navigation to Sigmund page ([af34f49](https://github.com/jordaoqualho/stormforged-website/commit/af34f49789a681c915ac70220947e1816ce5dd6a))
+* add number shortening toggle and hover tooltips to CostTracker ([94ae151](https://github.com/jordaoqualho/stormforged-website/commit/94ae151e49dc1a09ced3ccae90cef236f7120e10))
+* add site header to tool pages for consistent UX ([8d15dda](https://github.com/jordaoqualho/stormforged-website/commit/8d15dda1eb3f7e796f425e0dcb1cffdd04ae2a00))
+* charm builder simulator ([aa55569](https://github.com/jordaoqualho/stormforged-website/commit/aa5556981b3259d3c4046c62e5e2a434950687e6))
+* **charm-builder:** move eye reroll button to upgrade options panel ([26f08ed](https://github.com/jordaoqualho/stormforged-website/commit/26f08ed46f0ed0e7e762a3952a22e3594b4703ed))
+* create unified navigation system with tools dropdown ([e50f21a](https://github.com/jordaoqualho/stormforged-website/commit/e50f21a35df9f93219352003763f05a3f787c316))
+* enhance CharmRowCard with better row selection and lock display ([1041d28](https://github.com/jordaoqualho/stormforged-website/commit/1041d28552224426934f35e19232916a3acc33e7))
+* extract reusable SiteHeader component ([4f7268c](https://github.com/jordaoqualho/stormforged-website/commit/4f7268cbece490e1ebb800d23ceda934a5e26e0f))
+* implement new charm rolling system ([d2b2650](https://github.com/jordaoqualho/stormforged-website/commit/d2b2650390877976fd38dc459c2010ad8c90b869))
+* improve Eye Unlock button with better text and conditional visibility ([c4fe5d1](https://github.com/jordaoqualho/stormforged-website/commit/c4fe5d1c94674c52457856d1af78d574b5ead0a5))
+* move eye reroll button from charm rows to Upgrade Options ([d6d004e](https://github.com/jordaoqualho/stormforged-website/commit/d6d004efd1be9f2efe5d05dd3155755b763c189a))
+
 # [1.2.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.1.0...v1.2.0) (2025-09-28)
 
 
