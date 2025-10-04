@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.3.1...v1.4.0) (2025-10-04)
+
+
+### Features
+
+* add billions formatting to cost resources ([f4ddf76](https://github.com/jordaoqualho/stormforged-website/commit/f4ddf765f003baf929a0b26fc2dd5267addd381a))
+
 ## [1.3.1](https://github.com/jordaoqualho/stormforged-website/compare/v1.3.0...v1.3.1) (2025-10-04)
 
 
