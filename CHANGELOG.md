@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/jordaoqualho/stormforged-website/compare/v1.3.0...v1.3.1) (2025-10-04)
+
+
+### Bug Fixes
+
+* **charm-builder:** update substat values for consistency and accuracy ([e5fe1fe](https://github.com/jordaoqualho/stormforged-website/commit/e5fe1fe71f3cb7ed16578d3b6667653aa37eb1f5))
+* standardize float values in CharmBuilderSimulator component ([718751e](https://github.com/jordaoqualho/stormforged-website/commit/718751e14f736e8b181999ffd126453849fe0bc7))
+* wrap useSearchParams in Suspense boundaries for charm-builder and main pages ([8479252](https://github.com/jordaoqualho/stormforged-website/commit/8479252ee0173e5d0b851aae57f032c9d0bbaac1))
+
 # [1.3.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.2.0...v1.3.0) (2025-10-04)
 
 
