@@ -67,7 +67,7 @@ const SUBSTAT_POOL: StatDefinition[] = [
   {
     key: "ATTACK_SPEED_FLAT",
     label: "Attack Speed (Flat)",
-    values: [0.05, 0.055, 0.07, 0.08, 0.11],
+    values: [0.050, 0.055, 0.070, 0.080, 0.110],
     format: fmtFloat3,
   },
   { key: "HEALTH", label: "Health", values: [2400, 2625, 3200, 3600, 4800], format: fmtInt },
@@ -77,11 +77,11 @@ const SUBSTAT_POOL: StatDefinition[] = [
   { key: "ARMOR_PEN_FLAT", label: "Armor Pen. (Flat)", values: [4000, 4500, 6000, 7000, 10000], format: fmtInt },
   { key: "RESIST_PEN_PCT", label: "Resist Penetration (%)", values: [11.0, 11.75, 14.0, 15.5, 20.0], format: fmtPct1 },
   { key: "RESIST_PEN_FLAT", label: "Resist Pen. (Flat)", values: [4000, 4500, 6000, 7000, 10000], format: fmtInt },
-  { key: "CRIT_CHANCE_PCT", label: "Critical Chance (%)", values: [30, 33, 40, 45, 50], format: fmtPct },
+  { key: "CRIT_CHANCE_PCT", label: "Critical Chance (%)", values: [30, 33, 40, 45, 60], format: fmtPct },
   {
     key: "CRIT_CHANCE_FLAT",
     label: "Critical Chance (Flat)",
-    values: [0.03, 0.034, 0.045, 0.05, 0.075],
+    values: [0.030, 0.034, 0.045, 0.050, 0.075],
     format: fmtFloat3,
   },
   { key: "CRIT_DAMAGE", label: "Critical Damage (%)", values: [30, 34, 45, 53, 75], format: fmtPct },
