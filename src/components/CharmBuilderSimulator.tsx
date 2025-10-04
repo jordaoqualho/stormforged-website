@@ -85,7 +85,7 @@ const SUBSTAT_POOL: StatDefinition[] = [
     format: fmtFloat3,
   },
   { key: "CRIT_DAMAGE", label: "Critical Damage (%)", values: [30, 34, 45, 53, 75], format: fmtPct },
-  { key: "MOVE_SPEED", label: "Move Speed (tile/sec)", values: [0.45, 0.487, 0.6, 0.675, 0.9], format: fmtFloat3 },
+  { key: "MOVE_SPEED", label: "Move Speed (tile/sec)", values: [0.450, 0.487, 0.600, 0.675, 0.900], format: fmtFloat3 },
   {
     key: "RESIST_SHRED",
     label: "Resist Shred per Magic Hit (max 10)",
