@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import CharmBuilderSimulator from "@/components/CharmBuilderSimulator";
 import Footer from "@/components/Footer";
 import SiteHeader from "@/components/SiteHeader";

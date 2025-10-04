@@ -77,7 +77,7 @@ const SUBSTAT_POOL: StatDefinition[] = [
   { key: "ARMOR_PEN_FLAT", label: "Armor Pen. (Flat)", values: [4000, 4500, 6000, 7000, 10000], format: fmtInt },
   { key: "RESIST_PEN_PCT", label: "Resist Penetration (%)", values: [11.0, 11.75, 14.0, 15.5, 20.0], format: fmtPct1 },
   { key: "RESIST_PEN_FLAT", label: "Resist Pen. (Flat)", values: [4000, 4500, 6000, 7000, 10000], format: fmtInt },
-  { key: "CRIT_CHANCE_PCT", label: "Critical Chance (%)", values: [30, 33, 40, 45, 60], format: fmtPct },
+  { key: "CRIT_CHANCE_PCT", label: "Critical Chance (%)", values: [30, 34, 40, 45, 60], format: fmtPct },
   {
     key: "CRIT_CHANCE_FLAT",
     label: "Critical Chance (Flat)",
