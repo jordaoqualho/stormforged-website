@@ -3,7 +3,6 @@ import CharmBuilderSimulator from "@/components/CharmBuilderSimulator";
 import Footer from "@/components/Footer";
 import SiteHeader from "@/components/SiteHeader";
 import TopMenu from "@/components/TopMenu";
-import { Suspense } from "react";
 
 export default function CharmBuilderPage() {
   return (
