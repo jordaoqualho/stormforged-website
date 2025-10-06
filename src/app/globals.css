@@ -337,17 +337,179 @@ body {
 /* Mobile Navigation Responsive Styles */
 @media (max-width: 640px) {
   .tab-rpg {
-    @apply px-0.5 py-1;
+    @apply px-0.5 py-1.5;
     @apply text-xs;
+    @apply min-h-[48px];
+    @apply touch-manipulation;
+    @apply overflow-hidden;
   }
 
   .tab-rpg .flex-col {
     @apply space-y-0;
+    @apply justify-center;
+    @apply h-full;
+    @apply w-full;
+    @apply min-w-0;
   }
 
   .tab-rpg span {
     @apply text-[10px];
     @apply leading-tight;
+    @apply select-none;
+    @apply max-w-full;
+  }
+
+  .tab-rpg:hover {
+    @apply transform scale-[1.02];
+  }
+
+  .tab-rpg:active {
+    @apply transform scale-[0.98];
+  }
+
+  /* Improve dropdown positioning on mobile */
+  .tab-rpg + div > div[class*="absolute"] {
+    @apply left-0 right-0;
+    @apply min-w-full;
+  }
+
+  /* Ensure text doesn't overflow */
+  .tab-rpg .flex-col > span {
+    @apply block;
+    @apply w-full;
+    @apply text-center;
+    @apply overflow-hidden;
+    @apply text-ellipsis;
+    @apply whitespace-nowrap;
+  }
+}
+
+/* Enhanced mobile touch targets */
+@media (max-width: 640px) {
+  .tab-rpg {
+    @apply min-h-[44px];
+    @apply flex items-center justify-center;
+  }
+
+  /* Better visual feedback for touch */
+  .tab-rpg:active {
+    @apply bg-opacity-80;
+  }
+
+  /* Improve dropdown items for mobile */
+  .tab-rpg + div > div[class*="absolute"] a {
+    @apply min-h-[44px];
+    @apply flex items-center;
+  }
+}
+
+/* Extra small mobile screens */
+@media (max-width: 480px) {
+  .tab-rpg {
+    @apply px-0.5 py-1;
+    @apply min-h-[40px];
+    @apply max-w-full;
+  }
+
+  .tab-rpg span {
+    @apply text-[8px];
+    @apply max-w-full;
+  }
+
+  /* Ensure dropdown doesn't overflow on very small screens */
+  .tab-rpg + div > div[class*="absolute"] {
+    @apply max-w-[calc(100vw-1rem)];
+    @apply left-0 right-0;
+  }
+
+  /* More aggressive text handling for very small screens */
+  .tab-rpg .flex-col > span {
+    @apply text-[8px];
+    @apply max-w-full;
+    @apply overflow-hidden;
+    @apply text-ellipsis;
+    @apply whitespace-nowrap;
+  }
+}
+
+/* Ultra small screens and translation handling */
+@media (max-width: 360px) {
+  .tab-rpg {
+    @apply px-0.5 py-0.5;
+    @apply min-h-[36px];
+  }
+
+  .tab-rpg .flex-col > span {
+    @apply text-[7px];
+    @apply max-w-full;
+    @apply overflow-hidden;
+    @apply text-ellipsis;
+    @apply whitespace-nowrap;
+  }
+}
+
+/* Dropdown overflow prevention */
+.tab-rpg + div > div[class*="absolute"] {
+  @apply max-h-[200px];
+  @apply overflow-y-auto;
+  @apply z-[50];
+}
+
+/* Ensure dropdown doesn't overflow viewport */
+@media (max-width: 640px) {
+  .tab-rpg + div > div[class*="absolute"] {
+    @apply max-h-[150px];
+    @apply overflow-y-auto;
+    @apply left-0 right-0;
+    @apply max-w-full;
+  }
+}
+
+/* Translation-specific styles */
+.tab-rpg.translated {
+  @apply px-0.5 py-1;
+}
+
+.tab-rpg.translated .flex-col > span {
+  @apply text-[7px] sm:text-[8px];
+  @apply max-w-full;
+  @apply overflow-hidden;
+  @apply text-ellipsis;
+  @apply whitespace-nowrap;
+  @apply leading-tight;
+}
+
+/* Force smaller text when translation is detected */
+@media (max-width: 640px) {
+  .tab-rpg.translated {
+    @apply min-h-[40px];
+  }
+
+  .tab-rpg.translated .flex-col > span {
+    @apply text-[7px];
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 640px) and (orientation: landscape) {
+  .tab-rpg {
+    @apply py-1;
+    @apply min-h-[36px];
+    @apply max-w-full;
+  }
+
+  .tab-rpg span {
+    @apply text-[8px];
+    @apply max-w-full;
+  }
+
+  /* Better text handling in landscape */
+  .tab-rpg .flex-col > span {
+    @apply text-[8px];
+    @apply max-w-full;
+    @apply overflow-hidden;
+    @apply text-ellipsis;
+    @apply whitespace-nowrap;
   }
 }
 
