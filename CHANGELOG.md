@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.4.0...v1.5.0) (2025-10-06)
+
+
+### Features
+
+* enhance mobile navigation and translation handling ([a368509](https://github.com/jordaoqualho/stormforged-website/commit/a368509be7f2ea399a38a447dcbba584e2cdcf94))
+
 # [1.4.0](https://github.com/jordaoqualho/stormforged-website/compare/v1.3.1...v1.4.0) (2025-10-04)
 
 
